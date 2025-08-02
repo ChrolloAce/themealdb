@@ -3,8 +3,11 @@ const path = require('path');
 
 class DatabaseManager {
   constructor() {
-    this.dbPath = process.env.DB_PATH || './data/recipes.db';
+    // Use in-memory database for serverless environments (Vercel)
+    const isServerless = process.env.VERCEL || process.env.NODE_ENV === 'production';
+    this.dbPath = isServerless ? ':memory:' : (process.env.DB_PATH || './data/recipes.db');
     this.db = null;
+    console.log(`📊 Database mode: ${isServerless ? 'In-Memory (Serverless)' : 'File-based (Local)'}`);
   }
 
   async initialize() {
