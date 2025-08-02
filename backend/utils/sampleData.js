@@ -118,17 +118,11 @@ class DataSeeder {
 
   async seedIfEmpty() {
     try {
-      // Check if recipes already exist
-      const existingRecipes = await this.recipeManager.searchByName('');
-      
-      if (!existingRecipes.meals || existingRecipes.meals.length === 0) {
-        await this.seedSampleRecipes();
-      } else {
-        console.log('📚 Database already contains recipes, skipping seeding');
-      }
+      // NO DEFAULT SEEDING - as requested by user
+      console.log('🔥 Database seeding disabled - no default recipes will be added');
+      console.log('📝 All recipes will come from AI generation or manual creation');
     } catch (error) {
-      console.warn('⚠️ Could not check existing recipes, attempting to seed anyway');
-      await this.seedSampleRecipes();
+      console.log('🔥 Database seeding disabled - no default recipes will be added');
     }
   }
 }

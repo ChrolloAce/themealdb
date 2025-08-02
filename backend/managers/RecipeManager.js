@@ -8,6 +8,13 @@ class RecipeManager {
   // Search recipes by name
   async searchByName(name, limit = 100) {
     try {
+      // Check if we're using Firebase
+      if (this.db.searchRecipes) {
+        const recipes = await this.db.searchRecipes(name);
+        return { meals: recipes.map(row => new Recipe(row).toApiFormat()) };
+      }
+      
+      // Fallback to SQL for SQLite
       const query = `
         SELECT * FROM recipes 
         WHERE strMeal LIKE ? 
@@ -200,6 +207,14 @@ class RecipeManager {
         throw new Error('Invalid recipe data');
       }
       
+      // Check if we're using Firebase
+      if (this.db.addRecipe) {
+        const dbData = recipe.toDbFormat();
+        const result = await this.db.addRecipe(dbData);
+        return { meals: [new Recipe(result).toApiFormat()] };
+      }
+      
+      // Fallback to SQL for SQLite
       const dbData = recipe.toDbFormat();
       const columns = Object.keys(dbData).filter(key => key !== 'idMeal');
       const placeholders = columns.map(() => '?').join(',');
@@ -211,7 +226,7 @@ class RecipeManager {
       `;
       
       const result = await this.db.run(query, values);
-      return await this.getById(result.id);
+      return await this.getById(result.lastID);
     } catch (error) {
       throw new Error(`Create recipe failed: ${error.message}`);
     }
