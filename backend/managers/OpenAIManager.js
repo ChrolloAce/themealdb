@@ -15,6 +15,13 @@ class OpenAIManager {
   // Generate a complete recipe based on input parameters
   async generateRecipe(params = {}) {
     try {
+      // Check if OpenAI API key is configured
+      if (!process.env.OPENAI_API_KEY) {
+        throw new Error('OpenAI API key is not configured. Please set OPENAI_API_KEY environment variable.');
+      }
+
+      console.log('🧠 Starting AI recipe generation with params:', JSON.stringify(params, null, 2));
+
       const {
         cuisine = 'any',
         category = 'any',
@@ -37,6 +44,8 @@ class OpenAIManager {
         theme
       });
 
+      console.log('📝 Generated prompt for OpenAI (first 200 chars):', prompt.substring(0, 200) + '...');
+
       const completion = await this.openai.chat.completions.create({
         model: this.model,
         messages: [
@@ -53,11 +62,27 @@ class OpenAIManager {
         max_tokens: 2000
       });
 
+      console.log('✅ OpenAI API call successful, processing response...');
       const recipeData = this.parseAIResponse(completion.choices[0].message.content);
-      return this.formatRecipeForDatabase(recipeData);
+      const formattedRecipe = this.formatRecipeForDatabase(recipeData);
+      console.log('✅ Recipe generation completed successfully');
+      return formattedRecipe;
     } catch (error) {
       console.error('❌ Recipe generation error:', error.message);
-      throw new Error(`Recipe generation failed: ${error.message}`);
+      console.error('❌ Error stack:', error.stack);
+      
+      // Provide more specific error messages
+      if (error.message?.includes('API key')) {
+        throw new Error('OpenAI API key is missing or invalid. Please check your environment variables.');
+      } else if (error.message?.includes('insufficient_quota')) {
+        throw new Error('OpenAI API quota exceeded. Please check your OpenAI account billing.');
+      } else if (error.message?.includes('rate_limit')) {
+        throw new Error('OpenAI API rate limit exceeded. Please try again in a moment.');
+      } else if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED') {
+        throw new Error('Network error: Unable to connect to OpenAI API. Please check your internet connection.');
+      } else {
+        throw new Error(`Recipe generation failed: ${error.message}`);
+      }
     }
   }
 
