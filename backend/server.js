@@ -121,10 +121,22 @@ class FoodDBServer {
   }
 }
 
-// Start server if this file is run directly
+// Export app instance for Vercel
+let app;
+
+async function createApp() {
+  if (!app) {
+    const server = new FoodDBServer();
+    await server.initialize();
+    app = server.app;
+  }
+  return app;
+}
+
+// Start server if this file is run directly (for local development)
 if (require.main === module) {
   const server = new FoodDBServer();
   server.start().catch(console.error);
-}
-
-module.exports = FoodDBServer;
+} else {
+  // For Vercel deployment, export the app
+  module.exports = createApp;
