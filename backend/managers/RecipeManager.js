@@ -1,0 +1,255 @@
+const Recipe = require('../models/Recipe');
+
+class RecipeManager {
+  constructor(databaseManager) {
+    this.db = databaseManager;
+  }
+
+  // Search recipes by name
+  async searchByName(name, limit = 100) {
+    try {
+      const query = `
+        SELECT * FROM recipes 
+        WHERE strMeal LIKE ? 
+        ORDER BY strMeal 
+        LIMIT ?
+      `;
+      const rows = await this.db.all(query, [`%${name}%`, limit]);
+      return { meals: rows.map(row => new Recipe(row).toApiFormat()) };
+    } catch (error) {
+      throw new Error(`Search by name failed: ${error.message}`);
+    }
+  }
+
+  // Search recipes by first letter
+  async searchByFirstLetter(letter, limit = 100) {
+    try {
+      const query = `
+        SELECT * FROM recipes 
+        WHERE strMeal LIKE ? 
+        ORDER BY strMeal 
+        LIMIT ?
+      `;
+      const rows = await this.db.all(query, [`${letter}%`, limit]);
+      return { meals: rows.map(row => new Recipe(row).toApiFormat()) };
+    } catch (error) {
+      throw new Error(`Search by letter failed: ${error.message}`);
+    }
+  }
+
+  // Get recipe by ID
+  async getById(id) {
+    try {
+      const query = 'SELECT * FROM recipes WHERE idMeal = ?';
+      const row = await this.db.get(query, [id]);
+      
+      if (!row) {
+        return { meals: null };
+      }
+      
+      return { meals: [new Recipe(row).toApiFormat()] };
+    } catch (error) {
+      throw new Error(`Get by ID failed: ${error.message}`);
+    }
+  }
+
+  // Get random recipe
+  async getRandom() {
+    try {
+      const query = 'SELECT * FROM recipes ORDER BY RANDOM() LIMIT 1';
+      const row = await this.db.get(query);
+      
+      if (!row) {
+        return { meals: null };
+      }
+      
+      return { meals: [new Recipe(row).toApiFormat()] };
+    } catch (error) {
+      throw new Error(`Get random recipe failed: ${error.message}`);
+    }
+  }
+
+  // Get multiple random recipes (premium feature)
+  async getRandomSelection(count = 10) {
+    try {
+      const query = 'SELECT * FROM recipes ORDER BY RANDOM() LIMIT ?';
+      const rows = await this.db.all(query, [count]);
+      return { meals: rows.map(row => new Recipe(row).toApiFormat()) };
+    } catch (error) {
+      throw new Error(`Get random selection failed: ${error.message}`);
+    }
+  }
+
+  // Filter by main ingredient
+  async filterByIngredient(ingredient, limit = 100) {
+    try {
+      const conditions = [];
+      const params = [];
+      
+      // Search in all ingredient columns
+      for (let i = 1; i <= 20; i++) {
+        conditions.push(`strIngredient${i} LIKE ?`);
+        params.push(`%${ingredient}%`);
+      }
+      
+      params.push(limit);
+      
+      const query = `
+        SELECT idMeal, strMeal, strMealThumb 
+        FROM recipes 
+        WHERE ${conditions.join(' OR ')} 
+        ORDER BY strMeal 
+        LIMIT ?
+      `;
+      
+      const rows = await this.db.all(query, params);
+      return { meals: rows };
+    } catch (error) {
+      throw new Error(`Filter by ingredient failed: ${error.message}`);
+    }
+  }
+
+  // Filter by multiple ingredients (premium feature)
+  async filterByMultipleIngredients(ingredients, limit = 100) {
+    try {
+      const ingredientList = ingredients.split(',').map(ing => ing.trim());
+      const conditions = [];
+      const params = [];
+      
+      for (const ingredient of ingredientList) {
+        const ingredientConditions = [];
+        for (let i = 1; i <= 20; i++) {
+          ingredientConditions.push(`strIngredient${i} LIKE ?`);
+          params.push(`%${ingredient}%`);
+        }
+        conditions.push(`(${ingredientConditions.join(' OR ')})`);
+      }
+      
+      params.push(limit);
+      
+      const query = `
+        SELECT idMeal, strMeal, strMealThumb 
+        FROM recipes 
+        WHERE ${conditions.join(' AND ')} 
+        ORDER BY strMeal 
+        LIMIT ?
+      `;
+      
+      const rows = await this.db.all(query, params);
+      return { meals: rows };
+    } catch (error) {
+      throw new Error(`Filter by multiple ingredients failed: ${error.message}`);
+    }
+  }
+
+  // Filter by category
+  async filterByCategory(category, limit = 100) {
+    try {
+      const query = `
+        SELECT idMeal, strMeal, strMealThumb 
+        FROM recipes 
+        WHERE strCategory = ? 
+        ORDER BY strMeal 
+        LIMIT ?
+      `;
+      const rows = await this.db.all(query, [category, limit]);
+      return { meals: rows };
+    } catch (error) {
+      throw new Error(`Filter by category failed: ${error.message}`);
+    }
+  }
+
+  // Filter by area
+  async filterByArea(area, limit = 100) {
+    try {
+      const query = `
+        SELECT idMeal, strMeal, strMealThumb 
+        FROM recipes 
+        WHERE strArea = ? 
+        ORDER BY strMeal 
+        LIMIT ?
+      `;
+      const rows = await this.db.all(query, [area, limit]);
+      return { meals: rows };
+    } catch (error) {
+      throw new Error(`Filter by area failed: ${error.message}`);
+    }
+  }
+
+  // Get latest meals (premium feature)
+  async getLatest(limit = 20) {
+    try {
+      const query = `
+        SELECT * FROM recipes 
+        ORDER BY dateModified DESC, idMeal DESC 
+        LIMIT ?
+      `;
+      const rows = await this.db.all(query, [limit]);
+      return { meals: rows.map(row => new Recipe(row).toApiFormat()) };
+    } catch (error) {
+      throw new Error(`Get latest meals failed: ${error.message}`);
+    }
+  }
+
+  // Create new recipe
+  async create(recipeData) {
+    try {
+      const recipe = new Recipe(recipeData);
+      
+      if (!recipe.isValid()) {
+        throw new Error('Invalid recipe data');
+      }
+      
+      const dbData = recipe.toDbFormat();
+      const columns = Object.keys(dbData).filter(key => key !== 'idMeal');
+      const placeholders = columns.map(() => '?').join(',');
+      const values = columns.map(col => dbData[col]);
+      
+      const query = `
+        INSERT INTO recipes (${columns.join(',')}) 
+        VALUES (${placeholders})
+      `;
+      
+      const result = await this.db.run(query, values);
+      return await this.getById(result.id);
+    } catch (error) {
+      throw new Error(`Create recipe failed: ${error.message}`);
+    }
+  }
+
+  // Update recipe
+  async update(id, recipeData) {
+    try {
+      const existingRecipe = await this.getById(id);
+      if (!existingRecipe.meals) {
+        throw new Error('Recipe not found');
+      }
+      
+      const recipe = new Recipe({ ...existingRecipe.meals[0], ...recipeData });
+      const dbData = recipe.toDbFormat();
+      
+      const columns = Object.keys(dbData).filter(key => key !== 'idMeal');
+      const setClause = columns.map(col => `${col} = ?`).join(',');
+      const values = [...columns.map(col => dbData[col]), id];
+      
+      const query = `UPDATE recipes SET ${setClause} WHERE idMeal = ?`;
+      await this.db.run(query, values);
+      
+      return await this.getById(id);
+    } catch (error) {
+      throw new Error(`Update recipe failed: ${error.message}`);
+    }
+  }
+
+  // Delete recipe
+  async delete(id) {
+    try {
+      const result = await this.db.run('DELETE FROM recipes WHERE idMeal = ?', [id]);
+      return { success: result.changes > 0 };
+    } catch (error) {
+      throw new Error(`Delete recipe failed: ${error.message}`);
+    }
+  }
+}
+
+module.exports = RecipeManager;

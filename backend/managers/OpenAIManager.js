@@ -1,0 +1,559 @@
+const OpenAI = require('openai');
+const axios = require('axios');
+const fs = require('fs').promises;
+const path = require('path');
+
+class OpenAIManager {
+  constructor() {
+    this.openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY
+    });
+    this.model = process.env.OPENAI_MODEL || 'gpt-4';
+    this.imageModel = process.env.OPENAI_IMAGE_MODEL || 'dall-e-3';
+  }
+
+  // Generate a complete recipe based on input parameters
+  async generateRecipe(params = {}) {
+    try {
+      const {
+        cuisine = 'any',
+        category = 'any',
+        mainIngredient = '',
+        difficulty = 'medium',
+        cookingTime = '30-45 minutes',
+        servings = 4,
+        dietaryRestrictions = [],
+        theme = ''
+      } = params;
+
+      const prompt = this.buildRecipePrompt({
+        cuisine,
+        category,
+        mainIngredient,
+        difficulty,
+        cookingTime,
+        servings,
+        dietaryRestrictions,
+        theme
+      });
+
+      const completion = await this.openai.chat.completions.create({
+        model: this.model,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a professional chef and recipe developer. Generate detailed, authentic recipes with precise measurements and clear instructions. CRITICAL: Return ONLY valid JSON format - no additional text, explanations, or markdown formatting. The response must be pure JSON that starts with { and ends with }.'
+          },
+          {
+            role: 'user',
+            content: prompt + '\n\nIMPORTANT: Respond with ONLY the JSON object, no other text.'
+          }
+        ],
+        temperature: 0.8,
+        max_tokens: 2000
+      });
+
+      const recipeData = this.parseAIResponse(completion.choices[0].message.content);
+      return this.formatRecipeForDatabase(recipeData);
+    } catch (error) {
+      console.error('❌ Recipe generation error:', error.message);
+      throw new Error(`Recipe generation failed: ${error.message}`);
+    }
+  }
+
+  // Robust JSON parsing with error handling and cleanup
+  parseAIResponse(content) {
+    try {
+      // Clean up the response - remove markdown formatting and extra text
+      let cleanContent = content.trim();
+      
+      // Remove markdown code blocks if present
+      cleanContent = cleanContent.replace(/```json\s*/, '').replace(/```\s*$/, '');
+      
+      // Find JSON object/array boundaries
+      const startBrace = cleanContent.indexOf('{');
+      const startBracket = cleanContent.indexOf('[');
+      const endBrace = cleanContent.lastIndexOf('}');
+      const endBracket = cleanContent.lastIndexOf(']');
+      
+      let jsonContent;
+      
+      // Determine if it's an object or array and extract accordingly
+      if (startBrace !== -1 && (startBracket === -1 || startBrace < startBracket)) {
+        // It's an object
+        if (endBrace === -1) {
+          throw new Error('Invalid JSON: No closing brace found');
+        }
+        jsonContent = cleanContent.substring(startBrace, endBrace + 1);
+      } else if (startBracket !== -1) {
+        // It's an array
+        if (endBracket === -1) {
+          throw new Error('Invalid JSON: No closing bracket found');
+        }
+        jsonContent = cleanContent.substring(startBracket, endBracket + 1);
+      } else {
+        throw new Error('No valid JSON object or array found in response');
+      }
+      
+      // Parse the cleaned JSON
+      const parsed = JSON.parse(jsonContent);
+      console.log('✅ Successfully parsed AI response');
+      return parsed;
+      
+    } catch (parseError) {
+      console.error('❌ JSON parsing failed:', parseError.message);
+      console.error('🔍 Raw content length:', content.length);
+      console.error('🔍 Content preview:', content.substring(0, 200) + '...');
+      
+      // Try one more time with even more aggressive cleaning
+      try {
+        const fallbackContent = content
+          .replace(/^[^{[\n]*/, '') // Remove everything before first { or [
+          .replace(/[^}\]]*$/, '') // Remove everything after last } or ]
+          .trim();
+          
+        const fallbackParsed = JSON.parse(fallbackContent);
+        console.log('✅ Fallback parsing succeeded');
+        return fallbackParsed;
+      } catch (fallbackError) {
+        console.error('❌ Fallback parsing also failed:', fallbackError.message);
+        throw new Error(`Failed to parse AI response as JSON: ${parseError.message}. Content: ${content.substring(0, 200)}...`);
+      }
+    }
+  }
+
+  // Generate multiple recipe ideas
+  async generateRecipeIdeas(params = {}) {
+    try {
+      const {
+        count = 5,
+        cuisine = 'any',
+        category = 'any',
+        trending = false,
+        seasonal = false
+      } = params;
+
+      const prompt = `Generate ${count} creative recipe ideas for ${cuisine !== 'any' ? cuisine : 'various'} cuisine${category !== 'any' ? ` in the ${category} category` : ''}. ${trending ? 'Focus on current food trends. ' : ''}${seasonal ? 'Consider seasonal ingredients. ' : ''}
+
+Return a JSON array with each idea containing:
+- name: Recipe name
+- description: Brief description
+- cuisine: Cuisine type
+- category: Food category
+- estimatedTime: Cooking time
+- difficulty: easy/medium/hard
+- keyIngredients: Array of 3-5 main ingredients
+- uniqueFeature: What makes this recipe special
+
+Format as valid JSON array.`;
+
+      const completion = await this.openai.chat.completions.create({
+        model: this.model,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a creative chef specializing in innovative recipe development. Generate diverse, interesting recipe ideas. CRITICAL: Return ONLY valid JSON format - no additional text, explanations, or markdown formatting. The response must be pure JSON that starts with [ and ends with ].'
+          },
+          {
+            role: 'user',
+            content: prompt + '\n\nIMPORTANT: Respond with ONLY the JSON array, no other text.'
+          }
+        ],
+        temperature: 0.9,
+        max_tokens: 1500
+      });
+
+      return this.parseAIResponse(completion.choices[0].message.content);
+    } catch (error) {
+      throw new Error(`Recipe ideas generation failed: ${error.message}`);
+    }
+  }
+
+  // Generate ultra-high quality recipe image using AI-enhanced prompts
+  async generateRecipeImage(recipeName, description = '', mealId = null) {
+    try {
+      console.log('🧠 AI is crafting professional photography prompt...');
+      
+      // Step 1: Generate ultra-detailed photography prompt with AI
+      const enhancedPrompt = await this.generatePhotographyPrompt(recipeName, description);
+      
+      console.log('🎨 Generating ULTRA-HIGH QUALITY image with DALL-E 3...');
+      console.log('📸 Enhanced Prompt:', enhancedPrompt.substring(0, 150) + '...');
+      
+      // Step 2: Generate image with maximum quality settings
+      const response = await this.openai.images.generate({
+        model: this.imageModel,
+        prompt: enhancedPrompt,
+        n: 1,
+        size: '1024x1024',      // Maximum square resolution
+        quality: 'hd',          // HIGHEST quality setting
+        style: 'natural'        // Most photorealistic style
+      });
+
+      const dalleUrl = response.data[0].url;
+      console.log('✅ ULTRA-HIGH QUALITY image generated, downloading...');
+
+      // Download and save the image
+      const localImageData = await this.downloadAndSaveImage(dalleUrl, recipeName, mealId);
+
+      return {
+        url: localImageData.url,
+        localPath: localImageData.localPath,
+        dalleUrl: dalleUrl,
+        prompt: enhancedPrompt,
+        basicPrompt: `${recipeName} ${description}`,
+        quality: 'hd',
+        saved: true
+      };
+    } catch (error) {
+      console.error('❌ Ultra-high quality image generation failed:', error.message);
+      throw new Error(`Image generation failed: ${error.message}`);
+    }
+  }
+
+  // AI generates its own professional photography prompt
+  async generatePhotographyPrompt(recipeName, description = '') {
+    try {
+      const promptGenerationRequest = `As a world-class food photographer and prompt engineer, create an ultra-detailed DALL-E prompt for photographing "${recipeName}". ${description ? `Context: ${description}.` : ''}
+
+Create a prompt that will produce a photograph indistinguishable from reality. Include:
+
+🔸 CAMERA SPECIFICATIONS:
+- Professional camera model (Canon R5, Sony A7R IV, etc.)
+- Premium lens specifications (85mm f/1.4, 100mm macro, etc.)
+- Aperture, ISO, shutter speed details
+
+🔸 LIGHTING SETUP:
+- PERFECT ILLUMINATION: Bright, even, professional studio lighting
+- WELL-LIT BACKGROUND: Soft, bright background lighting eliminates shadows
+- FOOD-FOCUSED LIGHTING: Key light positioned to make the plated food luminous and appealing
+- MULTIPLE LIGHT SOURCES: Key light, fill light, and background light for complete coverage
+- GOLDEN RATIO LIGHTING: Warm, inviting light temperature (3000K-3500K)
+- NO DARK SHADOWS: Gentle fill lighting ensures every detail is beautifully visible
+
+🔸 COMPOSITION & STYLING:
+- PERFECT FRAMING: Dish fills 75-85% of frame, hero-centered composition
+- STUNNING DISHWARE: Exquisite, museum-quality plates/bowls that elevate the food
+- CAMERA ANGLE: Top-down (overhead) or 45-degree side angle for maximum visual impact
+- BEAUTIFUL WELL-LIT BACKGROUND: Bright, luminous natural surfaces (light wood, bright marble, or warm stone)
+- BRIGHT & INVITING: Well-illuminated backgrounds that make everything glow beautifully
+- FOOD IS THE STAR: Every element designed to make the plated food irresistibly beautiful
+- ARTISTIC PLATING: Michelin-star level food presentation with perfect color harmony
+- VISUAL PERFECTION: Every grain, texture, and color optimized for maximum beauty
+- PRISTINE CLEANLINESS: Spotless dishware and surfaces reflecting professional standards
+- APPETIZING APPEAL: Food styled to trigger immediate hunger and desire
+
+🔸 TECHNICAL QUALITY:
+- CRYSTAL-CLEAR SHARPNESS: Every detail razor-sharp and perfectly in focus
+- LUMINOUS COLOR PALETTE: Vibrant, saturated colors that make food look irresistible
+- PERFECT EXPOSURE: Bright, well-exposed image with no dark areas or harsh shadows
+- TEXTURE MASTERY: Every surface texture enhanced - from crispy edges to smooth sauces
+- APPETIZING GLOW: Food appears to emit its own warm, inviting light
+- PROFESSIONAL COLOR GRADING: Colors enhanced to maximum visual appeal
+
+🔸 ARTISTIC ELEMENTS:
+- MOUTHWATERING APPEAL: Food styled to be irresistibly beautiful and appetizing
+- PERFECT COLOR HARMONY: Colors balanced for maximum visual pleasure and appetite appeal
+- LUXURIOUS ATMOSPHERE: High-end restaurant ambiance with premium presentation
+- VISUAL STORYTELLING: Every element tells the story of culinary perfection
+- EMOTIONAL CONNECTION: Image evokes immediate desire and hunger for the dish
+
+Generate a single, comprehensive prompt (max 400 words) that would create a photograph so realistic it could be published in a Michelin-starred restaurant's cookbook.
+
+CRITICAL STYLING REQUIREMENTS:
+- HERO FOCUS: The plated dish is the absolute star - everything serves to make it beautiful
+- STUNNING DISHWARE: Museum-quality, elegant plates/bowls that complement the food perfectly
+- PERFECT BRIGHT LIGHTING: Well-lit, luminous scene with no dark shadows anywhere
+- BEAUTIFUL BACKGROUNDS: Bright, warm, natural surfaces that glow softly (light wood, bright marble, warm stone)
+- APPETIZING PERFECTION: Food styled to be irresistibly beautiful and immediately hunger-inducing
+- CAMERA ANGLE: Top-down or 45-degree angle that showcases the food's beauty maximally
+- PRISTINE PRESENTATION: Every element polished to perfection
+- COLOR MASTERY: Rich, vibrant colors that make the food look absolutely delicious
+- PROFESSIONAL LIGHTING: Bright, even illumination that makes everything glow beautifully
+- VISUAL FEAST: Create an image so beautiful it's impossible to look away from the food
+
+Return ONLY the prompt, no explanation.`;
+
+      const completion = await this.openai.chat.completions.create({
+        model: this.model,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a world-renowned food photographer and DALL-E prompt specialist. You create prompts that generate photorealistic, magazine-quality food photography that is indistinguishable from reality.'
+          },
+          {
+            role: 'user',
+            content: promptGenerationRequest
+          }
+        ],
+        temperature: 0.9,  // High creativity for diverse prompts
+        max_tokens: 500
+      });
+
+      const enhancedPrompt = completion.choices[0].message.content.trim();
+      
+      // Add final technical specifications for maximum realism
+      const finalPrompt = `${enhancedPrompt}
+
+TECHNICAL SPECIFICATIONS: Ultra-high resolution, professional food photography, shot with Canon EOS R5, 100mm macro lens, f/4 for perfect depth of field, ISO 100 for pristine quality, PREMIUM LIGHTING SETUP with multiple professional lights - bright key light, soft fill light, and background lighting for complete illumination, meticulously styled, Michelin-star restaurant quality, photorealistic, ultra-sharp details, vibrant color accuracy, commercial photography standard. LUMINOUS PERFECTION: Exquisite dishware, bright well-lit natural surface background, dish perfectly centered as the hero element, top-down or 45-degree angle, museum-quality plating that looks irresistibly delicious, every detail optimized for maximum beauty and appetite appeal.`;
+
+      return finalPrompt;
+
+    } catch (error) {
+      console.error('❌ Photography prompt generation failed, using fallback:', error.message);
+      
+      // Fallback to professional prompt if AI fails
+      return this.getFallbackPhotographyPrompt(recipeName, description);
+    }
+  }
+
+  // Fallback ultra-detailed prompt if AI generation fails
+  getFallbackPhotographyPrompt(recipeName, description) {
+    return `Ultra-high resolution professional food photography of ${recipeName}. ${description ? description + '. ' : ''}Shot with Canon EOS R5, 100mm f/2.8L macro lens, aperture f/4 for perfect depth of field, ISO 100, 1/60s shutter speed. PREMIUM STUDIO LIGHTING SETUP: Multiple professional lights - large softbox key light, bright fill light, dedicated background lighting for complete illumination, warm color temperature 3200K. Food meticulously styled by world-class food stylist, artfully plated on EXQUISITE, MUSEUM-QUALITY dishware that elevates the food's beauty. CAMERA ANGLE: Top-down (overhead) or 45-degree side angle for maximum visual impact. HERO FRAMING: dish centered and fills 80% of frame as the absolute star. LUMINOUS BACKGROUND: Bright, well-lit natural surface (light wood, bright marble, or warm stone) that glows softly. PERFECT ILLUMINATION: Every detail brilliantly lit with no dark shadows anywhere. Ultra-sharp macro details showing every appetizing texture, glistening surfaces, natural steam, vibrant colors. Commercial food photography quality, Michelin-starred restaurant presentation, magazine cover worthy, photorealistic, indistinguishable from reality. APPETIZING PERFECTION: Colors enhanced for maximum visual appeal, perfect bright exposure, food appears irresistibly delicious. CRITICAL: Show only the finished plated dish on stunning dishware, bright well-lit scene, natural surface background, perfect camera angle, focused entirely on making the food look absolutely beautiful and mouth-watering.`;
+  }
+
+  // Download image from DALL-E URL and save locally
+  async downloadAndSaveImage(dalleUrl, recipeName, mealId = null) {
+    try {
+      // Create filename
+      const timestamp = Date.now();
+      const safeName = this.sanitizeFilename(recipeName);
+      const filename = mealId ? `${mealId}-${safeName}.jpg` : `ai-${timestamp}-${safeName}.jpg`;
+      
+      // Ensure directories exist
+      const mealsDir = path.join(process.cwd(), 'uploads', 'images', 'meals');
+      await this.ensureDirectoryExists(mealsDir);
+      
+      const localPath = path.join(mealsDir, filename);
+      const publicUrl = `/images/meals/${filename}`;
+
+      console.log(`📥 Downloading image to: ${localPath}`);
+
+      // Download image with extended timeout for HD quality
+      const imageResponse = await axios({
+        method: 'GET',
+        url: dalleUrl,
+        responseType: 'stream',
+        timeout: 60000, // 60 second timeout for HD images
+        maxContentLength: 50000000, // 50MB max for HD images
+        headers: {
+          'User-Agent': 'FoodDB-AI-ImageDownloader/1.0'
+        }
+      });
+
+      // Save to file
+      const writer = require('fs').createWriteStream(localPath);
+      imageResponse.data.pipe(writer);
+
+      await new Promise((resolve, reject) => {
+        writer.on('finish', resolve);
+        writer.on('error', reject);
+      });
+
+      console.log('✅ Image saved successfully!');
+
+      return {
+        url: publicUrl,
+        localPath: localPath,
+        filename: filename
+      };
+    } catch (error) {
+      console.error('❌ Image download failed:', error.message);
+      throw new Error(`Image download failed: ${error.message}`);
+    }
+  }
+
+  // Utility methods
+  sanitizeFilename(name) {
+    return name
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_|_$/g, '')
+      .substring(0, 50); // Limit length
+  }
+
+  async ensureDirectoryExists(dirPath) {
+    try {
+      await fs.access(dirPath);
+    } catch {
+      await fs.mkdir(dirPath, { recursive: true });
+    }
+  }
+
+  // Improve existing recipe with AI suggestions
+  async improveRecipe(existingRecipe) {
+    try {
+      const prompt = `Analyze and improve this recipe. Provide suggestions for:
+1. Enhanced flavor combinations
+2. Better cooking techniques  
+3. Additional ingredients that would complement
+4. Presentation improvements
+5. Nutritional enhancements
+
+Existing Recipe:
+Name: ${existingRecipe.strMeal}
+Category: ${existingRecipe.strCategory}
+Area: ${existingRecipe.strArea}
+Instructions: ${existingRecipe.strInstructions}
+Ingredients: ${this.getIngredientsText(existingRecipe)}
+
+Return JSON with:
+- improvedName: Enhanced recipe name
+- suggestions: Array of improvement suggestions
+- enhancedInstructions: Improved cooking instructions
+- additionalIngredients: Suggested new ingredients
+- tips: Cooking tips and tricks`;
+
+      const completion = await this.openai.chat.completions.create({
+        model: this.model,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a culinary expert focused on recipe improvement and optimization.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1500
+      });
+
+      return this.parseAIResponse(completion.choices[0].message.content);
+    } catch (error) {
+      console.error('❌ Recipe improvement error:', error.message);
+      throw new Error(`Recipe improvement failed: ${error.message}`);
+    }
+  }
+
+  // Generate seasonal recipe suggestions
+  async generateSeasonalRecipes(season, count = 5) {
+    try {
+      const seasonalIngredients = {
+        spring: 'asparagus, peas, artichokes, strawberries, rhubarb, spring onions',
+        summer: 'tomatoes, corn, zucchini, berries, stone fruits, herbs',
+        fall: 'pumpkin, squash, apples, pears, brussels sprouts, sweet potatoes',
+        winter: 'root vegetables, citrus, pomegranates, cranberries, cabbage, leeks'
+      };
+
+      const ingredients = seasonalIngredients[season.toLowerCase()] || 'seasonal ingredients';
+
+      const prompt = `Generate ${count} delicious ${season} recipes featuring seasonal ingredients like ${ingredients}. 
+
+For each recipe, return JSON format with:
+- strMeal: Recipe name
+- strCategory: Food category
+- strArea: Cuisine origin
+- strInstructions: Detailed cooking instructions
+- ingredients: Object with strIngredient1-20 and strMeasure1-20
+- strTags: Comma-separated tags
+- seasonalHighlight: Why this recipe is perfect for ${season}
+
+Return as JSON array.`;
+
+      const completion = await this.openai.chat.completions.create({
+        model: this.model,
+        messages: [
+          {
+            role: 'system',
+            content: `You are a seasonal cooking expert specializing in ${season} cuisine.`
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.8,
+        max_tokens: 3000
+      });
+
+      return this.parseAIResponse(completion.choices[0].message.content);
+    } catch (error) {
+      console.error('❌ Seasonal recipe generation error:', error.message);
+      throw new Error(`Seasonal recipe generation failed: ${error.message}`);
+    }
+  }
+
+  // Helper methods
+  buildRecipePrompt(params) {
+    const restrictionsText = params.dietaryRestrictions.length > 0 
+      ? ` The recipe must accommodate these dietary restrictions: ${params.dietaryRestrictions.join(', ')}.`
+      : '';
+
+    return `Create a detailed recipe with the following specifications:
+- Cuisine: ${params.cuisine}
+- Category: ${params.category}
+- Main ingredient: ${params.mainIngredient || 'chef\'s choice'}
+- Difficulty: ${params.difficulty}
+- Cooking time: ${params.cookingTime}
+- Servings: ${params.servings}
+- Theme: ${params.theme || 'traditional'}${restrictionsText}
+
+Return ONLY valid JSON in this exact format:
+{
+  "strMeal": "Recipe Name",
+  "strCategory": "Category",
+  "strArea": "Cuisine/Country",
+  "strInstructions": "Detailed step-by-step instructions",
+  "strTags": "tag1,tag2,tag3",
+  "ingredients": {
+    "strIngredient1": "ingredient1",
+    "strMeasure1": "measurement1",
+    "strIngredient2": "ingredient2",
+    "strMeasure2": "measurement2"
+  },
+  "nutritionInfo": "Brief nutrition highlights",
+  "servingSize": "${params.servings}",
+  "cookingTime": "${params.cookingTime}",
+  "difficulty": "${params.difficulty}",
+  "strEquipment": "List of required cooking equipment and tools (e.g., Large skillet, Mixing bowls, Whisk, etc.)"
+}
+
+Include 8-15 ingredients with precise measurements. Make instructions clear and detailed.
+Include a comprehensive list of cooking equipment and tools needed for this recipe in strEquipment (e.g., "Large skillet, Mixing bowls, Whisk, Measuring cups, Chef's knife, Cutting board").`;
+  }
+
+  formatRecipeForDatabase(recipeData) {
+    const formatted = {
+      strMeal: recipeData.strMeal,
+      strCategory: recipeData.strCategory,
+      strArea: recipeData.strArea,
+      strInstructions: recipeData.strInstructions,
+      strTags: recipeData.strTags || '',
+      strYoutube: '',
+      strSource: 'AI Generated',
+      strEquipment: recipeData.strEquipment || ''
+    };
+
+    // Convert ingredients object to individual fields
+    if (recipeData.ingredients) {
+      let ingredientIndex = 1;
+      Object.keys(recipeData.ingredients).forEach(key => {
+        if (key.startsWith('strIngredient') && recipeData.ingredients[key]) {
+          const measureKey = key.replace('strIngredient', 'strMeasure');
+          formatted[key] = recipeData.ingredients[key];
+          formatted[measureKey] = recipeData.ingredients[measureKey] || '';
+          ingredientIndex++;
+        }
+      });
+    }
+
+    return formatted;
+  }
+
+  getIngredientsText(recipe) {
+    const ingredients = [];
+    for (let i = 1; i <= 20; i++) {
+      const ingredient = recipe[`strIngredient${i}`];
+      const measure = recipe[`strMeasure${i}`];
+      if (ingredient && ingredient.trim()) {
+        ingredients.push(`${measure || ''} ${ingredient}`.trim());
+      }
+    }
+    return ingredients.join(', ');
+  }
+}
+
+module.exports = OpenAIManager;

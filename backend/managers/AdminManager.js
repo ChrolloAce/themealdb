@@ -1,0 +1,191 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+class AdminManager {
+  constructor() {
+    this.adminUsername = process.env.ADMIN_USERNAME || 'admin';
+    this.adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    this.jwtSecret = process.env.JWT_SECRET || 'default_secret';
+    this.jwtExpiresIn = process.env.JWT_EXPIRES_IN || '24h';
+  }
+
+  // Authenticate admin user
+  async authenticate(username, password) {
+    try {
+      if (username !== this.adminUsername) {
+        throw new Error('Invalid credentials');
+      }
+
+      // In production, you'd store hashed passwords in database
+      // For now, we'll do a simple comparison (you should hash the password in .env)
+      const isValidPassword = password === this.adminPassword;
+      
+      if (!isValidPassword) {
+        throw new Error('Invalid credentials');
+      }
+
+      // Generate JWT token
+      const token = jwt.sign(
+        { 
+          username: this.adminUsername,
+          role: 'admin',
+          permissions: ['read', 'write', 'delete', 'ai_generate']
+        },
+        this.jwtSecret,
+        { expiresIn: this.jwtExpiresIn }
+      );
+
+      return {
+        success: true,
+        token,
+        user: {
+          username: this.adminUsername,
+          role: 'admin',
+          permissions: ['read', 'write', 'delete', 'ai_generate']
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message
+      };
+    }
+  }
+
+  // Verify JWT token
+  verifyToken(token) {
+    try {
+      const decoded = jwt.verify(token, this.jwtSecret);
+      return {
+        valid: true,
+        user: decoded
+      };
+    } catch (error) {
+      return {
+        valid: false,
+        message: error.message
+      };
+    }
+  }
+
+  // Check if user has specific permission
+  hasPermission(user, permission) {
+    return user && user.permissions && user.permissions.includes(permission);
+  }
+
+  // Generate new admin token (for token refresh)
+  refreshToken(currentToken) {
+    try {
+      const decoded = jwt.verify(currentToken, this.jwtSecret);
+      
+      // Generate new token with same data
+      const newToken = jwt.sign(
+        {
+          username: decoded.username,
+          role: decoded.role,
+          permissions: decoded.permissions
+        },
+        this.jwtSecret,
+        { expiresIn: this.jwtExpiresIn }
+      );
+
+      return {
+        success: true,
+        token: newToken
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Invalid token for refresh'
+      };
+    }
+  }
+
+  // Change admin password (for security)
+  async changePassword(currentPassword, newPassword) {
+    try {
+      if (currentPassword !== this.adminPassword) {
+        throw new Error('Current password is incorrect');
+      }
+
+      if (newPassword.length < 8) {
+        throw new Error('New password must be at least 8 characters');
+      }
+
+      // In production, update the hashed password in database
+      // For now, we'll just return success (you'd need to update .env manually)
+      return {
+        success: true,
+        message: 'Password changed successfully. Please update your .env file with the new password.'
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message
+      };
+    }
+  }
+
+  // Get admin activity logs (placeholder for future enhancement)
+  getActivityLogs(limit = 50) {
+    // In production, this would fetch from database
+    return {
+      logs: [
+        {
+          timestamp: new Date().toISOString(),
+          action: 'login',
+          details: 'Admin logged in successfully'
+        }
+      ],
+      total: 1
+    };
+  }
+
+  // Admin dashboard stats
+  async getDashboardStats(databaseManager) {
+    try {
+      const [
+        totalRecipes,
+        totalCategories,
+        totalAreas,
+        recentRecipes
+      ] = await Promise.all([
+        databaseManager.get('SELECT COUNT(*) as count FROM recipes'),
+        databaseManager.get('SELECT COUNT(*) as count FROM categories'),
+        databaseManager.get('SELECT COUNT(*) as count FROM areas'),
+        databaseManager.all('SELECT strMeal, dateModified FROM recipes ORDER BY dateModified DESC LIMIT 5')
+      ]);
+
+      return {
+        stats: {
+          totalRecipes: totalRecipes.count,
+          totalCategories: totalCategories.count,
+          totalAreas: totalAreas.count,
+          recentRecipes: recentRecipes.length
+        },
+        recentActivity: recentRecipes.map(recipe => ({
+          name: recipe.strMeal,
+          date: recipe.dateModified,
+          action: 'Recipe Added'
+        }))
+      };
+    } catch (error) {
+      throw new Error(`Failed to get dashboard stats: ${error.message}`);
+    }
+  }
+
+  // Validate admin session
+  validateSession(req) {
+    const token = req.headers.authorization?.replace('Bearer ', '') || 
+                 req.cookies?.adminToken ||
+                 req.query.token;
+
+    if (!token) {
+      return { valid: false, message: 'No authentication token provided' };
+    }
+
+    return this.verifyToken(token);
+  }
+}
+
+module.exports = AdminManager;
