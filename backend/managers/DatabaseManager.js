@@ -3,11 +3,18 @@ const path = require('path');
 
 class DatabaseManager {
   constructor() {
-    // Use in-memory database for serverless environments (Vercel)
-    const isServerless = process.env.VERCEL || process.env.NODE_ENV === 'production';
-    this.dbPath = isServerless ? ':memory:' : (process.env.DB_PATH || './data/recipes.db');
+    // Use persistent PostgreSQL database if DATABASE_URL is provided
+    if (process.env.DATABASE_URL) {
+      console.log('🐘 Using PostgreSQL database (persistent storage)');
+      const PostgresDatabaseManager = require('./PostgresDatabaseManager');
+      return new PostgresDatabaseManager();
+    }
+    
+    // Fallback to SQLite for local development
+    const isLocal = !process.env.VERCEL && process.env.NODE_ENV !== 'production';
+    this.dbPath = isLocal ? (process.env.DB_PATH || './data/recipes.db') : ':memory:';
     this.db = null;
-    console.log(`📊 Database mode: ${isServerless ? 'In-Memory (Serverless)' : 'File-based (Local)'}`);
+    console.log(`📊 SQLite Database mode: ${isLocal ? 'File-based (Local)' : 'In-Memory (Serverless)'}`);
   }
 
   async initialize() {
