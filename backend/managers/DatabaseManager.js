@@ -3,17 +3,21 @@ const path = require('path');
 
 class DatabaseManager {
   constructor() {
-    // Use Firebase Firestore database if Firebase config is provided
-    if (process.env.FIREBASE_PROJECT_ID || process.env.NODE_ENV === 'production' || process.env.VERCEL) {
+    // Only use Firebase if ALL required environment variables are present
+    if (process.env.FIREBASE_PROJECT_ID && 
+        process.env.FIREBASE_PRIVATE_KEY && 
+        process.env.FIREBASE_CLIENT_EMAIL) {
       console.log('🔥 Using Firebase Firestore database (persistent storage)');
       const FirebaseDatabaseManager = require('./FirebaseDatabaseManager');
       return new FirebaseDatabaseManager();
     }
     
-    // Fallback to SQLite for local development only
-    this.dbPath = process.env.DB_PATH || './data/recipes.db';
+    // Fallback to in-memory SQLite for serverless (Vercel) without Firebase
+    const isServerless = process.env.VERCEL || process.env.NODE_ENV === 'production';
+    this.dbPath = isServerless ? ':memory:' : (process.env.DB_PATH || './data/recipes.db');
     this.db = null;
-    console.log('📊 SQLite Database mode: File-based (Local Development)');
+    console.log(`📊 SQLite Database mode: ${isServerless ? 'In-Memory (Serverless)' : 'File-based (Local)'}`);
+    console.log('💡 To use persistent Firebase storage, set FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, and FIREBASE_CLIENT_EMAIL environment variables');
   }
 
   async initialize() {
