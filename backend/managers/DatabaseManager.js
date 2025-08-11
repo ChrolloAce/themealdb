@@ -3,13 +3,15 @@ const path = require('path');
 
 class DatabaseManager {
   constructor() {
-    // Only use Firebase if ALL required environment variables are present
-    if (process.env.FIREBASE_PROJECT_ID && 
-        process.env.FIREBASE_PRIVATE_KEY && 
-        process.env.FIREBASE_CLIENT_EMAIL) {
-      console.log('🔥 Using Firebase Firestore database (persistent storage)');
-      const FirebaseDatabaseManager = require('./FirebaseDatabaseManager');
-      return new FirebaseDatabaseManager();
+    // Try to use Simple Firebase (no service account bullshit needed!)
+    // Just needs the project to exist and have open security rules
+    try {
+      console.log('🔥 Attempting to use Simple Firebase (no service account needed)');
+      const SimpleFirebaseManager = require('./SimpleFirebaseManager');
+      return new SimpleFirebaseManager();
+    } catch (error) {
+      console.warn('⚠️ Simple Firebase failed, falling back to SQLite:', error.message);
+      // Continue with SQLite fallback below
     }
     
     // Fallback to in-memory SQLite for serverless (Vercel) without Firebase
