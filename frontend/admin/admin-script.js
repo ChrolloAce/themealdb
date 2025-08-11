@@ -65,7 +65,7 @@ class AdminPanel {
     this.setupRecipeActionListeners();
   }
 
-  // Authentication
+  // Authentication with PIN system
   async handleLogin(e) {
     e.preventDefault();
     
@@ -73,13 +73,17 @@ class AdminPanel {
     const password = document.getElementById('password').value;
     const errorDiv = document.getElementById('loginError');
     
+    // If only password is entered, treat it as PIN
+    const finalUsername = username || 'admin';
+    const finalPassword = password;
+    
     try {
       const response = await fetch('/admin/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username: finalUsername, password: finalPassword })
       });
       
       const data = await response.json();

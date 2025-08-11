@@ -13,17 +13,21 @@
     <!-- Login Modal -->
     <div id="loginModal" class="modal active">
         <div class="modal-content">
-            <h2>🔐 Admin Login</h2>
+            <h2>🔐 FoodDB Admin Access</h2>
+            <p style="color: #666; margin-bottom: 20px;">Enter your PIN to access the admin panel</p>
             <form id="loginForm">
                 <div class="form-group">
-                    <input type="text" id="username" placeholder="Username" required>
+                    <input type="text" id="username" placeholder="Username (optional - leave blank)" autocomplete="username">
                 </div>
                 <div class="form-group">
-                    <input type="password" id="password" placeholder="Password" required>
+                    <input type="password" id="password" placeholder="Enter PIN (default: 1234)" required autocomplete="current-password">
                 </div>
-                <button type="submit" class="btn btn-primary">Login</button>
+                <button type="submit" class="btn btn-primary">Access Admin Panel</button>
             </form>
             <div id="loginError" class="error-message"></div>
+            <div style="margin-top: 15px; font-size: 12px; color: #888;">
+                Default PIN: 1234 | Or use: admin / fooddb_admin_2024
+            </div>
         </div>
     </div>
 

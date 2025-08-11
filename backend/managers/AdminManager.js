@@ -9,19 +9,19 @@ class AdminManager {
     this.jwtExpiresIn = process.env.JWT_EXPIRES_IN || '24h';
   }
 
-  // Authenticate admin user
+  // Authenticate admin user with PIN system
   async authenticate(username, password) {
     try {
-      if (username !== this.adminUsername) {
-        throw new Error('Invalid credentials');
-      }
-
-      // In production, you'd store hashed passwords in database
-      // For now, we'll do a simple comparison (you should hash the password in .env)
-      const isValidPassword = password === this.adminPassword;
+      // Simple PIN system - just check the password/PIN
+      const adminPin = process.env.ADMIN_PIN || '1234';
       
-      if (!isValidPassword) {
-        throw new Error('Invalid credentials');
+      // Accept either username+password or just PIN
+      const isValidPin = password === adminPin || 
+                        (username === 'admin' && password === this.adminPassword) ||
+                        username === adminPin;
+      
+      if (!isValidPin) {
+        throw new Error('Invalid PIN or credentials');
       }
 
       // Generate JWT token
