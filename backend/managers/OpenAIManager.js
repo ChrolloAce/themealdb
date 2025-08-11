@@ -69,6 +69,17 @@ class OpenAIManager {
       });
 
       console.log('✅ OpenAI API call successful, processing response...');
+      console.log('🔍 OpenAI response structure:', JSON.stringify(completion, null, 2));
+      
+      // Validate OpenAI response structure
+      if (!completion || !completion.choices || !completion.choices[0]) {
+        throw new Error('Invalid OpenAI response: No choices returned');
+      }
+      
+      if (!completion.choices[0].message || !completion.choices[0].message.content) {
+        throw new Error('Invalid OpenAI response: No message content');
+      }
+      
       const recipeData = this.parseAIResponse(completion.choices[0].message.content);
       const formattedRecipe = this.formatRecipeForDatabase(recipeData);
       console.log('✅ Recipe generation completed successfully');
@@ -78,16 +89,20 @@ class OpenAIManager {
       console.error('❌ Error stack:', error.stack);
       
       // Provide more specific error messages
-      if (error.message?.includes('API key')) {
+      if (error.message?.includes('API key') || error.message?.includes('Incorrect API key')) {
         throw new Error('OpenAI API key is missing or invalid. Please check your environment variables.');
-      } else if (error.message?.includes('insufficient_quota')) {
+      } else if (error.message?.includes('insufficient_quota') || error.message?.includes('quota')) {
         throw new Error('OpenAI API quota exceeded. Please check your OpenAI account billing.');
-      } else if (error.message?.includes('rate_limit')) {
+      } else if (error.message?.includes('rate_limit') || error.status === 429) {
         throw new Error('OpenAI API rate limit exceeded. Please try again in a moment.');
       } else if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED') {
         throw new Error('Network error: Unable to connect to OpenAI API. Please check your internet connection.');
+      } else if (error.status === 401) {
+        throw new Error('OpenAI API authentication failed. Please check your API key.');
+      } else if (error.status === 400) {
+        throw new Error('Invalid request to OpenAI API. Please check your configuration.');
       } else {
-      throw new Error(`Recipe generation failed: ${error.message}`);
+        throw new Error(`Recipe generation failed: ${error.message}`);
       }
     }
   }
