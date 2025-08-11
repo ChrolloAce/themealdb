@@ -130,9 +130,15 @@ class AdminPanel {
         this.loadDashboard();
         document.getElementById('adminUsername').textContent = data.user.username;
       } else {
+        // Token is invalid, remove it and show login
+        this.token = null;
+        this.removeStoredToken();
         this.showLoginModal();
       }
     } catch (error) {
+      // Network error or server issue, show login
+      this.token = null;
+      this.removeStoredToken();
       this.showLoginModal();
     }
   }
