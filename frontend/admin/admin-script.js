@@ -69,12 +69,11 @@ class AdminPanel {
   async handleLogin(e) {
     e.preventDefault();
     
-    const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     const errorDiv = document.getElementById('loginError');
     
-    // If only password is entered, treat it as PIN
-    const finalUsername = username || 'admin';
+    // PIN-only system - no username required
+    const finalUsername = 'admin';
     const finalPassword = password;
     
     try {
