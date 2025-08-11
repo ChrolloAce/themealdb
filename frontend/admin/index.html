@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FoodDB Admin Panel - AI Recipe Management</title>
-    <link rel="stylesheet" href="/admin-assets/admin-styles.css">
+    <link rel="stylesheet" href="dark-professional-styles.css">
     <link rel="stylesheet" href="comprehensive-recipe-styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,21 +14,15 @@
     <!-- Login Modal -->
     <div id="loginModal" class="modal active">
         <div class="modal-content">
-            <h2>🔐 FoodDB Admin Access</h2>
-            <p style="color: #666; margin-bottom: 20px;">Enter your PIN to access the admin panel</p>
+            <h2>Admin Access</h2>
+            <p>Enter your PIN to continue</p>
             <form id="loginForm">
                 <div class="form-group">
-                    <input type="text" id="username" placeholder="Username (optional - leave blank)" autocomplete="username">
+                    <input type="password" id="password" placeholder="Enter PIN" required autocomplete="current-password">
                 </div>
-                <div class="form-group">
-                    <input type="password" id="password" placeholder="Enter PIN (default: 1234)" required autocomplete="current-password">
-                </div>
-                <button type="submit" class="btn btn-primary">Access Admin Panel</button>
+                <button type="submit" class="btn btn-primary">Access Panel</button>
             </form>
             <div id="loginError" class="error-message"></div>
-            <div style="margin-top: 15px; font-size: 12px; color: #888;">
-                Default PIN: 1234 | Or use: admin / fooddb_admin_2024
-            </div>
         </div>
     </div>
 
@@ -37,28 +31,28 @@
         <!-- Header -->
         <header class="admin-header">
             <div class="header-left">
-                <h1>🤖 FoodDB AI Admin</h1>
-                <span class="user-info">Welcome, <span id="adminUsername">Admin</span></span>
+                <h1>FoodDB Administration</h1>
+                <span class="user-info">Recipe Management System</span>
             </div>
             <div class="header-right">
-                <button id="logoutBtn" class="btn btn-outline">Logout</button>
+                <button id="logoutBtn" class="btn btn-outline">Sign Out</button>
             </div>
         </header>
 
         <!-- Navigation -->
         <nav class="admin-nav">
-            <button class="nav-btn active" data-section="dashboard">📊 Dashboard</button>
-            <button class="nav-btn" data-section="ai-generate">🤖 Generate Recipes</button>
-            <button class="nav-btn" data-section="ai-ideas">💡 Recipe Ideas</button>
-            <button class="nav-btn" data-section="batch-generate">🔥 Batch Generate</button>
-            <button class="nav-btn" data-section="manage-recipes">📝 Manage Recipes</button>
+            <button class="nav-btn active" data-section="dashboard">Dashboard</button>
+            <button class="nav-btn" data-section="ai-generate">Generate Recipes</button>
+            <button class="nav-btn" data-section="ai-ideas">Recipe Ideas</button>
+            <button class="nav-btn" data-section="batch-generate">Batch Generate</button>
+            <button class="nav-btn" data-section="manage-recipes">Manage Recipes</button>
         </nav>
 
         <!-- Main Content -->
         <main class="admin-main">
             <!-- Dashboard Section -->
             <section id="dashboard" class="admin-section active">
-                <h2>📊 Dashboard</h2>
+                <h2>Dashboard</h2>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h3>Total Recipes</h3>
