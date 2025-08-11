@@ -19,14 +19,38 @@ class Recipe {
     this.ingredients = [];
     this.measures = [];
     
+    // Handle both direct ingredient fields and ingredientsArray format
+    if (data.ingredientsArray && Array.isArray(data.ingredientsArray)) {
+      // Handle new format with ingredientsArray
+      data.ingredientsArray.forEach(item => {
+        if (item.name && item.name.trim()) {
+          this.ingredients.push(item.name.trim());
+          const measure = item.amount && item.unit ? 
+            `${item.amount} ${item.unit}`.trim() : 
+            (item.amount || '').trim();
+          this.measures.push(measure);
+        }
+      });
+    }
+    
+    // Also check traditional strIngredient1, strIngredient2 format
     for (let i = 1; i <= 20; i++) {
       const ingredient = data[`strIngredient${i}`];
       const measure = data[`strMeasure${i}`];
       
       if (ingredient && ingredient.trim()) {
-        this.ingredients.push(ingredient.trim());
-        this.measures.push(measure ? measure.trim() : '');
+        // Avoid duplicates if we already processed ingredientsArray
+        if (!this.ingredients.includes(ingredient.trim())) {
+          this.ingredients.push(ingredient.trim());
+          this.measures.push(measure ? measure.trim() : '');
+        }
       }
+    }
+    
+    // Set individual ingredient fields for database compatibility
+    for (let i = 1; i <= 20; i++) {
+      this[`strIngredient${i}`] = data[`strIngredient${i}`] || '';
+      this[`strMeasure${i}`] = data[`strMeasure${i}`] || '';
     }
   }
 
@@ -86,11 +110,29 @@ class Recipe {
 
   // Validation
   isValid() {
-    return this.strMeal && 
-           this.strCategory && 
-           this.strArea && 
-           this.strInstructions &&
-           this.ingredients.length > 0;
+    // Basic required fields
+    if (!this.strMeal || !this.strCategory || !this.strArea || !this.strInstructions) {
+      console.log('❌ Recipe validation failed - missing required fields:', {
+        strMeal: !!this.strMeal,
+        strCategory: !!this.strCategory,
+        strArea: !!this.strArea,
+        strInstructions: !!this.strInstructions
+      });
+      return false;
+    }
+    
+    // Check if we have at least one ingredient
+    const hasIngredients = this.ingredients.length > 0;
+    if (!hasIngredients) {
+      console.log('❌ Recipe validation failed - no ingredients found');
+      console.log('Ingredients array:', this.ingredients);
+      console.log('Raw data check - first few ingredient fields:');
+      for (let i = 1; i <= 5; i++) {
+        console.log(`strIngredient${i}:`, this[`strIngredient${i}`] || 'not set');
+      }
+    }
+    
+    return hasIngredients;
   }
 
   // Get ingredient list as array

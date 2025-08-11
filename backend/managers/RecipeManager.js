@@ -201,9 +201,15 @@ class RecipeManager {
   // Create new recipe
   async create(recipeData) {
     try {
+      console.log('🔍 RecipeManager.create - Raw recipe data:', JSON.stringify(recipeData, null, 2));
+      
       const recipe = new Recipe(recipeData);
       
+      console.log('🔍 Recipe object created, ingredients found:', recipe.ingredients.length);
+      console.log('🔍 Recipe ingredients:', recipe.ingredients);
+      
       if (!recipe.isValid()) {
+        console.log('❌ Recipe validation failed in RecipeManager');
         throw new Error('Invalid recipe data');
       }
       
