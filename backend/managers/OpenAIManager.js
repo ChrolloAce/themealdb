@@ -81,7 +81,7 @@ class OpenAIManager {
       } else if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED') {
         throw new Error('Network error: Unable to connect to OpenAI API. Please check your internet connection.');
       } else {
-        throw new Error(`Recipe generation failed: ${error.message}`);
+      throw new Error(`Recipe generation failed: ${error.message}`);
       }
     }
   }
@@ -501,13 +501,13 @@ Return as JSON array.`;
     }
   }
 
-  // Helper methods
+  // Helper methods - COMPREHENSIVE RECIPE DATA GENERATION
   buildRecipePrompt(params) {
     const restrictionsText = params.dietaryRestrictions.length > 0 
       ? ` The recipe must accommodate these dietary restrictions: ${params.dietaryRestrictions.join(', ')}.`
       : '';
 
-    return `Create a detailed recipe with the following specifications:
+    return `Create an extremely detailed, comprehensive recipe with the following specifications:
 - Cuisine: ${params.cuisine}
 - Category: ${params.category}
 - Main ingredient: ${params.mainIngredient || 'chef\'s choice'}
@@ -516,51 +516,169 @@ Return as JSON array.`;
 - Servings: ${params.servings}
 - Theme: ${params.theme || 'traditional'}${restrictionsText}
 
-Return ONLY valid JSON in this exact format:
+Return ONLY valid JSON with this COMPLETE data structure:
+
 {
-  "strMeal": "Recipe Name",
-  "strCategory": "Category",
-  "strArea": "Cuisine/Country",
-  "strInstructions": "Detailed step-by-step instructions",
-  "strTags": "tag1,tag2,tag3",
-  "ingredients": {
-    "strIngredient1": "ingredient1",
-    "strMeasure1": "measurement1",
-    "strIngredient2": "ingredient2",
-    "strMeasure2": "measurement2"
+  "coreData": {
+    "title": "Recipe Name",
+    "shortDescription": "Brief 1-2 sentence description",
+    "ingredientsList": [
+      {
+        "name": "ingredient name",
+        "quantity": "amount",
+        "unit": "cups/tbsp/etc",
+        "optional": false
+      }
+    ],
+    "instructions": [
+      "Step 1 detailed instruction",
+      "Step 2 detailed instruction"
+    ],
+    "prepTimeMinutes": 15,
+    "cookTimeMinutes": 30,
+    "totalTimeMinutes": 45,
+    "servingSize": "1 cup",
+    "numberOfServings": ${params.servings},
+    "difficulty": "${params.difficulty}",
+    "yield": "12 cookies / 2 cups / etc"
   },
-  "nutritionInfo": "Brief nutrition highlights",
-  "servingSize": "${params.servings}",
-  "cookingTime": "${params.cookingTime}",
-  "difficulty": "${params.difficulty}",
-  "strEquipment": "List of required cooking equipment and tools (e.g., Large skillet, Mixing bowls, Whisk, etc.)"
+  "nutritionalInfo": {
+    "caloriesPerServing": 350,
+    "protein": "25g",
+    "carbs": "30g", 
+    "fat": "15g",
+    "fiber": "5g",
+    "sugar": "8g",
+    "sodium": "400mg",
+    "cholesterol": "50mg",
+    "saturatedFat": "5g",
+    "vitaminA": "15% DV",
+    "vitaminC": "25% DV",
+    "iron": "10% DV",
+    "calcium": "20% DV"
+  },
+  "categorization": {
+    "cuisine": "${params.cuisine}",
+    "dietaryLabels": ["vegetarian", "gluten-free"],
+    "mealType": "dinner",
+    "dishType": "pasta",
+    "mainIngredient": "chicken",
+    "occasion": "weeknight dinner",
+    "seasonality": "year-round",
+    "equipmentRequired": ["large skillet", "mixing bowl", "whisk"],
+    "skillsRequired": ["chopping", "sauteing"]
+  },
+  "searchSupport": {
+    "keywords": ["easy", "quick", "family-friendly"],
+    "alternateTitles": ["Alternative name 1", "Alternative name 2"],
+    "allergenFlags": ["contains dairy", "contains eggs"],
+    "timeCategory": "under 1 hour"
+  },
+  "legacy": {
+    "strMeal": "Recipe Name",
+    "strCategory": "${params.category}",
+    "strArea": "${params.cuisine}",
+    "strInstructions": "Complete step-by-step instructions as single text",
+    "strTags": "tag1,tag2,tag3",
+    "strEquipment": "Complete equipment list"
+  }
 }
 
-Include 8-15 ingredients with precise measurements. Make instructions clear and detailed.
-Include a comprehensive list of cooking equipment and tools needed for this recipe in strEquipment (e.g., "Large skillet, Mixing bowls, Whisk, Measuring cups, Chef's knife, Cutting board").`;
+CRITICAL REQUIREMENTS:
+- Generate realistic nutritional values based on ingredients
+- Include 8-15 ingredients with precise measurements
+- Create detailed step-by-step instructions
+- Assign appropriate dietary labels based on ingredients
+- Include relevant allergen warnings
+- Estimate accurate prep/cook times
+- Choose appropriate occasion and seasonality
+- List all required equipment and cooking skills
+- Generate SEO-friendly keywords
+- Provide alternative recipe names for search`;
   }
 
   formatRecipeForDatabase(recipeData) {
+    // Handle both new comprehensive format and legacy format
+    const coreData = recipeData.coreData || {};
+    const nutritionalInfo = recipeData.nutritionalInfo || {};
+    const categorization = recipeData.categorization || {};
+    const searchSupport = recipeData.searchSupport || {};
+    const legacy = recipeData.legacy || recipeData;
+
     const formatted = {
-      strMeal: recipeData.strMeal,
-      strCategory: recipeData.strCategory,
-      strArea: recipeData.strArea,
-      strInstructions: recipeData.strInstructions,
-      strTags: recipeData.strTags || '',
+      // Core recipe data
+      strMeal: coreData.title || legacy.strMeal,
+      strCategory: legacy.strCategory,
+      strArea: legacy.strArea,
+      strInstructions: Array.isArray(coreData.instructions) 
+        ? coreData.instructions.join('\n\n') 
+        : legacy.strInstructions,
+      strTags: legacy.strTags || '',
       strYoutube: '',
       strSource: 'AI Generated',
-      strEquipment: recipeData.strEquipment || ''
+      strEquipment: legacy.strEquipment || '',
+
+      // NEW: Comprehensive data fields
+      shortDescription: coreData.shortDescription || '',
+      prepTimeMinutes: coreData.prepTimeMinutes || 0,
+      cookTimeMinutes: coreData.cookTimeMinutes || 0,
+      totalTimeMinutes: coreData.totalTimeMinutes || 0,
+      servingSize: coreData.servingSize || '',
+      numberOfServings: coreData.numberOfServings || 4,
+      difficulty: coreData.difficulty || 'medium',
+      recipeYield: coreData.yield || '',
+
+      // Nutritional information
+      caloriesPerServing: nutritionalInfo.caloriesPerServing || 0,
+      protein: nutritionalInfo.protein || '',
+      carbs: nutritionalInfo.carbs || '',
+      fat: nutritionalInfo.fat || '',
+      fiber: nutritionalInfo.fiber || '',
+      sugar: nutritionalInfo.sugar || '',
+      sodium: nutritionalInfo.sodium || '',
+      cholesterol: nutritionalInfo.cholesterol || '',
+      saturatedFat: nutritionalInfo.saturatedFat || '',
+      vitaminA: nutritionalInfo.vitaminA || '',
+      vitaminC: nutritionalInfo.vitaminC || '',
+      iron: nutritionalInfo.iron || '',
+      calcium: nutritionalInfo.calcium || '',
+
+      // Categorization
+      cuisine: categorization.cuisine || legacy.strArea,
+      dietaryLabels: JSON.stringify(categorization.dietaryLabels || []),
+      mealType: categorization.mealType || '',
+      dishType: categorization.dishType || '',
+      mainIngredient: categorization.mainIngredient || '',
+      occasion: categorization.occasion || '',
+      seasonality: categorization.seasonality || '',
+      equipmentRequired: JSON.stringify(categorization.equipmentRequired || []),
+      skillsRequired: JSON.stringify(categorization.skillsRequired || []),
+
+      // Search support
+      keywords: JSON.stringify(searchSupport.keywords || []),
+      alternateTitles: JSON.stringify(searchSupport.alternateTitles || []),
+      allergenFlags: JSON.stringify(searchSupport.allergenFlags || []),
+      timeCategory: searchSupport.timeCategory || ''
     };
 
-    // Convert ingredients object to individual fields
+    // Convert ingredients list to individual fields (legacy compatibility)
+    if (coreData.ingredientsList && Array.isArray(coreData.ingredientsList)) {
+      coreData.ingredientsList.forEach((ingredient, index) => {
+        const i = index + 1;
+        if (i <= 20) {
+          formatted[`strIngredient${i}`] = ingredient.name || '';
+          formatted[`strMeasure${i}`] = `${ingredient.quantity || ''} ${ingredient.unit || ''}`.trim();
+        }
+      });
+    }
+
+    // Legacy ingredient handling
     if (recipeData.ingredients) {
-      let ingredientIndex = 1;
       Object.keys(recipeData.ingredients).forEach(key => {
         if (key.startsWith('strIngredient') && recipeData.ingredients[key]) {
           const measureKey = key.replace('strIngredient', 'strMeasure');
           formatted[key] = recipeData.ingredients[key];
           formatted[measureKey] = recipeData.ingredients[measureKey] || '';
-          ingredientIndex++;
         }
       });
     }

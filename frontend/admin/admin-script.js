@@ -296,43 +296,166 @@ class AdminPanel {
     const qualityBadge = imageQuality === 'ultra-hd' ? 
       '<span style="background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; margin-left: 0.5rem;">🎨 ULTRA-HD AI GENERATED</span>' : '';
     
+    // Parse JSON fields safely
+    const parseDietaryLabels = (labels) => {
+      try { return JSON.parse(labels || '[]'); } catch { return []; }
+    };
+    const parseEquipment = (equipment) => {
+      try { return JSON.parse(equipment || '[]'); } catch { return []; }
+    };
+    const parseAllergens = (allergens) => {
+      try { return JSON.parse(allergens || '[]'); } catch { return []; }
+    };
+    const parseKeywords = (keywords) => {
+      try { return JSON.parse(keywords || '[]'); } catch { return []; }
+    };
+
     this.generateResult.innerHTML = `
-      <div class="recipe-preview">
+      <div class="recipe-preview comprehensive-recipe">
         ${imageUrl ? `
           <div style="position: relative; margin-bottom: 1rem;">
             <img src="${imageUrl}" alt="${recipe.strMeal}" style="width: 100%; max-width: 400px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
             ${qualityBadge}
           </div>
         ` : ''}
-        <h3>${recipe.strMeal}</h3>
-        <div class="recipe-meta">
-          <span>Category: ${recipe.strCategory}</span>
-          <span>Cuisine: ${recipe.strArea}</span>
-          <span>Servings: ${recipe.servingSize || '4'}</span>
-          <span>Time: ${recipe.cookingTime || '30-45 minutes'}</span>
-        </div>
         
+        <!-- Recipe Header -->
+        <div class="recipe-header">
+          <h3>${recipe.strMeal}</h3>
+          ${recipe.shortDescription ? `<p class="recipe-description">${recipe.shortDescription}</p>` : ''}
+          
+          <div class="recipe-badges">
+            ${parseDietaryLabels(recipe.dietaryLabels).map(label => 
+              `<span class="badge dietary-badge">${label}</span>`
+            ).join('')}
+            ${parseAllergens(recipe.allergenFlags).map(allergen => 
+              `<span class="badge allergen-badge">⚠️ ${allergen}</span>`
+            ).join('')}
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="recipe-stats-grid">
+          <div class="stat-item">
+            <strong>⏱️ Prep</strong><br>${recipe.prepTimeMinutes || 'N/A'} min
+          </div>
+          <div class="stat-item">
+            <strong>🔥 Cook</strong><br>${recipe.cookTimeMinutes || 'N/A'} min
+          </div>
+          <div class="stat-item">
+            <strong>⏰ Total</strong><br>${recipe.totalTimeMinutes || 'N/A'} min
+          </div>
+          <div class="stat-item">
+            <strong>🍽️ Serves</strong><br>${recipe.numberOfServings || '4'}
+          </div>
+          <div class="stat-item">
+            <strong>📊 Difficulty</strong><br>${recipe.difficulty || 'Medium'}
+          </div>
+          <div class="stat-item">
+            <strong>🥘 Yield</strong><br>${recipe.recipeYield || 'N/A'}
+          </div>
+        </div>
+
+        <!-- Nutrition Facts -->
+        ${recipe.caloriesPerServing ? `
+        <div class="nutrition-panel">
+          <h4>📊 Nutrition Facts (per serving)</h4>
+          <div class="nutrition-grid">
+            <div class="nutrition-item calories">
+              <strong>${recipe.caloriesPerServing}</strong><br>Calories
+            </div>
+            <div class="nutrition-item">
+              <strong>${recipe.protein || 'N/A'}</strong><br>Protein
+            </div>
+            <div class="nutrition-item">
+              <strong>${recipe.carbs || 'N/A'}</strong><br>Carbs
+            </div>
+            <div class="nutrition-item">
+              <strong>${recipe.fat || 'N/A'}</strong><br>Fat
+            </div>
+            <div class="nutrition-item">
+              <strong>${recipe.fiber || 'N/A'}</strong><br>Fiber
+            </div>
+            <div class="nutrition-item">
+              <strong>${recipe.sodium || 'N/A'}</strong><br>Sodium
+            </div>
+          </div>
+          
+          ${recipe.vitaminA || recipe.vitaminC || recipe.iron || recipe.calcium ? `
+          <div class="micronutrients">
+            <h5>Vitamins & Minerals</h5>
+            <div class="micro-grid">
+              ${recipe.vitaminA ? `<span>Vitamin A: ${recipe.vitaminA}</span>` : ''}
+              ${recipe.vitaminC ? `<span>Vitamin C: ${recipe.vitaminC}</span>` : ''}
+              ${recipe.iron ? `<span>Iron: ${recipe.iron}</span>` : ''}
+              ${recipe.calcium ? `<span>Calcium: ${recipe.calcium}</span>` : ''}
+            </div>
+          </div>
+          ` : ''}
+        </div>
+        ` : ''}
+        
+        <!-- Ingredients -->
         <div class="ingredients-list">
-          <h4>Ingredients</h4>
-          <ul>
+          <h4>🥘 Ingredients</h4>
+          <ul class="ingredients-enhanced">
             ${ingredients.map(ing => `<li>${ing}</li>`).join('')}
           </ul>
         </div>
         
-        ${recipe.strEquipment ? `
+        <!-- Equipment -->
+        ${recipe.strEquipment || parseEquipment(recipe.equipmentRequired).length ? `
         <div class="equipment-list">
           <h4>🍳 Required Equipment</h4>
-          <p style="background: #f8f9fa; padding: 1rem; border-radius: 6px; border-left: 4px solid #007bff;">${recipe.strEquipment}</p>
+          <div class="equipment-tags">
+            ${parseEquipment(recipe.equipmentRequired).length ? 
+              parseEquipment(recipe.equipmentRequired).map(item => 
+                `<span class="equipment-tag">${item}</span>`
+              ).join('') :
+              `<p>${recipe.strEquipment}</p>`
+            }
+          </div>
         </div>
         ` : ''}
         
+        <!-- Instructions -->
         <div class="instructions">
-          <h4>Instructions</h4>
-          <p>${recipe.strInstructions}</p>
+          <h4>👨‍🍳 Instructions</h4>
+          <div class="instructions-content">${recipe.strInstructions}</div>
         </div>
         
+        <!-- Recipe Details -->
+        <div class="recipe-details-grid">
+          <div class="detail-section">
+            <h5>🏷️ Categories</h5>
+            <p><strong>Cuisine:</strong> ${recipe.cuisine || recipe.strArea}</p>
+            <p><strong>Meal Type:</strong> ${recipe.mealType || 'N/A'}</p>
+            <p><strong>Dish Type:</strong> ${recipe.dishType || recipe.strCategory}</p>
+            <p><strong>Main Ingredient:</strong> ${recipe.mainIngredient || 'N/A'}</p>
+          </div>
+          
+          <div class="detail-section">
+            <h5>🎯 Context</h5>
+            <p><strong>Occasion:</strong> ${recipe.occasion || 'Any time'}</p>
+            <p><strong>Season:</strong> ${recipe.seasonality || 'Year-round'}</p>
+            <p><strong>Time Category:</strong> ${recipe.timeCategory || 'N/A'}</p>
+          </div>
+        </div>
+        
+        <!-- Keywords & Search -->
+        ${parseKeywords(recipe.keywords).length ? `
+        <div class="keywords-section">
+          <h5>🔍 Keywords</h5>
+          <div class="keyword-tags">
+            ${parseKeywords(recipe.keywords).map(keyword => 
+              `<span class="keyword-tag">${keyword}</span>`
+            ).join('')}
+          </div>
+        </div>
+        ` : ''}
+        
         ${recipe.strTags ? `<p><strong>Tags:</strong> ${recipe.strTags}</p>` : ''}
-        ${isPreview ? `<div class="form-actions"><button class="btn btn-primary save-previewed-recipe-btn">Save This Recipe</button></div>` : ''}
+        ${isPreview ? `<div class="form-actions"><button class="btn btn-primary save-previewed-recipe-btn">💾 Save This Amazing Recipe</button></div>` : ''}
       </div>
     `;
     
