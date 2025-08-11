@@ -31,6 +31,9 @@ class AdminRoutes {
     this.router.get('/me', getCurrentAdmin);
     this.router.get('/dashboard', ErrorHandler.asyncHandler(this.getDashboard.bind(this)));
     
+    // Debug/test routes
+    this.router.get('/test/openai', ErrorHandler.asyncHandler(this.testOpenAI.bind(this)));
+    
     // AI Recipe Generation routes
     this.router.post('/ai/generate-recipe', 
       requirePermission('ai_generate'),
@@ -240,7 +243,14 @@ class AdminRoutes {
         message: 'Recipe created successfully with ULTRA-HIGH QUALITY AI image'
       });
     } catch (error) {
-      throw new Error(`Failed to create recipe with AI: ${error.message}`);
+      console.error('❌ Recipe generation error in route:', error.message);
+      console.error('❌ Full error stack:', error.stack);
+      
+      res.status(500).json({
+        success: false,
+        message: error.message || 'An unexpected error occurred. Please try again later.',
+        error: 'RECIPE_GENERATION_FAILED'
+      });
     }
   }
 
@@ -351,6 +361,60 @@ class AdminRoutes {
       success: true,
       message: 'Recipe deleted successfully'
     });
+  }
+
+  // Test OpenAI connection
+  async testOpenAI(req, res) {
+    try {
+      console.log('🔍 Testing OpenAI connection...');
+      
+      // Check environment variables
+      const hasApiKey = !!process.env.OPENAI_API_KEY;
+      const apiKeyMasked = hasApiKey ? 
+        `${process.env.OPENAI_API_KEY.substring(0, 7)}...${process.env.OPENAI_API_KEY.slice(-4)}` : 
+        'NOT_SET';
+      
+      if (!hasApiKey) {
+        return res.json({
+          success: false,
+          error: 'OpenAI API key not configured',
+          details: {
+            apiKey: apiKeyMasked,
+            model: process.env.OPENAI_MODEL || 'gpt-4',
+            imageModel: process.env.OPENAI_IMAGE_MODEL || 'dall-e-3'
+          }
+        });
+      }
+      
+      // Try a simple API call
+      const testResult = await this.openaiManager.openai.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: 'Say "OpenAI connection test successful"' }],
+        max_tokens: 20
+      });
+      
+      res.json({
+        success: true,
+        message: 'OpenAI connection successful',
+        details: {
+          apiKey: apiKeyMasked,
+          model: process.env.OPENAI_MODEL || 'gpt-4',
+          imageModel: process.env.OPENAI_IMAGE_MODEL || 'dall-e-3',
+          testResponse: testResult.choices[0].message.content
+        }
+      });
+    } catch (error) {
+      console.error('❌ OpenAI test failed:', error);
+      res.status(500).json({
+        success: false,
+        error: 'OpenAI test failed',
+        message: error.message,
+        details: {
+          apiKey: process.env.OPENAI_API_KEY ? 'SET_BUT_INVALID' : 'NOT_SET',
+          errorType: error.code || 'UNKNOWN'
+        }
+      });
+    }
   }
 
   getRouter() {

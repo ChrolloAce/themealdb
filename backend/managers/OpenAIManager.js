@@ -20,6 +20,12 @@ class OpenAIManager {
         throw new Error('OpenAI API key is not configured. Please set OPENAI_API_KEY environment variable.');
       }
 
+      // Log API key status (masked for security)
+      const apiKeyMasked = process.env.OPENAI_API_KEY ? 
+        `${process.env.OPENAI_API_KEY.substring(0, 7)}...${process.env.OPENAI_API_KEY.slice(-4)}` : 
+        'NOT_SET';
+      console.log('🔑 OpenAI API Key status:', apiKeyMasked);
+      console.log('🤖 Using model:', this.model);
       console.log('🧠 Starting AI recipe generation with params:', JSON.stringify(params, null, 2));
 
       const {

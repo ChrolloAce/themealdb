@@ -236,10 +236,12 @@ class AdminPanel {
           'Recipe generated and saved successfully!';
         this.showSuccess(this.generateResult, message);
       } else {
+        console.error('❌ Recipe generation failed:', data);
         this.showError(this.generateResult, data.message || 'Generation failed');
       }
     } catch (error) {
-      this.showError(this.generateResult, 'Failed to generate recipe');
+      console.error('❌ Network/Parse error:', error);
+      this.showError(this.generateResult, `Network error: ${error.message}`);
     }
   }
 
