@@ -528,6 +528,28 @@ Return as JSON array.`;
       ? ` The recipe must accommodate these dietary restrictions: ${params.dietaryRestrictions.join(', ')}.`
       : '';
 
+    const allowedEquipment = [
+      "Air fryer", "Broiler pan", "Dutch oven", "Grill", "Grill pan", "Microwave", "Oven", 
+      "Pressure cooker", "Rice cooker", "Saucepan", "Baking sheet", "Frying pan", "Slow cooker", 
+      "Small pot", "Medium pot", "Large pot", "Stovetop", "Wok", "Bench scraper", "Chef's knife", 
+      "Citrus juicer", "Citrus zester", "Cutting board", "Dough scraper", "Egg separator", 
+      "Fish spatula", "Food tweezers", "Garlic press", "Jar opener", "Kitchen scissors", "Ladle", 
+      "Mandoline slicer", "Meat tenderizer", "Spray bottle", "Paring knife", "Pastry blender", 
+      "Pastry brush", "Pasta spoon", "Peeler", "Pizza cutter", "Rolling pin", "Spatula (rubber)", 
+      "Spatula (metal)", "Tongs", "Vegetable peeler", "Whisk", "Zester", "Glass measuring cup", 
+      "Kitchen scale", "Large mixing bowl", "Medium mixing bowl", "Small mixing bowl", 
+      "Measuring cups", "Measuring spoons", "Mortar and pestle", "Piping bag", "Plate", "Bowl", 
+      "Salad bowl", "Serving bowl", "Tamper (for blender)", "Timer", "Toothpicks", 
+      "Tweezers (plating)", "Fork", "Spoon", "Knife (table)", "Serving spoon", "Slotted spoon", 
+      "Baking dish", "Baking ramekin", "Cake pan", "Cooling rack", "Cookie cutters", "Loaf pan", 
+      "Muffin tin", "Parchment paper", "Pie dish", "Silicone baking mat", "Springform pan", 
+      "Stand mixer", "Whipped cream siphon", "Can opener", "Colander", "Funnel", "Salad spinner", 
+      "Sieve", "Skewers", "Strainer", "Storage container", "Bottle opener", "Corkscrew", 
+      "Ice cube mold", "Ice cream scoop", "Cocktail shaker", "Aluminum foil", "Apron", 
+      "Dish towel", "Oven mitts", "Paper towels", "Plastic wrap", "Trivet", "Chopsticks", 
+      "Food processor", "Hand mixer", "Sous vide wand"
+    ];
+
     return `Create an extremely detailed, comprehensive recipe with the following specifications:
 - Cuisine: ${params.cuisine}
 - Category: ${params.category}
@@ -537,171 +559,149 @@ Return as JSON array.`;
 - Servings: ${params.servings}
 - Theme: ${params.theme || 'traditional'}${restrictionsText}
 
-Return ONLY valid JSON with this COMPLETE data structure:
+CRITICAL REQUIREMENTS:
+1. NEVER use "N/A" or empty values - always provide complete data
+2. ONLY use equipment from this allowed list: ${allowedEquipment.join(', ')}
+3. Format instructions as numbered steps in an array
+4. Format ingredients as detailed objects in an array
+5. Provide realistic, complete nutritional information
+6. Generate all TheMealDB format fields with proper ingredient slots
+
+Return ONLY valid JSON with this COMPLETE structure:
 
 {
-  "coreData": {
-    "title": "Recipe Name",
-    "shortDescription": "Brief 1-2 sentence description",
-    "ingredientsList": [
-      {
-        "name": "ingredient name",
-        "quantity": "amount",
-        "unit": "cups/tbsp/etc",
-        "optional": false
-      }
-    ],
-    "instructions": [
-      "Step 1 detailed instruction",
-      "Step 2 detailed instruction"
-    ],
-    "prepTimeMinutes": 15,
-    "cookTimeMinutes": 30,
-    "totalTimeMinutes": 45,
-    "servingSize": "1 cup",
-    "numberOfServings": ${params.servings},
+  "strMeal": "Creative Recipe Name (never generic)",
+  "strDrinkAlternate": "",
+  "strCategory": "${params.category}",
+  "strArea": "${params.cuisine}",
+  "strInstructions": "Complete detailed cooking instructions",
+  "strMealThumb": "PLACEHOLDER_FOR_IMAGE",
+  "strTags": "comma,separated,relevant,tags",
+  "strYoutube": "",
+  "strSource": "AI Generated",
+  "strImageSource": "",
+  "strCreativeCommonsConfirmed": "",
+  "dateModified": "${new Date().toISOString()}",
+  
+  "instructionsArray": [
+    "Step 1: Detailed first instruction with specific techniques",
+    "Step 2: Detailed second instruction with temperatures/times",
+    "Step 3: Continue with specific steps..."
+  ],
+  
+  "ingredientsArray": [
+    {
+      "name": "specific ingredient name",
+      "amount": "precise amount",
+      "unit": "cups/tbsp/oz/etc",
+      "notes": "preparation notes if needed"
+    }
+  ],
+  
+  "strIngredient1": "First ingredient name",
+  "strMeasure1": "Precise measurement",
+  "strIngredient2": "Second ingredient name", 
+  "strMeasure2": "Precise measurement",
+  "strIngredient3": "Third ingredient name",
+  "strMeasure3": "Precise measurement",
+  "strIngredient4": "Fourth ingredient name",
+  "strMeasure4": "Precise measurement",
+  "strIngredient5": "Fifth ingredient name",
+  "strMeasure5": "Precise measurement",
+  "strIngredient6": "Sixth ingredient name",
+  "strMeasure6": "Precise measurement",
+  "strIngredient7": "Seventh ingredient name",
+  "strMeasure7": "Precise measurement",
+  "strIngredient8": "Eighth ingredient name",
+  "strMeasure8": "Precise measurement",
+  "strIngredient9": "",
+  "strMeasure9": "",
+  "strIngredient10": "",
+  "strMeasure10": "",
+  "strIngredient11": "",
+  "strMeasure11": "",
+  "strIngredient12": "",
+  "strMeasure12": "",
+  "strIngredient13": "",
+  "strMeasure13": "",
+  "strIngredient14": "",
+  "strMeasure14": "",
+  "strIngredient15": "",
+  "strMeasure15": "",
+  "strIngredient16": "",
+  "strMeasure16": "",
+  "strIngredient17": "",
+  "strMeasure17": "",
+  "strIngredient18": "",
+  "strMeasure18": "",
+  "strIngredient19": "",
+  "strMeasure19": "",
+  "strIngredient20": "",
+  "strMeasure20": "",
+  
+  "nutrition": {
+    "calories": "realistic number",
+    "protein": "amount with unit",
+    "carbs": "amount with unit",
+    "fat": "amount with unit",
+    "fiber": "amount with unit",
+    "sugar": "amount with unit",
+    "sodium": "amount with unit"
+  },
+  
+  "cookingInfo": {
+    "prepTime": "realistic prep time",
+    "cookTime": "realistic cook time", 
+    "totalTime": "total time",
+    "servings": ${params.servings},
     "difficulty": "${params.difficulty}",
-    "yield": "12 cookies / 2 cups / etc"
-  },
-  "nutritionalInfo": {
-    "caloriesPerServing": 350,
-    "protein": "25g",
-    "carbs": "30g", 
-    "fat": "15g",
-    "fiber": "5g",
-    "sugar": "8g",
-    "sodium": "400mg",
-    "cholesterol": "50mg",
-    "saturatedFat": "5g",
-    "vitaminA": "15% DV",
-    "vitaminC": "25% DV",
-    "iron": "10% DV",
-    "calcium": "20% DV"
-  },
-  "categorization": {
-    "cuisine": "${params.cuisine}",
-    "dietaryLabels": ["vegetarian", "gluten-free"],
-    "mealType": "dinner",
-    "dishType": "pasta",
-    "mainIngredient": "chicken",
-    "occasion": "weeknight dinner",
-    "seasonality": "year-round",
-    "equipmentRequired": ["large skillet", "mixing bowl", "whisk"],
-    "skillsRequired": ["chopping", "sauteing"]
-  },
-  "searchSupport": {
-    "keywords": ["easy", "quick", "family-friendly"],
-    "alternateTitles": ["Alternative name 1", "Alternative name 2"],
-    "allergenFlags": ["contains dairy", "contains eggs"],
-    "timeCategory": "under 1 hour"
-  },
-  "legacy": {
-    "strMeal": "Recipe Name",
-    "strCategory": "${params.category}",
-    "strArea": "${params.cuisine}",
-    "strInstructions": "Complete step-by-step instructions as single text",
-    "strTags": "tag1,tag2,tag3",
-    "strEquipment": "Complete equipment list"
+    "equipment": ["only from allowed list above"]
   }
 }
 
-CRITICAL REQUIREMENTS:
-- Generate realistic nutritional values based on ingredients
-- Include 8-15 ingredients with precise measurements
-- Create detailed step-by-step instructions
-- Assign appropriate dietary labels based on ingredients
-- Include relevant allergen warnings
-- Estimate accurate prep/cook times
-- Choose appropriate occasion and seasonality
-- List all required equipment and cooking skills
-- Generate SEO-friendly keywords
-- Provide alternative recipe names for search`;
+ABSOLUTE REQUIREMENTS:
+- Fill ALL ingredient slots (1-20) - use empty string "" for unused slots, never null or undefined
+- Create 6-12 detailed numbered instruction steps
+- Use ONLY the allowed equipment list provided above
+- Never use "N/A", "TBD", or placeholder text except "PLACEHOLDER_FOR_IMAGE"
+- Generate realistic nutritional values based on actual ingredients
+- Create engaging, specific recipe names (not generic)
+- Include relevant cooking techniques and temperatures
+- Provide precise measurements and timing`;
   }
 
   formatRecipeForDatabase(recipeData) {
-    // Handle both new comprehensive format and legacy format
-    const coreData = recipeData.coreData || {};
-    const nutritionalInfo = recipeData.nutritionalInfo || {};
-    const categorization = recipeData.categorization || {};
-    const searchSupport = recipeData.searchSupport || {};
-    const legacy = recipeData.legacy || recipeData;
-
+    // Handle the new simplified format
     const formatted = {
-      // Core recipe data
-      strMeal: coreData.title || legacy.strMeal,
-      strCategory: legacy.strCategory,
-      strArea: legacy.strArea,
-      strInstructions: Array.isArray(coreData.instructions) 
-        ? coreData.instructions.join('\n\n') 
-        : legacy.strInstructions,
-      strTags: legacy.strTags || '',
-      strYoutube: '',
-      strSource: 'AI Generated',
-      strEquipment: legacy.strEquipment || '',
+      // Core TheMealDB format - directly from AI response
+      strMeal: recipeData.strMeal || 'Unnamed Recipe',
+      strDrinkAlternate: recipeData.strDrinkAlternate || '',
+      strCategory: recipeData.strCategory || 'Miscellaneous',
+      strArea: recipeData.strArea || 'Unknown',
+      strInstructions: recipeData.strInstructions || '',
+      strMealThumb: recipeData.strMealThumb || '',
+      strTags: recipeData.strTags || '',
+      strYoutube: recipeData.strYoutube || '',
+      strSource: recipeData.strSource || 'AI Generated',
+      strImageSource: recipeData.strImageSource || '',
+      strCreativeCommonsConfirmed: recipeData.strCreativeCommonsConfirmed || '',
+      dateModified: recipeData.dateModified || new Date().toISOString(),
 
-      // NEW: Comprehensive data fields
-      shortDescription: coreData.shortDescription || '',
-      prepTimeMinutes: coreData.prepTimeMinutes || 0,
-      cookTimeMinutes: coreData.cookTimeMinutes || 0,
-      totalTimeMinutes: coreData.totalTimeMinutes || 0,
-      servingSize: coreData.servingSize || '',
-      numberOfServings: coreData.numberOfServings || 4,
-      difficulty: coreData.difficulty || 'medium',
-      recipeYield: coreData.yield || '',
-
+      // Enhanced arrays for better data access
+      instructionsArray: recipeData.instructionsArray || [],
+      ingredientsArray: recipeData.ingredientsArray || [],
+      
       // Nutritional information
-      caloriesPerServing: nutritionalInfo.caloriesPerServing || 0,
-      protein: nutritionalInfo.protein || '',
-      carbs: nutritionalInfo.carbs || '',
-      fat: nutritionalInfo.fat || '',
-      fiber: nutritionalInfo.fiber || '',
-      sugar: nutritionalInfo.sugar || '',
-      sodium: nutritionalInfo.sodium || '',
-      cholesterol: nutritionalInfo.cholesterol || '',
-      saturatedFat: nutritionalInfo.saturatedFat || '',
-      vitaminA: nutritionalInfo.vitaminA || '',
-      vitaminC: nutritionalInfo.vitaminC || '',
-      iron: nutritionalInfo.iron || '',
-      calcium: nutritionalInfo.calcium || '',
-
-      // Categorization
-      cuisine: categorization.cuisine || legacy.strArea,
-      dietaryLabels: JSON.stringify(categorization.dietaryLabels || []),
-      mealType: categorization.mealType || '',
-      dishType: categorization.dishType || '',
-      mainIngredient: categorization.mainIngredient || '',
-      occasion: categorization.occasion || '',
-      seasonality: categorization.seasonality || '',
-      equipmentRequired: JSON.stringify(categorization.equipmentRequired || []),
-      skillsRequired: JSON.stringify(categorization.skillsRequired || []),
-
-      // Search support
-      keywords: JSON.stringify(searchSupport.keywords || []),
-      alternateTitles: JSON.stringify(searchSupport.alternateTitles || []),
-      allergenFlags: JSON.stringify(searchSupport.allergenFlags || []),
-      timeCategory: searchSupport.timeCategory || ''
+      nutrition: recipeData.nutrition || {},
+      
+      // Cooking information
+      cookingInfo: recipeData.cookingInfo || {}
     };
 
-    // Convert ingredients list to individual fields (legacy compatibility)
-    if (coreData.ingredientsList && Array.isArray(coreData.ingredientsList)) {
-      coreData.ingredientsList.forEach((ingredient, index) => {
-        const i = index + 1;
-        if (i <= 20) {
-          formatted[`strIngredient${i}`] = ingredient.name || '';
-          formatted[`strMeasure${i}`] = `${ingredient.quantity || ''} ${ingredient.unit || ''}`.trim();
-        }
-      });
-    }
-
-    // Legacy ingredient handling
-    if (recipeData.ingredients) {
-      Object.keys(recipeData.ingredients).forEach(key => {
-        if (key.startsWith('strIngredient') && recipeData.ingredients[key]) {
-          const measureKey = key.replace('strIngredient', 'strMeasure');
-          formatted[key] = recipeData.ingredients[key];
-          formatted[measureKey] = recipeData.ingredients[measureKey] || '';
-        }
-      });
+    // Add all 20 ingredient slots from AI response
+    for (let i = 1; i <= 20; i++) {
+      formatted[`strIngredient${i}`] = recipeData[`strIngredient${i}`] || '';
+      formatted[`strMeasure${i}`] = recipeData[`strMeasure${i}`] || '';
     }
 
     return formatted;

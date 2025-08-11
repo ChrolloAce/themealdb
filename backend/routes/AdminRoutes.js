@@ -217,7 +217,7 @@ class AdminRoutes {
       let imageUrl = null;
       if (req.body.generateImage) {
         try {
-          console.log('🎨 Generating AI image for new recipe...');
+          console.log('🎨 Generating ULTRA-HIGH QUALITY AI image for new recipe...');
           
           const imageData = await this.openaiManager.generateRecipeImage(
             generatedRecipe.strMeal,
@@ -228,14 +228,25 @@ class AdminRoutes {
           // Use the local URL that we saved
           imageUrl = imageData.url;
           
-          // Update recipe with local image URL
-          await this.recipeManager.update(savedRecipe.meals[0].idMeal, {
-            strMealThumb: imageUrl
-          });
+          // Update recipe with local image URL - use Firebase or SQLite method
+          if (this.db.updateRecipe) {
+            await this.db.updateRecipe(savedRecipe.meals[0].idMeal || savedRecipe.meals[0].id, {
+              strMealThumb: imageUrl
+            });
+          } else {
+            await this.recipeManager.update(savedRecipe.meals[0].idMeal, {
+              strMealThumb: imageUrl
+            });
+          }
           
-          console.log('✅ AI image generated and saved!');
+          console.log('✅ ULTRA-HIGH QUALITY AI image generated and saved!');
         } catch (imageError) {
           console.error('❌ Image generation failed:', imageError.message);
+          console.error('❌ Image generation stack:', imageError.stack);
+          
+          // Don't fail the entire request - just log the error
+          // Set a placeholder image URL instead of leaving it null
+          imageUrl = '/images/placeholder-recipe.jpg';
         }
       }
       
