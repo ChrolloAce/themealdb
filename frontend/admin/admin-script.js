@@ -61,6 +61,12 @@ class AdminPanel {
     // Recipe management
     document.getElementById('refreshRecipes').addEventListener('click', this.loadRecipes.bind(this));
     
+    // Edit modal listeners
+    document.getElementById('closeEditModal').addEventListener('click', this.closeEditModal.bind(this));
+    document.getElementById('cancelEditBtn').addEventListener('click', this.closeEditModal.bind(this));
+    document.getElementById('editRecipeForm').addEventListener('submit', this.saveRecipeEdit.bind(this));
+    document.getElementById('addIngredientBtn').addEventListener('click', this.addIngredientField.bind(this));
+    
     // Setup recipe action listeners (will be called after loadRecipes)
     this.setupRecipeActionListeners();
   }
@@ -709,17 +715,38 @@ class AdminPanel {
       const data = await response.json();
       
       const recipesList = document.getElementById('recipesList');
+      
+      if (!data.recipes || data.recipes.length === 0) {
+        recipesList.innerHTML = `
+          <div class="empty-state">
+            <h3>No recipes found</h3>
+            <p>Start by generating some recipes with AI!</p>
+            <button class="btn btn-primary" onclick="adminPanel.switchSection('ai-generate')">
+              🤖 Generate Recipes
+            </button>
+          </div>
+        `;
+        return;
+      }
+      
       recipesList.innerHTML = data.recipes.map(recipe => `
         <div class="recipe-item">
           <div class="recipe-info">
-            <h4>${recipe.strMeal}</h4>
-            <p>${recipe.strCategory} • ${recipe.strArea} • ${new Date(recipe.dateModified).toLocaleDateString()}</p>
+            <div class="recipe-header">
+              <h4>${recipe.strMeal || 'Unnamed Recipe'}</h4>
+              ${recipe.strMealThumb ? `<img src="${recipe.strMealThumb}" alt="${recipe.strMeal}" class="recipe-thumb">` : ''}
+            </div>
+            <p>${recipe.strCategory || 'No Category'} • ${recipe.strArea || 'No Area'} • ${recipe.dateModified ? new Date(recipe.dateModified).toLocaleDateString() : 'No Date'}</p>
+            <p class="recipe-preview">${recipe.strInstructions ? recipe.strInstructions.substring(0, 100) + '...' : 'No instructions'}</p>
           </div>
           <div class="recipe-actions">
-            <button class="btn btn-outline improve-recipe-btn" data-recipe-id="${recipe.idMeal}">
+            <button class="btn btn-outline edit-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}">
+              ✏️ Edit
+            </button>
+            <button class="btn btn-outline improve-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}">
               🤖 Improve
             </button>
-            <button class="btn btn-danger delete-recipe-btn" data-recipe-id="${recipe.idMeal}">
+            <button class="btn btn-danger delete-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}">
               🗑️ Delete
             </button>
           </div>
@@ -737,7 +764,7 @@ class AdminPanel {
   // Setup event listeners for recipe action buttons (dynamically created)
   setupRecipeActionListeners() {
     // Remove existing listeners to prevent duplicates
-    document.querySelectorAll('.improve-recipe-btn, .delete-recipe-btn').forEach(btn => {
+    document.querySelectorAll('.improve-recipe-btn, .delete-recipe-btn, .edit-recipe-btn').forEach(btn => {
       btn.replaceWith(btn.cloneNode(true));
     });
     
@@ -746,6 +773,14 @@ class AdminPanel {
       btn.addEventListener('click', (e) => {
         const recipeId = e.target.getAttribute('data-recipe-id');
         this.improveRecipe(recipeId);
+      });
+    });
+    
+    // Add edit recipe listeners
+    document.querySelectorAll('.edit-recipe-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const recipeId = e.target.getAttribute('data-recipe-id');
+        this.editRecipe(recipeId);
       });
     });
     
@@ -838,6 +873,150 @@ class AdminPanel {
 
   removeStoredToken() {
     localStorage.removeItem('fooddb_admin_token');
+  }
+
+  // Edit Recipe functionality
+  async editRecipe(recipeId) {
+    try {
+      // Fetch recipe data
+      const response = await fetch(`/admin/recipes/${recipeId}`, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch recipe');
+      }
+      
+      const data = await response.json();
+      const recipe = data.recipe;
+      
+      // Populate form fields
+      document.getElementById('editRecipeId').value = recipeId;
+      document.getElementById('editStrMeal').value = recipe.strMeal || '';
+      document.getElementById('editStrCategory').value = recipe.strCategory || '';
+      document.getElementById('editStrArea').value = recipe.strArea || '';
+      document.getElementById('editStrMealThumb').value = recipe.strMealThumb || '';
+      document.getElementById('editStrInstructions').value = recipe.strInstructions || '';
+      
+      // Populate ingredients
+      this.populateIngredients(recipe);
+      
+      // Show modal
+      document.getElementById('editRecipeModal').classList.add('active');
+    } catch (error) {
+      console.error('Failed to load recipe for editing:', error);
+      alert('Failed to load recipe data');
+    }
+  }
+  
+  populateIngredients(recipe) {
+    const container = document.getElementById('editIngredientsContainer');
+    container.innerHTML = '';
+    
+    // Extract ingredients from recipe (TheMealDB format)
+    for (let i = 1; i <= 20; i++) {
+      const ingredient = recipe[`strIngredient${i}`];
+      const measure = recipe[`strMeasure${i}`];
+      
+      if (ingredient && ingredient.trim()) {
+        this.addIngredientField(ingredient, measure || '');
+      }
+    }
+    
+    // Add one empty field if no ingredients exist
+    if (container.children.length === 0) {
+      this.addIngredientField('', '');
+    }
+  }
+  
+  addIngredientField(ingredient = '', measure = '') {
+    const container = document.getElementById('editIngredientsContainer');
+    const ingredientDiv = document.createElement('div');
+    ingredientDiv.className = 'ingredient-row';
+    
+    ingredientDiv.innerHTML = `
+      <div class="form-row">
+        <div class="form-group">
+          <input type="text" class="ingredient-input" placeholder="Ingredient" value="${ingredient}">
+        </div>
+        <div class="form-group">
+          <input type="text" class="measure-input" placeholder="Measurement" value="${measure}">
+        </div>
+        <div class="form-group">
+          <button type="button" class="btn btn-danger remove-ingredient-btn">×</button>
+        </div>
+      </div>
+    `;
+    
+    // Add remove functionality
+    ingredientDiv.querySelector('.remove-ingredient-btn').addEventListener('click', () => {
+      ingredientDiv.remove();
+    });
+    
+    container.appendChild(ingredientDiv);
+  }
+  
+  async saveRecipeEdit(e) {
+    e.preventDefault();
+    
+    const recipeId = document.getElementById('editRecipeId').value;
+    
+    // Build recipe object
+    const recipeData = {
+      strMeal: document.getElementById('editStrMeal').value,
+      strCategory: document.getElementById('editStrCategory').value,
+      strArea: document.getElementById('editStrArea').value,
+      strMealThumb: document.getElementById('editStrMealThumb').value,
+      strInstructions: document.getElementById('editStrInstructions').value
+    };
+    
+    // Add ingredients
+    const ingredientRows = document.querySelectorAll('.ingredient-row');
+    ingredientRows.forEach((row, index) => {
+      const ingredient = row.querySelector('.ingredient-input').value.trim();
+      const measure = row.querySelector('.measure-input').value.trim();
+      
+      if (ingredient) {
+        recipeData[`strIngredient${index + 1}`] = ingredient;
+        recipeData[`strMeasure${index + 1}`] = measure;
+      }
+    });
+    
+    // Clear unused ingredient slots
+    for (let i = ingredientRows.length + 1; i <= 20; i++) {
+      recipeData[`strIngredient${i}`] = '';
+      recipeData[`strMeasure${i}`] = '';
+    }
+    
+    try {
+      const response = await fetch(`/admin/recipes/${recipeId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.token}`
+        },
+        body: JSON.stringify(recipeData)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        alert('Recipe updated successfully!');
+        this.closeEditModal();
+        this.loadRecipes(); // Refresh recipe list
+      } else {
+        alert('Failed to update recipe: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Failed to save recipe:', error);
+      alert('Failed to save recipe');
+    }
+  }
+  
+  closeEditModal() {
+    document.getElementById('editRecipeModal').classList.remove('active');
   }
 }
 

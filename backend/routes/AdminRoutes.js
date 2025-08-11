@@ -74,6 +74,11 @@ class AdminRoutes {
     
     // Admin recipe management
     this.router.get('/recipes', ErrorHandler.asyncHandler(this.getAllRecipes.bind(this)));
+    this.router.get('/recipes/:id', ErrorHandler.asyncHandler(this.getRecipe.bind(this)));
+    this.router.put('/recipes/:id', 
+      requirePermission('write'),
+      ErrorHandler.asyncHandler(this.updateRecipe.bind(this))
+    );
     this.router.delete('/recipes/:id', 
       requirePermission('delete'),
       ErrorHandler.asyncHandler(this.deleteRecipe.bind(this))
@@ -325,42 +330,177 @@ class AdminRoutes {
   async getAllRecipes(req, res) {
     const { page = 1, limit = 50 } = req.query;
     
-    const offset = (page - 1) * limit;
-    const recipes = await this.db.all(
-      'SELECT * FROM recipes ORDER BY dateModified DESC LIMIT ? OFFSET ?',
-      [parseInt(limit), offset]
-    );
-    
-    const total = await this.db.get('SELECT COUNT(*) as count FROM recipes');
-    
-    res.json({
-      recipes,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total: total.count,
-        pages: Math.ceil(total.count / limit)
+    try {
+      // Use Firebase method if available
+      if (this.db.getAllRecipes) {
+        const recipes = await this.db.getAllRecipes(parseInt(limit));
+        
+        res.json({
+          recipes,
+          pagination: {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            total: recipes.length,
+            pages: Math.ceil(recipes.length / limit)
+          }
+        });
+      } else {
+        // Fallback for SQLite
+        const offset = (page - 1) * limit;
+        const recipes = await this.db.all(
+          'SELECT * FROM recipes ORDER BY dateModified DESC LIMIT ? OFFSET ?',
+          [parseInt(limit), offset]
+        );
+        
+        const total = await this.db.get('SELECT COUNT(*) as count FROM recipes');
+        
+        res.json({
+          recipes,
+          pagination: {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            total: total.count,
+            pages: Math.ceil(total.count / limit)
+          }
+        });
       }
-    });
+    } catch (error) {
+      console.error('Error getting recipes:', error);
+      res.status(500).json({
+        error: 'Internal Server Error',
+        message: 'Failed to retrieve recipes'
+      });
+    }
+  }
+
+  // Get single recipe for editing
+  async getRecipe(req, res) {
+    const recipeId = req.params.id;
+    
+    try {
+      // Use Firebase method if available
+      if (this.db.getRecipe) {
+        const recipe = await this.db.getRecipe(recipeId);
+        
+        if (!recipe) {
+          return res.status(404).json({
+            error: 'Not Found',
+            message: 'Recipe not found'
+          });
+        }
+        
+        res.json({ recipe });
+      } else {
+        // Fallback for SQLite
+        const recipe = await this.db.get('SELECT * FROM recipes WHERE idMeal = ?', [recipeId]);
+        
+        if (!recipe) {
+          return res.status(404).json({
+            error: 'Not Found',
+            message: 'Recipe not found'
+          });
+        }
+        
+        res.json({ recipe });
+      }
+    } catch (error) {
+      console.error('Error getting recipe:', error);
+      res.status(500).json({
+        error: 'Internal Server Error',
+        message: 'Failed to retrieve recipe'
+      });
+    }
+  }
+
+  // Update recipe
+  async updateRecipe(req, res) {
+    const recipeId = req.params.id;
+    const updateData = req.body;
+    
+    try {
+      // Use Firebase method if available
+      if (this.db.updateRecipe) {
+        const result = await this.db.updateRecipe(recipeId, updateData);
+        
+        if (!result.success) {
+          return res.status(404).json({
+            error: 'Not Found',
+            message: 'Recipe not found'
+          });
+        }
+        
+        res.json({
+          success: true,
+          message: 'Recipe updated successfully'
+        });
+      } else {
+        // Fallback to RecipeManager for SQLite
+        const result = await this.recipeManager.update(recipeId, updateData);
+        
+        if (!result.success) {
+          return res.status(404).json({
+            error: 'Not Found',
+            message: 'Recipe not found'
+          });
+        }
+        
+        res.json({
+          success: true,
+          message: 'Recipe updated successfully'
+        });
+      }
+    } catch (error) {
+      console.error('Error updating recipe:', error);
+      res.status(500).json({
+        error: 'Internal Server Error',
+        message: 'Failed to update recipe'
+      });
+    }
   }
 
   // Delete recipe
   async deleteRecipe(req, res) {
     const recipeId = req.params.id;
     
-    const result = await this.recipeManager.delete(recipeId);
-    
-    if (!result.success) {
-      return res.status(404).json({
-        error: 'Not Found',
-        message: 'Recipe not found'
+    try {
+      // Use Firebase method if available
+      if (this.db.deleteRecipe) {
+        const result = await this.db.deleteRecipe(recipeId);
+        
+        if (!result.success) {
+          return res.status(404).json({
+            error: 'Not Found',
+            message: 'Recipe not found'
+          });
+        }
+        
+        res.json({
+          success: true,
+          message: 'Recipe deleted successfully'
+        });
+      } else {
+        // Fallback to RecipeManager for SQLite
+        const result = await this.recipeManager.delete(recipeId);
+        
+        if (!result.success) {
+          return res.status(404).json({
+            error: 'Not Found',
+            message: 'Recipe not found'
+          });
+        }
+        
+        res.json({
+          success: true,
+          message: 'Recipe deleted successfully'
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting recipe:', error);
+      res.status(500).json({
+        error: 'Internal Server Error',
+        message: 'Failed to delete recipe'
       });
     }
-    
-    res.json({
-      success: true,
-      message: 'Recipe deleted successfully'
-    });
   }
 
   // Test OpenAI connection

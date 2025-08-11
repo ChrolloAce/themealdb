@@ -250,6 +250,100 @@
         </main>
     </div>
 
+    <!-- Recipe Edit Modal -->
+    <div id="editRecipeModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>Edit Recipe</h2>
+                <button class="close-btn" id="closeEditModal">&times;</button>
+            </div>
+            <form id="editRecipeForm" class="edit-recipe-form">
+                <input type="hidden" id="editRecipeId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Recipe Name</label>
+                        <input type="text" id="editStrMeal" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="editStrCategory">
+                            <option value="Beef">Beef</option>
+                            <option value="Chicken">Chicken</option>
+                            <option value="Dessert">Dessert</option>
+                            <option value="Lamb">Lamb</option>
+                            <option value="Miscellaneous">Miscellaneous</option>
+                            <option value="Pasta">Pasta</option>
+                            <option value="Pork">Pork</option>
+                            <option value="Seafood">Seafood</option>
+                            <option value="Side">Side</option>
+                            <option value="Starter">Starter</option>
+                            <option value="Vegan">Vegan</option>
+                            <option value="Vegetarian">Vegetarian</option>
+                            <option value="Breakfast">Breakfast</option>
+                            <option value="Goat">Goat</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Area/Cuisine</label>
+                        <select id="editStrArea">
+                            <option value="American">American</option>
+                            <option value="British">British</option>
+                            <option value="Canadian">Canadian</option>
+                            <option value="Chinese">Chinese</option>
+                            <option value="Croatian">Croatian</option>
+                            <option value="Dutch">Dutch</option>
+                            <option value="Egyptian">Egyptian</option>
+                            <option value="French">French</option>
+                            <option value="Greek">Greek</option>
+                            <option value="Indian">Indian</option>
+                            <option value="Irish">Irish</option>
+                            <option value="Italian">Italian</option>
+                            <option value="Jamaican">Jamaican</option>
+                            <option value="Japanese">Japanese</option>
+                            <option value="Kenyan">Kenyan</option>
+                            <option value="Malaysian">Malaysian</option>
+                            <option value="Mexican">Mexican</option>
+                            <option value="Moroccan">Moroccan</option>
+                            <option value="Polish">Polish</option>
+                            <option value="Portuguese">Portuguese</option>
+                            <option value="Russian">Russian</option>
+                            <option value="Spanish">Spanish</option>
+                            <option value="Thai">Thai</option>
+                            <option value="Tunisian">Tunisian</option>
+                            <option value="Turkish">Turkish</option>
+                            <option value="Unknown">Unknown</option>
+                            <option value="Vietnamese">Vietnamese</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Image URL</label>
+                        <input type="url" id="editStrMealThumb" placeholder="https://example.com/image.jpg">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Instructions</label>
+                    <textarea id="editStrInstructions" rows="8" required></textarea>
+                </div>
+                
+                <div class="ingredients-section">
+                    <h3>Ingredients & Measurements</h3>
+                    <div id="editIngredientsContainer"></div>
+                    <button type="button" id="addIngredientBtn" class="btn btn-outline">+ Add Ingredient</button>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" id="cancelEditBtn" class="btn btn-outline">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="/admin-assets/admin-script.js"></script>
 </body>
 </html>
