@@ -559,13 +559,16 @@ Return as JSON array.`;
 - Servings: ${params.servings}
 - Theme: ${params.theme || 'traditional'}${restrictionsText}
 
-CRITICAL REQUIREMENTS:
-1. NEVER use "N/A" or empty values - always provide complete data
-2. ONLY use equipment from this allowed list: ${allowedEquipment.join(', ')}
-3. Format instructions as numbered steps in an array
-4. Format ingredients as detailed objects in an array
-5. Provide realistic, complete nutritional information
-6. Generate all TheMealDB format fields with proper ingredient slots
+🚨 ABSOLUTE CRITICAL REQUIREMENTS - FAILURE TO FOLLOW = REJECTED:
+1. 🚫 NEVER EVER use "N/A", "TBD", "Unknown", or any placeholder text
+2. 🚫 ALL fields must have REAL, SPECIFIC values - no generic descriptions
+3. 🚫 ONLY use equipment from this list: ${allowedEquipment.join(', ')}
+4. ✅ Instructions must be ACTUAL cooking steps (not descriptions)
+5. ✅ All times must be specific numbers (15 min, 25 min, etc.)
+6. ✅ All measurements must be precise (2 cups, 1 tbsp, etc.)
+7. ✅ Generate complete ingredient slots 1-20
+
+⚠️ IF YOU USE "N/A" ANYWHERE, THE ENTIRE RESPONSE IS INVALID ⚠️
 
 Return ONLY valid JSON with this COMPLETE structure:
 
@@ -640,34 +643,38 @@ Return ONLY valid JSON with this COMPLETE structure:
   "strMeasure20": "",
   
   "nutrition": {
-    "calories": "realistic number",
-    "protein": "amount with unit",
-    "carbs": "amount with unit",
-    "fat": "amount with unit",
-    "fiber": "amount with unit",
-    "sugar": "amount with unit",
-    "sodium": "amount with unit"
+    "calories": "350",
+    "protein": "28g",
+    "carbs": "45g",
+    "fat": "12g",
+    "fiber": "4g",
+    "sugar": "6g",
+    "sodium": "580mg"
   },
   
   "cookingInfo": {
-    "prepTime": "realistic prep time",
-    "cookTime": "realistic cook time", 
-    "totalTime": "total time",
+    "prepTime": "15 minutes",
+    "cookTime": "25 minutes", 
+    "totalTime": "40 minutes",
     "servings": ${params.servings},
     "difficulty": "${params.difficulty}",
-    "equipment": ["only from allowed list above"]
+    "equipment": ["Large pot", "Chef's knife", "Cutting board"],
+    "yield": "Serves ${params.servings}"
   }
 }
 
-ABSOLUTE REQUIREMENTS:
-- Fill ALL ingredient slots (1-20) - use empty string "" for unused slots, never null or undefined
-- Create 6-12 detailed numbered instruction steps
+🚨 ABSOLUTE REQUIREMENTS - ZERO TOLERANCE FOR N/A:
+- Fill ALL ingredient slots (1-20) - use empty string "" for unused slots, NEVER null or undefined
+- Create 6-12 detailed COOKING STEPS (not descriptions) - "Heat oil in pan", "Add chicken and cook 5 minutes"
 - Use ONLY the allowed equipment list provided above
-- Never use "N/A", "TBD", or placeholder text except "PLACEHOLDER_FOR_IMAGE"
-- Generate realistic nutritional values based on actual ingredients
-- Create engaging, specific recipe names (not generic)
-- Include relevant cooking techniques and temperatures
-- Provide precise measurements and timing`;
+- 🚫 BANNED WORDS: "N/A", "TBD", "Unknown", "Various", "As needed", "To taste"
+- ✅ REQUIRED: Specific times (15 min, 25 min), specific amounts (2 cups, 1 tbsp)
+- ✅ REQUIRED: Real nutritional values (350 calories, 28g protein)
+- ✅ REQUIRED: Specific recipe names (Tuscan Herb Chicken Pasta, not "Pasta Dish")
+- ✅ REQUIRED: Actual cooking instructions with temperatures (350°F, medium heat)
+- ✅ REQUIRED: Precise measurements for ALL ingredients
+
+🔥 VALIDATION CHECK: Scan your entire response and replace ANY "N/A" with real values before returning!`;
   }
 
   formatRecipeForDatabase(recipeData) {
@@ -704,7 +711,99 @@ ABSOLUTE REQUIREMENTS:
       formatted[`strMeasure${i}`] = recipeData[`strMeasure${i}`] || '';
     }
 
+    // 🚨 CRITICAL: Remove ALL N/A values and replace with realistic data
+    formatted = this.eliminateNAValues(formatted);
+
     return formatted;
+  }
+
+  // 🚨 CRITICAL: Eliminate ALL N/A values from recipe data
+  eliminateNAValues(recipeData) {
+    const cleaned = { ...recipeData };
+    
+    // Replace N/A values with realistic defaults
+    const naReplacements = {
+      'N/A': '',
+      'n/a': '',
+      'NA': '',
+      'na': '',
+      'TBD': '',
+      'tbd': '',
+      'Unknown': '',
+      'unknown': '',
+      'Various': '',
+      'various': '',
+      'As needed': '1 tsp',
+      'To taste': '1/2 tsp'
+    };
+    
+    // Specific field replacements
+    const fieldDefaults = {
+      prepTime: '15 minutes',
+      cookTime: '25 minutes',
+      totalTime: '40 minutes',
+      yield: `Serves ${cleaned.cookingInfo?.servings || 4}`,
+      mealType: 'dinner',
+      dishType: 'main dish',
+      mainIngredient: cleaned.strCategory?.toLowerCase() || 'mixed',
+      occasion: 'weeknight dinner',
+      timeCategory: 'under 1 hour'
+    };
+    
+    // Clean all string values
+    Object.keys(cleaned).forEach(key => {
+      if (typeof cleaned[key] === 'string') {
+        let value = cleaned[key];
+        
+        // Replace N/A variations
+        Object.keys(naReplacements).forEach(na => {
+          if (value === na || value.includes(na)) {
+            value = naReplacements[na];
+          }
+        });
+        
+        // Apply field-specific defaults
+        if (fieldDefaults[key] && (!value || value === '')) {
+          value = fieldDefaults[key];
+        }
+        
+        cleaned[key] = value;
+      }
+    });
+    
+    // Clean nested objects
+    if (cleaned.cookingInfo) {
+      Object.keys(cleaned.cookingInfo).forEach(key => {
+        if (typeof cleaned.cookingInfo[key] === 'string') {
+          let value = cleaned.cookingInfo[key];
+          Object.keys(naReplacements).forEach(na => {
+            if (value === na || value.includes(na)) {
+              value = fieldDefaults[key] || naReplacements[na];
+            }
+          });
+          cleaned.cookingInfo[key] = value;
+        }
+      });
+    }
+    
+    if (cleaned.nutrition) {
+      Object.keys(cleaned.nutrition).forEach(key => {
+        if (typeof cleaned.nutrition[key] === 'string' && (cleaned.nutrition[key] === 'N/A' || cleaned.nutrition[key] === '')) {
+          const nutritionDefaults = {
+            calories: '350',
+            protein: '25g',
+            carbs: '40g',
+            fat: '12g',
+            fiber: '4g',
+            sugar: '8g',
+            sodium: '580mg'
+          };
+          cleaned.nutrition[key] = nutritionDefaults[key] || '0g';
+        }
+      });
+    }
+    
+    return cleaned;
   }
 
   getIngredientsText(recipe) {

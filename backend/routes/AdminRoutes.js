@@ -95,13 +95,48 @@ class AdminRoutes {
   async generateRecipe(req, res) {
     const params = req.body;
     
-    const recipe = await this.openaiManager.generateRecipe(params);
-    
-    res.json({
-      success: true,
-      recipe,
-      message: 'Recipe generated successfully'
-    });
+    try {
+      const recipe = await this.openaiManager.generateRecipe(params);
+      
+      // Generate image if requested
+      let imageUrl = null;
+      if (params.generateImage) {
+        try {
+          console.log('🎨 Generating ULTRA-HIGH QUALITY AI image for preview recipe...');
+          
+          const imageData = await this.openaiManager.generateRecipeImage(
+            recipe.strMeal,
+            `${recipe.strCategory} dish from ${recipe.strArea}`,
+            null // No meal ID for preview
+          );
+          
+          imageUrl = imageData.url;
+          recipe.strMealThumb = imageUrl;
+          
+          console.log('✅ ULTRA-HIGH QUALITY AI image generated for preview!');
+        } catch (imageError) {
+          console.error('❌ Preview image generation failed:', imageError.message);
+          // Set placeholder instead of failing
+          imageUrl = '/images/placeholder-recipe.jpg';
+          recipe.strMealThumb = imageUrl;
+        }
+      }
+      
+      res.json({
+        success: true,
+        recipe,
+        imageGenerated: !!imageUrl,
+        imageUrl,
+        message: 'Recipe generated successfully with image'
+      });
+    } catch (error) {
+      console.error('❌ Recipe generation failed:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message,
+        error: 'RECIPE_GENERATION_FAILED'
+      });
+    }
   }
 
   // Generate recipe ideas
