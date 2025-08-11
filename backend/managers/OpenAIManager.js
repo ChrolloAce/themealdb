@@ -697,7 +697,7 @@ Return ONLY valid JSON with this COMPLETE structure:
       // Enhanced arrays for better data access
       instructionsArray: recipeData.instructionsArray || [],
       ingredientsArray: recipeData.ingredientsArray || [],
-      
+
       // Nutritional information
       nutrition: recipeData.nutrition || {},
       
@@ -712,9 +712,9 @@ Return ONLY valid JSON with this COMPLETE structure:
     }
 
     // 🚨 CRITICAL: Remove ALL N/A values and replace with realistic data
-    formatted = this.eliminateNAValues(formatted);
+    const cleanedFormatted = this.eliminateNAValues(formatted);
 
-    return formatted;
+    return cleanedFormatted;
   }
 
   // 🚨 CRITICAL: Eliminate ALL N/A values from recipe data
@@ -785,7 +785,7 @@ Return ONLY valid JSON with this COMPLETE structure:
         }
       });
     }
-    
+
     if (cleaned.nutrition) {
       Object.keys(cleaned.nutrition).forEach(key => {
         if (typeof cleaned.nutrition[key] === 'string' && (cleaned.nutrition[key] === 'N/A' || cleaned.nutrition[key] === '')) {
@@ -802,7 +802,7 @@ Return ONLY valid JSON with this COMPLETE structure:
         }
       });
     }
-    
+
     return cleaned;
   }
 
