@@ -216,45 +216,114 @@ Format as valid JSON array.`;
     }
   }
 
-  // Generate ultra-high quality recipe image using AI-enhanced prompts
+  // Generate ultra-high quality recipe image using Flux.1 schnell API (much cheaper than DALL-E!)
   async generateRecipeImage(recipeName, description = '', mealId = null) {
     try {
       console.log('🧠 AI is crafting professional photography prompt...');
       
-      // Step 1: Generate ultra-detailed photography prompt with AI
-      const enhancedPrompt = await this.generatePhotographyPrompt(recipeName, description);
+      // Step 1: Generate ultra-detailed photography prompt with AI (if OpenAI is available)
+      let enhancedPrompt;
+      if (process.env.OPENAI_API_KEY) {
+        enhancedPrompt = await this.generatePhotographyPrompt(recipeName, description);
+      } else {
+        enhancedPrompt = this.getFallbackPhotographyPrompt(recipeName, description);
+      }
       
-      console.log('🎨 Generating ULTRA-HIGH QUALITY image with DALL-E 3...');
+      console.log('🎨 Generating ULTRA-HIGH QUALITY image with Flux.1 schnell (super cheap!)...');
       console.log('📸 Enhanced Prompt:', enhancedPrompt.substring(0, 150) + '...');
       
-      // Step 2: Generate image with maximum quality settings
-      const response = await this.openai.images.generate({
-        model: this.imageModel,
-        prompt: enhancedPrompt,
-        n: 1,
-        size: '1024x1024',      // Maximum square resolution
-        quality: 'hd',          // HIGHEST quality setting
-        style: 'natural'        // Most photorealistic style
-      });
-
-      const dalleUrl = response.data[0].url;
-      console.log('✅ ULTRA-HIGH QUALITY image generated, downloading...');
+      // Step 2: Generate image with Flux.1 schnell API
+      const fluxUrl = await this.generateFluxImage(enhancedPrompt);
+      console.log('✅ ULTRA-HIGH QUALITY Flux image generated, downloading...');
 
       // Download and save the image
-      const localImageData = await this.downloadAndSaveImage(dalleUrl, recipeName, mealId);
+      const localImageData = await this.downloadAndSaveImage(fluxUrl, recipeName, mealId);
 
       return {
         url: localImageData.url,
         localPath: localImageData.localPath,
-        dalleUrl: dalleUrl,
+        fluxUrl: fluxUrl,
         prompt: enhancedPrompt,
         basicPrompt: `${recipeName} ${description}`,
-        quality: 'hd',
+        quality: 'high',
+        model: 'flux-schnell',
+        cost: '$0.00252',
         saved: true
       };
     } catch (error) {
       console.error('❌ Ultra-high quality image generation failed:', error.message);
-      throw new Error(`Image generation failed: ${error.message}`);
+      
+      // Fallback to placeholder
+      console.log('🎭 Using placeholder image as fallback...');
+      return {
+        url: '/images/placeholder-recipe.jpg',
+        localPath: null,
+        fluxUrl: null,
+        prompt: enhancedPrompt || `${recipeName} ${description}`,
+        basicPrompt: `${recipeName} ${description}`,
+        quality: 'placeholder',
+        model: 'fallback',
+        cost: '$0.00',
+        saved: false,
+        error: error.message
+      };
+    }
+  }
+
+  // Generate image using Flux.1 schnell API - much cheaper than DALL-E!
+  async generateFluxImage(prompt) {
+    try {
+      console.log('🎯 Using Flux.1 schnell API for image generation...');
+      
+      // Check if Flux API key is configured
+      const fluxApiKey = process.env.FLUX_API_KEY || process.env.FAL_KEY || process.env.REPLICATE_API_TOKEN;
+      if (!fluxApiKey) {
+        throw new Error('Flux API key not configured. Please set FLUX_API_KEY, FAL_KEY, or REPLICATE_API_TOKEN environment variable.');
+      }
+
+      // Prepare the API request (assuming fal.ai format based on endpoint structure)
+      const apiUrl = process.env.FLUX_API_URL || 'https://fal.run/fal-ai/flux/schnell';
+      
+      console.log('🔑 Flux API configured, generating image...');
+      console.log('📝 Using prompt length:', prompt.length, 'chars');
+
+      const response = await axios.post(apiUrl, {
+        prompt: prompt,
+        image_size: "square_hd", // 1024x1024 for $0.00252
+        num_inference_steps: 4,  // Schnell is optimized for 4 steps
+        num_images: 1,
+        enable_safety_checker: true
+      }, {
+        headers: {
+          'Authorization': `Key ${fluxApiKey}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 30000 // 30 second timeout
+      });
+
+      if (!response.data || !response.data.images || !response.data.images[0]) {
+        throw new Error('Invalid response from Flux API');
+      }
+
+      const imageUrl = response.data.images[0].url;
+      console.log('✅ Flux.1 schnell image generated successfully!');
+      console.log('💰 Cost: ~$0.00252 (vs DALL-E 3 ~$0.04)');
+      
+      return imageUrl;
+
+    } catch (error) {
+      console.error('❌ Flux image generation failed:', error.message);
+      
+      // If it's an API configuration issue, provide helpful guidance
+      if (error.message.includes('API key') || error.response?.status === 401) {
+        throw new Error('Flux API authentication failed. Please check your API key configuration.');
+      } else if (error.response?.status === 429) {
+        throw new Error('Flux API rate limit exceeded. Please try again in a moment.');
+      } else if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED') {
+        throw new Error('Network error: Unable to connect to Flux API. Please check your internet connection.');
+      } else {
+        throw new Error(`Flux image generation failed: ${error.message}`);
+      }
     }
   }
 
@@ -686,7 +755,7 @@ Return ONLY valid JSON with this COMPLETE structure:
       strDrinkAlternate: recipeData.strDrinkAlternate || '',
       strCategory: recipeData.strCategory || 'Miscellaneous',
       strArea: recipeData.strArea || 'Unknown',
-      strInstructions: recipeData.strInstructions || '',
+      strInstructions: recipeData.strInstructions || (recipeData.instructionsArray ? recipeData.instructionsArray.join('\n\n') : ''),
       strMealThumb: recipeData.strMealThumb || '',
       strTags: recipeData.strTags || '',
       strYoutube: recipeData.strYoutube || '',

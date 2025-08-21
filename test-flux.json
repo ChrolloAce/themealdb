@@ -1,0 +1,8 @@
+{
+  "recipeName": "Gourmet Mushroom Risotto",
+  "cuisine": "Italian", 
+  "category": "Main Dish",
+  "difficulty": "Medium",
+  "servings": 4,
+  "generateImage": true
+}
