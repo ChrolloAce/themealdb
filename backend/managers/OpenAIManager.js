@@ -900,18 +900,21 @@ Return ONLY valid JSON with this COMPLETE structure:
       recipeName = 'Test Recipe'
     } = params;
 
+    const instructionsArray = [
+      "Heat olive oil in a large pan over medium heat",
+      "Add garlic and onions, cook until fragrant (2-3 minutes)",
+      "Add main ingredients and cook until tender",
+      "Season with salt, pepper, and herbs",
+      "Simmer for 15-20 minutes until flavors combine",
+      "Serve hot and enjoy!"
+    ];
+
     const mockRecipe = {
       strMeal: recipeName || `Delicious ${cuisine} ${category}`,
       strCategory: category,
       strArea: cuisine,
-      strInstructions: [
-        "Heat olive oil in a large pan over medium heat",
-        "Add garlic and onions, cook until fragrant (2-3 minutes)",
-        "Add main ingredients and cook until tender",
-        "Season with salt, pepper, and herbs",
-        "Simmer for 15-20 minutes until flavors combine",
-        "Serve hot and enjoy!"
-      ],
+      strInstructions: instructionsArray.join('\n\n'),
+      instructionsArray: instructionsArray,
       strMealThumb: "/images/placeholder-recipe.jpg",
       strTags: `${cuisine},${category},${difficulty}`.toLowerCase(),
       strYoutube: "",
