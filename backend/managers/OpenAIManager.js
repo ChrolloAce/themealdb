@@ -15,11 +15,8 @@ class OpenAIManager {
   // Generate a complete recipe based on input parameters
   async generateRecipe(params = {}) {
     try {
-      // Check if OpenAI API key is configured
-      if (!process.env.OPENAI_API_KEY) {
-        console.log('⚠️ OpenAI API key not configured, generating mock recipe for testing...');
-        return this.generateMockRecipe(params);
-      }
+      // ALWAYS use real recipe generation, don't fallback to mock for N/A issues
+      console.log('🤖 Starting REAL AI recipe generation...');
 
       // Log API key status (masked for security)
       const apiKeyMasked = process.env.OPENAI_API_KEY ? 
@@ -40,33 +37,57 @@ class OpenAIManager {
         theme = ''
       } = params;
 
-      const prompt = this.buildRecipePrompt({
-        cuisine,
-        category,
-        mainIngredient,
-        difficulty,
-        cookingTime,
-        servings,
-        dietaryRestrictions,
-        theme
-      });
+      // Create simple, fast prompt - no complex instructions
+      const simplePrompt = `Generate a ${cuisine} ${category} recipe with ${mainIngredient || 'your choice of main ingredient'}. 
+      
+Make it ${difficulty} difficulty, serves ${servings}, takes about ${cookingTime}.
 
-      console.log('📝 Generated prompt for OpenAI (first 200 chars):', prompt.substring(0, 200) + '...');
+Return ONLY this JSON format with NO extra text:
+{
+  "strMeal": "Specific Recipe Name",
+  "strCategory": "${category}",
+  "strArea": "${cuisine}",
+  "strInstructions": "Step 1: Do this. Step 2: Do that. Step 3: Finish.",
+  "strMealThumb": "",
+  "strTags": "tag1,tag2,tag3",
+  "strIngredient1": "ingredient name",
+  "strMeasure1": "amount",
+  "strIngredient2": "ingredient name", 
+  "strMeasure2": "amount",
+  "strIngredient3": "ingredient name",
+  "strMeasure3": "amount",
+  "strIngredient4": "ingredient name",
+  "strMeasure4": "amount",
+  "strIngredient5": "ingredient name",
+  "strMeasure5": "amount",
+  "strIngredient6": "",
+  "strMeasure6": "",
+  "strIngredient7": "",
+  "strMeasure7": "",
+  "strIngredient8": "",
+  "strMeasure8": "",
+  "strIngredient9": "",
+  "strMeasure9": "",
+  "strIngredient10": "",
+  "strMeasure10": ""
+}`;
+
+      console.log('📝 Using simple fast prompt for quick generation...');
 
       const completion = await this.openai.chat.completions.create({
-        model: this.model,
+        model: 'gpt-3.5-turbo', // Use faster model
         messages: [
           {
             role: 'system',
-            content: 'You are a professional chef and recipe developer. Generate detailed, authentic recipes with precise measurements and clear instructions. CRITICAL: Return ONLY valid JSON format - no additional text, explanations, or markdown formatting. The response must be pure JSON that starts with { and ends with }.'
+            content: 'You are a chef. Generate recipes in JSON format only. No extra text.'
           },
           {
             role: 'user',
-            content: prompt + '\n\nIMPORTANT: Respond with ONLY the JSON object, no other text.'
+            content: simplePrompt
           }
         ],
-        temperature: 0.8,
-        max_tokens: 2000
+        temperature: 0.7,
+        max_tokens: 800 // Reduced for speed
       });
 
       console.log('✅ OpenAI API call successful, processing response...');
@@ -82,7 +103,9 @@ class OpenAIManager {
       }
       
       const recipeData = this.parseAIResponse(completion.choices[0].message.content);
-      const formattedRecipe = this.formatRecipeForDatabase(recipeData);
+      
+      // Simple formatting - fill missing slots immediately
+      const formattedRecipe = this.quickFormatRecipe(recipeData, params);
       console.log('✅ Recipe generation completed successfully');
       return formattedRecipe;
     } catch (error) {
@@ -216,51 +239,41 @@ Format as valid JSON array.`;
     }
   }
 
-  // Generate ultra-high quality recipe image using Flux.1 schnell API (much cheaper than DALL-E!)
+  // Generate recipe image - FAST and SIMPLE
   async generateRecipeImage(recipeName, description = '', mealId = null) {
     try {
-      console.log('🧠 AI is crafting professional photography prompt...');
+      console.log('🎨 Starting FAST image generation...');
       
-      // Step 1: Generate ultra-detailed photography prompt with AI (if OpenAI is available)
-      let enhancedPrompt;
-      if (process.env.OPENAI_API_KEY) {
-        enhancedPrompt = await this.generatePhotographyPrompt(recipeName, description);
-      } else {
-        enhancedPrompt = this.getFallbackPhotographyPrompt(recipeName, description);
-      }
+      // Simple prompt - no AI generation of prompts for speed
+      const simplePrompt = `Professional food photography of ${recipeName}, restaurant quality, well-lit, appetizing, high-resolution, centered on white plate`;
       
-      console.log('🎨 Generating ULTRA-HIGH QUALITY image with Flux.1 schnell (super cheap!)...');
-      console.log('📸 Enhanced Prompt:', enhancedPrompt.substring(0, 150) + '...');
+      console.log('📸 Using simple prompt for speed:', simplePrompt);
       
-      // Step 2: Generate image with Flux.1 schnell API
-      const fluxUrl = await this.generateFluxImage(enhancedPrompt);
-      console.log('✅ ULTRA-HIGH QUALITY Flux image generated, downloading...');
-
-      // Download and save the image
-      const localImageData = await this.downloadAndSaveImage(fluxUrl, recipeName, mealId);
+      // Generate image directly
+      const imageUrl = await this.generateFluxImage(simplePrompt);
+      console.log('✅ Image generated successfully!');
 
       return {
-        url: localImageData.url,
-        localPath: localImageData.localPath,
-        fluxUrl: fluxUrl,
-        prompt: enhancedPrompt,
-        basicPrompt: `${recipeName} ${description}`,
+        url: imageUrl, // Return URL directly - no download for speed
+        localPath: null,
+        fluxUrl: imageUrl,
+        prompt: simplePrompt,
+        basicPrompt: simplePrompt,
         quality: 'high',
-        model: 'flux-schnell',
-        cost: '$0.00252',
-        saved: true
+        model: 'getimg-ai',
+        cost: '$0.006',
+        saved: false // Skip download for speed
       };
     } catch (error) {
-      console.error('❌ Ultra-high quality image generation failed:', error.message);
+      console.error('❌ Image generation failed:', error.message);
       
-      // Fallback to placeholder
-      console.log('🎭 Using placeholder image as fallback...');
+      // Return placeholder immediately
       return {
         url: '/images/placeholder-recipe.jpg',
         localPath: null,
         fluxUrl: null,
-        prompt: enhancedPrompt || `${recipeName} ${description}`,
-        basicPrompt: `${recipeName} ${description}`,
+        prompt: `${recipeName} food photo`,
+        basicPrompt: `${recipeName} food photo`,
         quality: 'placeholder',
         model: 'fallback',
         cost: '$0.00',
@@ -868,6 +881,29 @@ Return ONLY valid JSON with this COMPLETE structure:
 - ✅ REQUIRED: Precise measurements for ALL ingredients
 
 🔥 VALIDATION CHECK: Scan your entire response and replace ANY "N/A" with real values before returning!`;
+  }
+
+  // FAST recipe formatting - no N/A bullshit
+  quickFormatRecipe(recipeData, params) {
+    const recipe = {
+      strMeal: recipeData.strMeal || `Delicious ${params.cuisine} ${params.category}`,
+      strCategory: recipeData.strCategory || params.category || 'Main Dish',
+      strArea: recipeData.strArea || params.cuisine || 'International', 
+      strInstructions: recipeData.strInstructions || 'Mix ingredients and cook until done.',
+      strMealThumb: recipeData.strMealThumb || '',
+      strTags: recipeData.strTags || `${params.cuisine},${params.category}`.toLowerCase(),
+      strYoutube: '',
+      strSource: 'AI Generated',
+      dateModified: new Date().toISOString()
+    };
+
+    // Fill ingredient slots - no empty N/A shit
+    for (let i = 1; i <= 20; i++) {
+      recipe[`strIngredient${i}`] = recipeData[`strIngredient${i}`] || '';
+      recipe[`strMeasure${i}`] = recipeData[`strMeasure${i}`] || '';
+    }
+
+    return recipe;
   }
 
   formatRecipeForDatabase(recipeData) {
