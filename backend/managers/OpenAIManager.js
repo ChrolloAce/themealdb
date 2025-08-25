@@ -334,30 +334,49 @@ Format as valid JSON array.`;
   // GetImg.AI - FLUX.1 schnell
   async generateGetImgAIImage(prompt) {
     console.log('🎨 Using GetImg.AI for FLUX.1 schnell...');
+    console.log('🔑 API Key status:', process.env.GETIMG_API_KEY ? 'SET' : 'NOT SET');
     
-    const response = await axios.post('https://api.getimg.ai/v1/flux-schnell/text-to-image', {
-      prompt: prompt,
-      width: 1024,
-      height: 1024,
-      steps: 4,
-      output_format: "jpeg",
-      response_format: "url"
-    }, {
-      headers: {
-        'Authorization': `Bearer ${process.env.GETIMG_API_KEY}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      timeout: 60000 // 60 second timeout
-    });
+    try {
+      const response = await axios.post('https://api.getimg.ai/v1/flux-schnell/text-to-image', {
+        prompt: prompt,
+        width: 1024,
+        height: 1024,
+        steps: 4,
+        output_format: "jpeg",
+        response_format: "url"
+      }, {
+        headers: {
+          'Authorization': `Bearer ${process.env.GETIMG_API_KEY}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        timeout: 60000 // 60 second timeout
+      });
 
-    if (!response.data?.url) {
-      throw new Error('Invalid response from GetImg.AI');
+      if (!response.data?.url) {
+        throw new Error('Invalid response from GetImg.AI - no URL returned');
+      }
+
+      console.log(`💰 Cost: $${response.data.cost || 'Unknown'}`);
+      console.log(`🌱 Seed: ${response.data.seed || 'Unknown'}`);
+      return response.data.url;
+      
+    } catch (error) {
+      console.error('❌ GetImg.AI Error Details:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        message: error.message
+      });
+      
+      if (error.response?.status === 402) {
+        throw new Error('GetImg.AI: No credits available. Please add credits to your account at https://dashboard.getimg.ai/');
+      } else if (error.response?.status === 401) {
+        throw new Error('GetImg.AI: Invalid API key. Please check your GETIMG_API_KEY environment variable.');
+      } else {
+        throw new Error(`GetImg.AI API error: ${error.message}`);
+      }
     }
-
-    console.log(`💰 Cost: $${response.data.cost || 'Unknown'}`);
-    console.log(`🌱 Seed: ${response.data.seed || 'Unknown'}`);
-    return response.data.url;
   }
 
   // Together AI - FREE Flux.1 schnell
