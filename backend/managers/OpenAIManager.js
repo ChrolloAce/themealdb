@@ -285,6 +285,15 @@ Format as valid JSON array.`;
 
   // Generate image using multiple APIs with fallbacks
   async generateFluxImage(prompt) {
+    console.log('🎯 Starting generateFluxImage with prompt:', prompt.substring(0, 100) + '...');
+    console.log('🔑 Available API keys:', {
+      getimg: !!process.env.GETIMG_API_KEY,
+      together: !!process.env.TOGETHER_API_KEY,
+      fal: !!process.env.FAL_KEY,
+      openai: !!process.env.OPENAI_API_KEY,
+      replicate: !!process.env.REPLICATE_API_TOKEN
+    });
+    
     // Try multiple image generation APIs in order of preference
     const apis = [
       {

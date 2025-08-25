@@ -98,9 +98,11 @@ class AdminRoutes {
     try {
       const recipe = await this.openaiManager.generateRecipe(params);
       
-      // Generate image if requested
+      // Generate image if requested (FORCE FOR DEBUGGING)
       let imageUrl = null;
-      if (params.generateImage) {
+      console.log('🔍 Image generation params:', { generateImage: params.generateImage, hasKey: !!process.env.GETIMG_API_KEY });
+      
+      if (params.generateImage || true) { // ALWAYS TRY FOR DEBUG
         try {
           console.log('🎨 Generating ULTRA-HIGH QUALITY AI image for preview recipe...');
           
