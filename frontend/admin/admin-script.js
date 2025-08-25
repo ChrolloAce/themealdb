@@ -731,13 +731,14 @@ class AdminPanel {
       
       recipesList.innerHTML = data.recipes.map(recipe => `
         <div class="recipe-item">
+          <div class="recipe-header">
+            ${recipe.strMealThumb ? `<img src="${recipe.strMealThumb}" alt="${recipe.strMeal}" class="recipe-thumb">` : '<div class="recipe-thumb-placeholder">📸</div>'}
+            <h4>${recipe.strMeal || 'Unnamed Recipe'}</h4>
+          </div>
           <div class="recipe-info">
-            <div class="recipe-header">
-              <h4>${recipe.strMeal || 'Unnamed Recipe'}</h4>
-              ${recipe.strMealThumb ? `<img src="${recipe.strMealThumb}" alt="${recipe.strMeal}" class="recipe-thumb">` : ''}
-            </div>
-            <p>${recipe.strCategory || 'No Category'} • ${recipe.strArea || 'No Area'} • ${recipe.dateModified ? new Date(recipe.dateModified).toLocaleDateString() : 'No Date'}</p>
-            <p class="recipe-preview">${recipe.strInstructions ? recipe.strInstructions.substring(0, 100) + '...' : 'No instructions'}</p>
+            <p>${recipe.strCategory || 'No Category'} • ${recipe.strArea || 'No Area'}</p>
+            <p class="recipe-date">${recipe.dateModified ? new Date(recipe.dateModified).toLocaleDateString() : 'No Date'}</p>
+            <p class="recipe-preview">${recipe.strInstructions ? recipe.strInstructions.substring(0, 120) + '...' : 'No instructions'}</p>
           </div>
           <div class="recipe-actions">
             <button class="btn btn-outline edit-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}">

@@ -44,7 +44,6 @@
             <button class="nav-btn active" data-section="dashboard">Dashboard</button>
             <button class="nav-btn" data-section="ai-generate">Generate Recipes</button>
             <button class="nav-btn" data-section="ai-ideas">Recipe Ideas</button>
-            <button class="nav-btn" data-section="batch-generate">Batch Generate</button>
             <button class="nav-btn" data-section="manage-recipes">Manage Recipes</button>
         </nav>
 
@@ -80,89 +79,108 @@
 
             <!-- AI Generate Section -->
             <section id="ai-generate" class="admin-section">
-                <h2>🤖 Generate Recipe with AI</h2>
-                <form id="generateForm" class="generate-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Cuisine</label>
-                            <select id="cuisine">
-                                <option value="any">Any Cuisine</option>
-                                <option value="Italian">Italian</option>
-                                <option value="Mexican">Mexican</option>
-                                <option value="Chinese">Chinese</option>
-                                <option value="Japanese">Japanese</option>
-                                <option value="Indian">Indian</option>
-                                <option value="French">French</option>
-                                <option value="American">American</option>
-                                <option value="Mediterranean">Mediterranean</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Category</label>
-                            <select id="category">
-                                <option value="any">Any Category</option>
-                                <option value="Beef">Beef</option>
-                                <option value="Chicken">Chicken</option>
-                                <option value="Seafood">Seafood</option>
-                                <option value="Vegetarian">Vegetarian</option>
-                                <option value="Vegan">Vegan</option>
-                                <option value="Dessert">Dessert</option>
-                                <option value="Pasta">Pasta</option>
-                            </select>
-                        </div>
+                <h2>🤖 AI Recipe Generator</h2>
+                
+                <!-- Quick Generation Buttons -->
+                <div class="quick-generate-section">
+                    <h3>🚀 Quick Generate</h3>
+                    <div class="quick-buttons">
+                        <button class="btn btn-primary quick-gen-btn" data-preset="random">🎲 Random Recipe</button>
+                        <button class="btn btn-primary quick-gen-btn" data-preset="healthy">🥗 Healthy Recipe</button>
+                        <button class="btn btn-primary quick-gen-btn" data-preset="comfort">🍲 Comfort Food</button>
+                        <button class="btn btn-primary quick-gen-btn" data-preset="dessert">🍰 Dessert</button>
                     </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Main Ingredient</label>
-                            <input type="text" id="mainIngredient" placeholder="e.g., chicken breast, salmon">
+                </div>
+
+                <!-- Custom Generation Form -->
+                <div class="custom-generate-section">
+                    <h3>⚙️ Custom Generation</h3>
+                    <form id="generateForm" class="generate-form-compact">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Cuisine</label>
+                                <select id="cuisine">
+                                    <option value="any">Any</option>
+                                    <option value="Italian">Italian</option>
+                                    <option value="Mexican">Mexican</option>
+                                    <option value="Chinese">Chinese</option>
+                                    <option value="Japanese">Japanese</option>
+                                    <option value="Indian">Indian</option>
+                                    <option value="French">French</option>
+                                    <option value="American">American</option>
+                                    <option value="Mediterranean">Mediterranean</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select id="category">
+                                    <option value="any">Any</option>
+                                    <option value="Beef">Beef</option>
+                                    <option value="Chicken">Chicken</option>
+                                    <option value="Seafood">Seafood</option>
+                                    <option value="Vegetarian">Vegetarian</option>
+                                    <option value="Vegan">Vegan</option>
+                                    <option value="Dessert">Dessert</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Difficulty</label>
+                                <select id="difficulty">
+                                    <option value="any">Any</option>
+                                    <option value="Easy">Easy</option>
+                                    <option value="Medium" selected>Medium</option>
+                                    <option value="Hard">Hard</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Servings</label>
+                                <input type="number" id="servings" value="4" min="1" max="12">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Difficulty</label>
-                            <select id="difficulty">
-                                <option value="easy">Easy</option>
-                                <option value="medium" selected>Medium</option>
-                                <option value="hard">Hard</option>
-                            </select>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Main Ingredient (Optional)</label>
+                                <input type="text" id="mainIngredient" placeholder="e.g., chicken, salmon, pasta">
+                            </div>
+                            <div class="form-group">
+                                <label>Theme (Optional)</label>
+                                <input type="text" id="theme" placeholder="e.g., healthy, comfort food, spicy">
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Cooking Time</label>
-                            <input type="text" id="cookingTime" placeholder="e.g., 30 minutes" value="30-45 minutes">
+
+                        <!-- Batch Generation Options -->
+                        <div class="batch-options">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Generate Multiple</label>
+                                    <select id="batchCount">
+                                        <option value="1">1 Recipe</option>
+                                        <option value="3">3 Recipes</option>
+                                        <option value="5">5 Recipes</option>
+                                        <option value="10">10 Recipes</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="checkbox-label-simple">
+                                        <input type="checkbox" id="randomizeSettings"> 🎲 Randomize Each Recipe
+                                    </label>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Servings</label>
-                            <input type="number" id="servings" value="4" min="1" max="12">
+                        
+                        <div class="generation-options">
+                            <label class="checkbox-label-simple">
+                                <input type="checkbox" id="generateImage" checked> 🎨 Generate Images
+                            </label>
                         </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Theme/Style</label>
-                        <input type="text" id="theme" placeholder="e.g., comfort food, healthy, gourmet">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Dietary Restrictions</label>
-                        <div class="checkbox-group">
-                            <label><input type="checkbox" value="gluten-free"> Gluten-Free</label>
-                            <label><input type="checkbox" value="dairy-free"> Dairy-Free</label>
-                            <label><input type="checkbox" value="nut-free"> Nut-Free</label>
-                            <label><input type="checkbox" value="low-carb"> Low-Carb</label>
+                        
+                        <div class="form-actions-compact">
+                            <button type="button" id="previewBtn" class="btn btn-outline">Preview</button>
+                            <button type="submit" class="btn btn-primary btn-large">🚀 Generate Recipe(s)</button>
                         </div>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <label class="checkbox-label" style="background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: inline-block;">
-                            <input type="checkbox" id="generateImage"> 🎨 Generate ULTRA-HIGH QUALITY AI Image (HD + AI-Enhanced Prompts)
-                        </label>
-                        <div class="button-group">
-                            <button type="button" id="previewBtn" class="btn btn-outline">Preview Recipe</button>
-                            <button type="submit" class="btn btn-primary">Generate & Save</button>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
                 
                 <div id="generateResult" class="result-section"></div>
             </section>
@@ -207,35 +225,7 @@
                 <div id="ideasResult" class="ideas-grid"></div>
             </section>
 
-            <!-- Batch Generate Section -->
-            <section id="batch-generate" class="admin-section">
-                <h2>🔥 Batch Recipe Generation</h2>
-                <div class="batch-templates">
-                    <h3>Quick Templates</h3>
-                    <div class="template-buttons">
-                        <button class="btn btn-outline" data-template="seasonal">Seasonal Collection (5 recipes)</button>
-                        <button class="btn btn-outline" data-template="healthy">Healthy Options (8 recipes)</button>
-                        <button class="btn btn-outline" data-template="international">International Mix (10 recipes)</button>
-                        <button class="btn btn-outline" data-template="desserts">Dessert Collection (6 recipes)</button>
-                    </div>
-                </div>
-                
-                <form id="batchForm" class="batch-form">
-                    <div class="form-group">
-                        <label>Custom Batch Configuration</label>
-                        <textarea id="batchConfig" rows="10" placeholder="Enter JSON configuration for batch generation..."></textarea>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <label class="checkbox-label" style="background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 0.5rem 1rem; border-radius: 8px; margin-bottom: 1rem; display: inline-block;">
-                            <input type="checkbox" id="batchGenerateImages"> 🎨 Generate ULTRA-HD AI Images for All Recipes
-                        </label>
-                        <button type="submit" class="btn btn-primary">Start Batch Generation</button>
-                    </div>
-                </form>
-                
-                <div id="batchResult" class="batch-progress"></div>
-            </section>
+
 
             <!-- Manage Recipes Section -->
             <section id="manage-recipes" class="admin-section">
