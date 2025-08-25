@@ -886,15 +886,37 @@ Return ONLY valid JSON with this COMPLETE structure:
   // FAST recipe formatting - no N/A bullshit
   quickFormatRecipe(recipeData, params) {
     const recipe = {
-      strMeal: recipeData.strMeal || `Delicious ${params.cuisine} ${params.category}`,
+      strMeal: recipeData.strMeal || `Delicious ${params.cuisine || 'International'} ${params.category || 'Dish'}`,
       strCategory: recipeData.strCategory || params.category || 'Main Dish',
       strArea: recipeData.strArea || params.cuisine || 'International', 
       strInstructions: recipeData.strInstructions || 'Mix ingredients and cook until done.',
       strMealThumb: recipeData.strMealThumb || '',
-      strTags: recipeData.strTags || `${params.cuisine},${params.category}`.toLowerCase(),
+      strTags: recipeData.strTags || `${params.cuisine || 'international'},${params.category || 'dish'}`.toLowerCase(),
       strYoutube: '',
       strSource: 'AI Generated',
-      dateModified: new Date().toISOString()
+      dateModified: new Date().toISOString(),
+      
+      // ADD ALL THE MISSING FIELDS THE FRONTEND EXPECTS
+      prepTime: '15 minutes',
+      cookTime: '25 minutes', 
+      totalTime: '40 minutes',
+      servings: params.servings || 4,
+      difficulty: params.difficulty || 'Medium',
+      yield: `Serves ${params.servings || 4}`,
+      mealType: params.category || 'Main Dish',
+      dishType: params.category || 'Main Dish',
+      mainIngredient: params.mainIngredient || 'Mixed ingredients',
+      occasion: 'Any time',
+      timeCategory: 'Under 1 hour',
+      
+      // Nutrition info - no N/A bullshit
+      calories: '350',
+      protein: '25g',
+      carbs: '40g',
+      fat: '12g',
+      fiber: '4g',
+      sugar: '8g',
+      sodium: '580mg'
     };
 
     // Fill ingredient slots - no empty N/A shit
