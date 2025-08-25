@@ -61,6 +61,13 @@ class AdminPanel {
     // Recipe management
     document.getElementById('refreshRecipes').addEventListener('click', this.loadRecipes.bind(this));
     
+    // Quick generation buttons
+    document.querySelectorAll('.quick-gen-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        this.handleQuickGenerate(e.target.dataset.preset);
+      });
+    });
+    
     // Edit modal listeners
     document.getElementById('closeEditModal').addEventListener('click', this.closeEditModal.bind(this));
     document.getElementById('cancelEditBtn').addEventListener('click', this.closeEditModal.bind(this));
@@ -211,43 +218,114 @@ class AdminPanel {
     }
   }
 
-  // Recipe Generation
+  // Recipe Generation with Batch Support
   async handleGenerateRecipe(e) {
     e.preventDefault();
     
     const params = this.getGenerateFormData();
-    const saveRecipe = true;
+    const batchCount = params.batchCount || 1;
     
-    this.showLoading(this.generateResult, '🧠 AI is crafting professional recipe... 🎨 Creating ultra-detailed photography prompt... 📸 Generating ULTRA-HIGH QUALITY image with DALL-E 3...');
-    
-    try {
-      const endpoint = saveRecipe ? '/admin/recipes/create-with-ai' : '/admin/ai/generate-recipe';
+    if (batchCount > 1) {
+      // Handle batch generation
+      this.handleBatchGenerateFromForm(params);
+    } else {
+      // Handle single recipe generation
+      this.showLoading(this.generateResult, '🚀 Generating recipe with AI...');
       
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.token}`
-        },
-        body: JSON.stringify(params)
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        this.displayRecipeResult(data.recipe, data.imageUrl, false, data.imageQuality);
-        const message = data.imageQuality === 'ultra-hd' ? 
-          '🎉 Recipe generated with ULTRA-HIGH QUALITY photorealistic AI image!' : 
-          'Recipe generated and saved successfully!';
-        this.showSuccess(this.generateResult, message);
-      } else {
-        console.error('❌ Recipe generation failed:', data);
-        this.showError(this.generateResult, data.message || 'Generation failed');
+      try {
+        const response = await fetch('/admin/recipes/create-with-ai', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.token}`
+          },
+          body: JSON.stringify(params)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          this.displayRecipeResult(data.recipe, data.imageUrl);
+          this.showSuccess(this.generateResult, '🎉 Recipe generated successfully!');
+        } else {
+          this.showError(this.generateResult, data.message || 'Generation failed');
+        }
+      } catch (error) {
+        this.showError(this.generateResult, `Network error: ${error.message}`);
       }
-    } catch (error) {
-      console.error('❌ Network/Parse error:', error);
-      this.showError(this.generateResult, `Network error: ${error.message}`);
     }
+  }
+
+  // Handle batch generation from main form
+  async handleBatchGenerateFromForm(baseParams) {
+    const batchCount = baseParams.batchCount;
+    const randomize = baseParams.randomizeSettings;
+    
+    this.showLoading(this.generateResult, `🔥 Generating ${batchCount} recipes...`);
+    
+    const recipes = [];
+    const cuisines = ['Italian', 'Mexican', 'Chinese', 'Japanese', 'Indian', 'French', 'American', 'Mediterranean'];
+    const categories = ['Beef', 'Chicken', 'Seafood', 'Vegetarian', 'Vegan', 'Dessert'];
+    const difficulties = ['Easy', 'Medium', 'Hard'];
+    
+    for (let i = 0; i < batchCount; i++) {
+      let recipeParams = { ...baseParams };
+      
+      if (randomize) {
+        recipeParams.cuisine = cuisines[Math.floor(Math.random() * cuisines.length)];
+        recipeParams.category = categories[Math.floor(Math.random() * categories.length)];
+        recipeParams.difficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
+        recipeParams.theme = `delicious ${recipeParams.cuisine.toLowerCase()} ${recipeParams.category.toLowerCase()}`;
+      }
+      
+      try {
+        const response = await fetch('/admin/recipes/create-with-ai', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.token}`
+          },
+          body: JSON.stringify(recipeParams)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          recipes.push(data.recipe);
+        }
+        
+        // Update loading message
+        this.showLoading(this.generateResult, `🔥 Generated ${i + 1}/${batchCount} recipes...`);
+        
+      } catch (error) {
+        console.error(`Failed to generate recipe ${i + 1}:`, error);
+      }
+    }
+    
+    // Display batch results
+    this.displayBatchResults(recipes);
+    this.showSuccess(this.generateResult, `🎉 Generated ${recipes.length}/${batchCount} recipes successfully!`);
+  }
+
+  // Display batch generation results
+  displayBatchResults(recipes) {
+    const resultsHTML = recipes.map(recipe => `
+      <div class="batch-recipe-card">
+        <h4>${recipe.strMeal}</h4>
+        <p><strong>${recipe.strCategory}</strong> • ${recipe.strArea}</p>
+        ${recipe.strMealThumb ? `<img src="${recipe.strMealThumb}" alt="${recipe.strMeal}" class="batch-recipe-thumb">` : ''}
+        <p class="batch-recipe-preview">${recipe.strInstructions ? recipe.strInstructions.substring(0, 100) + '...' : ''}</p>
+      </div>
+    `).join('');
+    
+    this.generateResult.innerHTML = `
+      <div class="batch-results">
+        <h3>🎉 Batch Generation Complete</h3>
+        <div class="batch-recipes-grid">
+          ${resultsHTML}
+        </div>
+      </div>
+    `;
   }
 
   async previewRecipe(e) {
@@ -279,21 +357,84 @@ class AdminPanel {
     }
   }
 
+  // Quick generation with presets
+  async handleQuickGenerate(preset) {
+    const presets = {
+      random: {
+        cuisine: 'any',
+        category: 'any',
+        difficulty: 'any',
+        mainIngredient: '',
+        theme: 'surprise me with something delicious',
+        generateImage: true
+      },
+      healthy: {
+        cuisine: 'Mediterranean',
+        category: 'Vegetarian',
+        difficulty: 'Medium',
+        mainIngredient: '',
+        theme: 'healthy and nutritious',
+        generateImage: true
+      },
+      comfort: {
+        cuisine: 'American',
+        category: 'any',
+        difficulty: 'Easy',
+        mainIngredient: '',
+        theme: 'comfort food',
+        generateImage: true
+      },
+      dessert: {
+        cuisine: 'any',
+        category: 'Dessert',
+        difficulty: 'Medium',
+        mainIngredient: '',
+        theme: 'delicious dessert',
+        generateImage: true
+      }
+    };
+
+    const params = presets[preset];
+    params.servings = 4;
+    params.cookingTime = '30 minutes';
+
+    this.showLoading(this.generateResult, `🚀 Generating ${preset} recipe...`);
+
+    try {
+      const response = await fetch('/admin/recipes/create-with-ai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.token}`
+        },
+        body: JSON.stringify(params)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        this.displayRecipeResult(data.recipe, data.imageUrl);
+        this.showSuccess(this.generateResult, `🎉 ${preset.charAt(0).toUpperCase() + preset.slice(1)} recipe generated!`);
+      } else {
+        this.showError(this.generateResult, data.message || 'Generation failed');
+      }
+    } catch (error) {
+      this.showError(this.generateResult, `Failed to generate ${preset} recipe`);
+    }
+  }
+
   getGenerateFormData() {
-    const dietaryRestrictions = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
-      .map(cb => cb.value)
-      .filter(value => !['generateImage'].includes(value));
-    
     return {
       cuisine: document.getElementById('cuisine').value,
       category: document.getElementById('category').value,
       mainIngredient: document.getElementById('mainIngredient').value,
       difficulty: document.getElementById('difficulty').value,
-      cookingTime: document.getElementById('cookingTime').value,
+      cookingTime: '30 minutes', // Fixed for simplicity
       servings: parseInt(document.getElementById('servings').value),
       theme: document.getElementById('theme').value,
-      dietaryRestrictions,
-      generateImage: document.getElementById('generateImage').checked
+      generateImage: document.getElementById('generateImage').checked,
+      batchCount: parseInt(document.getElementById('batchCount').value),
+      randomizeSettings: document.getElementById('randomizeSettings').checked
     };
   }
 

@@ -870,6 +870,57 @@ body {
     }
 }
 
+/* Batch Results Display */
+.batch-results {
+    margin-top: 2rem;
+}
+
+.batch-results h3 {
+    color: #1f2937;
+    margin-bottom: 1.5rem;
+}
+
+.batch-recipes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.batch-recipe-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.batch-recipe-card h4 {
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.batch-recipe-card p {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.batch-recipe-thumb {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin: 0.5rem 0;
+}
+
+.batch-recipe-preview {
+    font-style: italic;
+    color: #9ca3af;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
 /* Old recipe actions styles - replaced by new grid layout styles above */
 
 /* Empty State */
