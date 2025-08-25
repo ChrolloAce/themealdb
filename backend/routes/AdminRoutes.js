@@ -98,11 +98,11 @@ class AdminRoutes {
     try {
       const recipe = await this.openaiManager.generateRecipe(params);
       
-      // Generate image if requested (FORCE FOR DEBUGGING)
+      // Generate image if requested
       let imageUrl = null;
       console.log('🔍 Image generation params:', { generateImage: params.generateImage, hasKey: !!process.env.GETIMG_API_KEY });
       
-      if (params.generateImage || true) { // ALWAYS TRY FOR DEBUG
+      if (params.generateImage) {
         try {
           console.log('🎨 Generating ULTRA-HIGH QUALITY AI image for preview recipe...');
           
@@ -247,45 +247,34 @@ class AdminRoutes {
       // Generate recipe with AI
       const generatedRecipe = await this.openaiManager.generateRecipe(aiParams);
       
-      // Save to database
-      const savedRecipe = await this.recipeManager.create(generatedRecipe);
-      
-      // Generate image if requested
+      // Generate image BEFORE saving to avoid update issues
       let imageUrl = null;
       if (req.body.generateImage) {
         try {
-          console.log('🎨 Generating ULTRA-HIGH QUALITY AI image for new recipe...');
+          console.log('🎨 Generating AI image before saving recipe...');
           
           const imageData = await this.openaiManager.generateRecipeImage(
             generatedRecipe.strMeal,
             `${generatedRecipe.strCategory} dish from ${generatedRecipe.strArea}`,
-            savedRecipe.meals[0].idMeal
+            null // No meal ID yet
           );
           
-          // Use the local URL that we saved
           imageUrl = imageData.url;
+          generatedRecipe.strMealThumb = imageUrl; // Set image URL in recipe before saving
           
-          // Update recipe with local image URL - use Firebase or SQLite method
-          if (this.db.updateRecipe) {
-            await this.db.updateRecipe(savedRecipe.meals[0].idMeal || savedRecipe.meals[0].id, {
-              strMealThumb: imageUrl
-            });
-          } else {
-            await this.recipeManager.update(savedRecipe.meals[0].idMeal, {
-              strMealThumb: imageUrl
-            });
-          }
-          
-          console.log('✅ ULTRA-HIGH QUALITY AI image generated and saved!');
+          console.log('✅ AI image generated successfully!');
         } catch (imageError) {
           console.error('❌ Image generation failed:', imageError.message);
           console.error('❌ Image generation stack:', imageError.stack);
           
-          // Don't fail the entire request - just log the error
-          // Set a placeholder image URL instead of leaving it null
+          // Set placeholder image URL
           imageUrl = '/images/placeholder-recipe.jpg';
+          generatedRecipe.strMealThumb = imageUrl;
         }
       }
+      
+      // Save recipe to database (with image URL already included)
+      const savedRecipe = await this.recipeManager.create(generatedRecipe);
       
       res.json({
         success: true,

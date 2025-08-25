@@ -47,6 +47,9 @@ class FoodDBServer {
   }
 
   setupMiddleware() {
+    // Trust proxy for Vercel deployment
+    this.app.set('trust proxy', 1);
+    
     // Security middleware with CSP fix
     this.app.use(helmet({
       contentSecurityPolicy: {
