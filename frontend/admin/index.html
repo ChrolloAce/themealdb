@@ -83,102 +83,36 @@
                 <h2>🤖 AI Recipe Generator</h2>
                 
                 <!-- Quick Generation Buttons -->
-                <div class="quick-generate-section">
-                    <h3>🚀 Quick Generate</h3>
-                    <div class="quick-buttons">
-                        <button class="btn btn-primary quick-gen-btn" data-preset="random">🎲 Random Recipe</button>
-                        <button class="btn btn-primary quick-gen-btn" data-preset="healthy">🥗 Healthy Recipe</button>
-                        <button class="btn btn-primary quick-gen-btn" data-preset="comfort">🍲 Comfort Food</button>
-                        <button class="btn btn-primary quick-gen-btn" data-preset="dessert">🍰 Dessert</button>
-                    </div>
-                </div>
-
-                <!-- Custom Generation Form -->
-                <div class="custom-generate-section">
-                    <h3>⚙️ Custom Generation</h3>
-                    <form id="generateForm" class="generate-form-compact">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Cuisine</label>
-                                <select id="cuisine">
-                                    <option value="any">Any</option>
-                                    <option value="Italian">Italian</option>
-                                    <option value="Mexican">Mexican</option>
-                                    <option value="Chinese">Chinese</option>
-                                    <option value="Japanese">Japanese</option>
-                                    <option value="Indian">Indian</option>
-                                    <option value="French">French</option>
-                                    <option value="American">American</option>
-                                    <option value="Mediterranean">Mediterranean</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Category</label>
-                                <select id="category">
-                                    <option value="any">Any</option>
-                                    <option value="Beef">Beef</option>
-                                    <option value="Chicken">Chicken</option>
-                                    <option value="Seafood">Seafood</option>
-                                    <option value="Vegetarian">Vegetarian</option>
-                                    <option value="Vegan">Vegan</option>
-                                    <option value="Dessert">Dessert</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Difficulty</label>
-                                <select id="difficulty">
-                                    <option value="any">Any</option>
-                                    <option value="Easy">Easy</option>
-                                    <option value="Medium" selected>Medium</option>
-                                    <option value="Hard">Hard</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Servings</label>
-                                <input type="number" id="servings" value="4" min="1" max="12">
-                            </div>
-                        </div>
+                <!-- Simplified Generation -->
+                <div class="simple-generate-section">
+                    <h3>🤖 AI Recipe Generator</h3>
+                    <form id="generateForm" class="generate-form-simple">
                         
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Main Ingredient (Optional)</label>
-                                <input type="text" id="mainIngredient" placeholder="e.g., chicken, salmon, pasta">
-                            </div>
-                            <div class="form-group">
-                                <label>Theme (Optional)</label>
-                                <input type="text" id="theme" placeholder="e.g., healthy, comfort food, spicy">
-                            </div>
-                        </div>
-
-                        <!-- Batch Generation Options -->
-                        <div class="batch-options">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Generate Multiple</label>
-                                    <select id="batchCount">
-                                        <option value="1">1 Recipe</option>
-                                        <option value="3">3 Recipes</option>
-                                        <option value="5">5 Recipes</option>
-                                        <option value="10">10 Recipes</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label class="checkbox-label-simple">
-                                        <input type="checkbox" id="randomizeSettings"> 🎲 Randomize Each Recipe
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="generation-options">
+                        <!-- Random or Custom Toggle -->
+                        <div class="generation-mode">
                             <label class="checkbox-label-simple">
-                                <input type="checkbox" id="generateImage" checked> 🎨 Generate Images
+                                <input type="checkbox" id="randomMode" checked> 🎲 Random Recipe
+                            </label>
+                            <p class="mode-description">Uncheck to use custom prompt</p>
+                        </div>
+                        
+                        <!-- Custom Prompt Field (hidden when random is checked) -->
+                        <div id="customPromptSection" class="custom-prompt-section" style="display: none;">
+                            <div class="form-group">
+                                <label>Custom Prompt</label>
+                                <textarea id="customPrompt" rows="4" placeholder="Describe the recipe you want...&#10;&#10;Examples:&#10;• Make me a spicy Italian pasta with seafood&#10;• Create a healthy vegan dessert with chocolate&#10;• I want a comfort food recipe using chicken and potatoes"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Simple Options -->
+                        <div class="simple-options">
+                            <label class="checkbox-label-simple">
+                                <input type="checkbox" id="generateImage" checked> 🎨 Generate Image
                             </label>
                         </div>
                         
-                        <div class="form-actions-compact">
-                            <button type="button" id="previewBtn" class="btn btn-outline">Preview</button>
-                            <button type="submit" class="btn btn-primary btn-large">🚀 Generate Recipe(s)</button>
+                        <div class="form-actions-simple">
+                            <button type="submit" class="btn btn-primary btn-large">🚀 Generate Recipe</button>
                         </div>
                     </form>
                 </div>

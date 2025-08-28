@@ -45,7 +45,20 @@ class AdminPanel {
     
     // Forms
     this.generateForm.addEventListener('submit', this.handleGenerateRecipe.bind(this));
-    document.getElementById('previewBtn').addEventListener('click', this.previewRecipe.bind(this));
+    
+    // Handle random mode toggle
+    const randomModeCheckbox = document.getElementById('randomMode');
+    const customPromptSection = document.getElementById('customPromptSection');
+    
+    if (randomModeCheckbox && customPromptSection) {
+      randomModeCheckbox.addEventListener('change', () => {
+        if (randomModeCheckbox.checked) {
+          customPromptSection.style.display = 'none';
+        } else {
+          customPromptSection.style.display = 'block';
+        }
+      });
+    }
     
     this.ideasForm.addEventListener('submit', this.handleGenerateIdeas.bind(this));
     
@@ -424,18 +437,27 @@ class AdminPanel {
   }
 
   getGenerateFormData() {
-    return {
-      cuisine: document.getElementById('cuisine').value,
-      category: document.getElementById('category').value,
-      mainIngredient: document.getElementById('mainIngredient').value,
-      difficulty: document.getElementById('difficulty').value,
-      cookingTime: '30 minutes', // Fixed for simplicity
-      servings: parseInt(document.getElementById('servings').value),
-      theme: document.getElementById('theme').value,
-      generateImage: document.getElementById('generateImage').checked,
-      batchCount: parseInt(document.getElementById('batchCount').value),
-      randomizeSettings: document.getElementById('randomizeSettings').checked
-    };
+    const randomMode = document.getElementById('randomMode')?.checked ?? true;
+    const customPrompt = document.getElementById('customPrompt')?.value || '';
+    const generateImage = document.getElementById('generateImage')?.checked ?? true;
+    
+    if (randomMode) {
+      // Random generation with variety
+      return {
+        mode: 'random',
+        generateImage: generateImage,
+        // Add variety to prevent duplication
+        includeExistingContext: true
+      };
+    } else {
+      // Custom prompt generation
+      return {
+        mode: 'custom',
+        customPrompt: customPrompt,
+        generateImage: generateImage,
+        includeExistingContext: true
+      };
+    }
   }
 
   displayRecipeResult(recipe, imageUrl = null, isPreview = false, imageQuality = null) {

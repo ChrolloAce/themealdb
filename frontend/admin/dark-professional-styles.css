@@ -824,14 +824,21 @@ h1, h2, h3, h4, h5, h6,
     font-weight: 600 !important;
 }
 
-/* BODY TEXT - HIGH CONTRAST */
+/* BODY TEXT - MAXIMUM CONTRAST - PURE WHITE */
 .recipe-info p,
 .batch-recipe-card p,
 .idea-card p,
 .admin-section p,
 .recipe-preview p,
-p, span, div {
-    color: #e2e8f0 !important;
+p, span, div,
+.recipe-item p,
+.stat-card p,
+.activity-item,
+.progress-item,
+.loading,
+.empty-state p,
+.modal-content p {
+    color: #ffffff !important;
 }
 
 /* FORM LABELS - BRIGHT WHITE */
@@ -865,13 +872,17 @@ p, span, div {
     color: #a0aec0 !important;
 }
 
-/* META INFORMATION - READABLE GRAY */
+/* META INFORMATION - BRIGHT WHITE FOR READABILITY */
 .recipe-meta,
 .idea-meta,
 .user-info,
 .activity-item small,
-.recipe-preview {
-    color: #cbd5e0 !important;
+.recipe-preview,
+.stat-card .stat-number,
+.batch-recipe-preview,
+.idea-description,
+.recipe-description {
+    color: #ffffff !important;
 }
 
 /* STAT NUMBERS */
@@ -964,4 +975,76 @@ p, span, div {
     border: 1px solid #48bb78 !important;
 =======
 >>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+}
+/* ======================================= */
+/* SIMPLIFIED FORM STYLES */
+/* ======================================= */
+
+.simple-generate-section {
+    background: #1e2329 !important;
+    color: #ffffff !important;
+    border: 1px solid #3d434b !important;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.generate-form-simple {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.generation-mode {
+    text-align: center;
+    padding: 1.5rem;
+    background: #2d3748 !important;
+    border-radius: 8px;
+    border: 1px solid #4a5568 !important;
+}
+
+.mode-description {
+    color: #a0aec0 !important;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+.custom-prompt-section {
+    background: #2d3748 !important;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #4a5568 !important;
+}
+
+.custom-prompt-section textarea {
+    min-height: 120px;
+    resize: vertical;
+    background: #1a202c !important;
+    border: 1px solid #4a5568 !important;
+    color: #ffffff !important;
+}
+
+.custom-prompt-section textarea::placeholder {
+    color: #a0aec0 !important;
+}
+
+.simple-options {
+    text-align: center;
+    padding: 1rem;
+    background: #2d3748 !important;
+    border-radius: 8px;
+    border: 1px solid #4a5568 !important;
+}
+
+.form-actions-simple {
+    text-align: center;
+    padding-top: 1rem;
+}
+
+.form-actions-simple .btn {
+    min-width: 200px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
 }

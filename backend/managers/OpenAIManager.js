@@ -15,8 +15,7 @@ class OpenAIManager {
   // Generate a complete recipe based on input parameters
   async generateRecipe(params = {}) {
     try {
-      // ALWAYS use real recipe generation, don't fallback to mock for N/A issues
-      console.log('🤖 Starting REAL AI recipe generation...');
+      console.log('🤖 Starting CONTEXT-AWARE AI recipe generation...');
 
       // Log API key status (masked for security)
       const apiKeyMasked = process.env.OPENAI_API_KEY ? 
@@ -24,65 +23,90 @@ class OpenAIManager {
         'NOT_SET';
       console.log('🔑 OpenAI API Key status:', apiKeyMasked);
       console.log('🤖 Using model:', this.model);
-      console.log('🧠 Starting AI recipe generation with params:', JSON.stringify(params, null, 2));
-
-      const {
-        cuisine = 'any',
-        category = 'any',
-        mainIngredient = '',
-        difficulty = 'medium',
-        cookingTime = '30-45 minutes',
-        servings = 4,
-        dietaryRestrictions = [],
-        theme = ''
-      } = params;
-
-      // Create comprehensive prompt for complete recipe data
-      const comprehensivePrompt = `Generate a detailed ${cuisine} ${category} recipe with ${mainIngredient || 'your choice of main ingredient'}. 
+      console.log('🧠 Generation params:', JSON.stringify(params, null, 2));
       
-Make it ${difficulty} difficulty, serves ${servings}, takes about ${cookingTime}.
+      // Get existing recipes for context if requested
+      let existingContext = '';
+      if (params.includeExistingContext) {
+        try {
+          existingContext = await this.getExistingRecipesContext();
+          console.log('📚 Retrieved existing recipes context for variety');
+        } catch (error) {
+          console.warn('⚠️ Could not get existing recipes context:', error.message);
+        }
+      }
+
+      // Handle different generation modes
+      let comprehensivePrompt;
+      
+      if (params.mode === 'custom' && params.customPrompt) {
+        // Custom prompt mode
+        console.log('🎯 Using CUSTOM PROMPT mode');
+        comprehensivePrompt = `${existingContext}
+
+User Request: "${params.customPrompt}"
+
+Based on the user's request above, generate a detailed recipe. Make it creative and unique.
+${existingContext ? 'IMPORTANT: Create something different from the existing recipes to add variety to our collection.' : ''}
 
 🚨 CRITICAL: NEVER use "N/A", "TBD", or any placeholder text. ALL fields must have real values.
 
 Return ONLY this JSON format with NO extra text:
 {
-  "strMeal": "Specific Creative Recipe Name",
-  "strCategory": "${category}",
-  "strArea": "${cuisine}",
-  "strInstructions": "Step 1: Detailed first step with specific actions. Step 2: Detailed second step with times/temps. Step 3: Continue with specific steps until complete.",
+  "strMeal": "Creative Recipe Name",
+  "strCategory": "Main category (Beef, Chicken, Seafood, Vegetarian, etc)",
+  "strArea": "Cuisine type (Italian, Mexican, Asian, etc)",
+  "strInstructions": "Step 1: First step. Step 2: Second step. Step 3: Continue...",
   "strMealThumb": "",
-  "strTags": "tag1,tag2,tag3,${difficulty.toLowerCase()},${cuisine.toLowerCase()}",
-  "strIngredient1": "First ingredient name",
-  "strMeasure1": "Precise amount (2 cups, 1 tbsp, etc)",
-  "strIngredient2": "Second ingredient name", 
-  "strMeasure2": "Precise amount",
-  "strIngredient3": "Third ingredient name",
-  "strMeasure3": "Precise amount",
-  "strIngredient4": "Fourth ingredient name",
-  "strMeasure4": "Precise amount",
-  "strIngredient5": "Fifth ingredient name",
-  "strMeasure5": "Precise amount",
-  "strIngredient6": "Sixth ingredient name",
-  "strMeasure6": "Precise amount",
-  "strIngredient7": "Seventh ingredient name",
-  "strMeasure7": "Precise amount",
-  "strIngredient8": "Eighth ingredient name",
-  "strMeasure8": "Precise amount",
-  "strIngredient9": "",
-  "strMeasure9": "",
-  "strIngredient10": "",
-  "strMeasure10": "",
-  "prepTime": "15 minutes",
-  "cookTime": "25 minutes",
-  "totalTime": "40 minutes",
-  "equipment": ["Large pot", "Wooden spoon", "Chef's knife", "Cutting board"],
-  "instructionsArray": [
-    "Step 1: Detailed first instruction with specific techniques",
-    "Step 2: Detailed second instruction with temperatures/times",
-    "Step 3: Continue with specific cooking steps",
-    "Step 4: Final plating and serving instructions"
-  ]
+  "strTags": "tag1,tag2,tag3",
+  "strIngredient1": "First ingredient", "strMeasure1": "Amount",
+  "strIngredient2": "Second ingredient", "strMeasure2": "Amount",
+  "strIngredient3": "Third ingredient", "strMeasure3": "Amount",
+  "strIngredient4": "Fourth ingredient", "strMeasure4": "Amount",
+  "strIngredient5": "Fifth ingredient", "strMeasure5": "Amount",
+  "strIngredient6": "Sixth ingredient", "strMeasure6": "Amount",
+  "strIngredient7": "", "strMeasure7": "",
+  "strIngredient8": "", "strMeasure8": ""
 }`;
+      } else {
+        // Random mode - generate creative diverse recipe
+        console.log('🎲 Using RANDOM mode with variety');
+        
+        const cuisines = ['Italian', 'Mexican', 'Asian', 'Mediterranean', 'Indian', 'French', 'American', 'Japanese', 'Thai', 'Greek'];
+        const categories = ['Beef', 'Chicken', 'Seafood', 'Vegetarian', 'Vegan', 'Pasta', 'Dessert', 'Breakfast'];
+        const themes = ['healthy', 'comfort food', 'spicy', 'fresh', 'hearty', 'light', 'creative fusion', 'traditional', 'modern twist'];
+        
+        const randomCuisine = cuisines[Math.floor(Math.random() * cuisines.length)];
+        const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+        const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+        
+        comprehensivePrompt = `${existingContext}
+
+Generate a creative ${randomTheme} ${randomCuisine} ${randomCategory} recipe that would be unique and interesting.
+${existingContext ? 'IMPORTANT: Create something completely different from the existing recipes listed above to ensure variety and innovation in our collection.' : ''}
+
+Make it innovative and delicious. Use unexpected flavor combinations or techniques.
+
+🚨 CRITICAL: NEVER use "N/A", "TBD", or any placeholder text. ALL fields must have real values.
+
+Return ONLY this JSON format with NO extra text:
+{
+  "strMeal": "Creative Recipe Name",
+  "strCategory": "${randomCategory}",
+  "strArea": "${randomCuisine}",
+  "strInstructions": "Step 1: First step. Step 2: Second step. Step 3: Continue...",
+  "strMealThumb": "",
+  "strTags": "${randomTheme},${randomCuisine.toLowerCase()},${randomCategory.toLowerCase()}",
+  "strIngredient1": "First ingredient", "strMeasure1": "Amount",
+  "strIngredient2": "Second ingredient", "strMeasure2": "Amount",
+  "strIngredient3": "Third ingredient", "strMeasure3": "Amount",
+  "strIngredient4": "Fourth ingredient", "strMeasure4": "Amount",
+  "strIngredient5": "Fifth ingredient", "strMeasure5": "Amount",
+  "strIngredient6": "Sixth ingredient", "strMeasure6": "Amount",
+  "strIngredient7": "", "strMeasure7": "",
+  "strIngredient8": "", "strMeasure8": ""
+}`;
+      }
 
       console.log('📝 Using comprehensive prompt for complete recipe data...');
 
@@ -1168,6 +1192,64 @@ Return ONLY valid JSON with this COMPLETE structure:
       }
     }
     return ingredients.join(', ');
+  }
+
+  // Get context of existing recipes to avoid duplicates
+  async getExistingRecipesContext() {
+    try {
+      const RecipeManager = require('./RecipeManager');
+      const DatabaseManager = require('./DatabaseManager');
+      
+      const db = new DatabaseManager();
+      await db.initialize();
+      const recipeManager = new RecipeManager(db);
+      
+      // Get recent recipes (last 20) to use as context
+      const recentRecipes = await this.getRecentRecipes(recipeManager, 20);
+      
+      if (recentRecipes.length === 0) {
+        return '';
+      }
+      
+      const recipeNames = recentRecipes.map(recipe => 
+        `"${recipe.strMeal}" (${recipe.strArea} ${recipe.strCategory})`
+      ).join(', ');
+      
+      return `EXISTING RECIPES IN DATABASE (avoid duplicates):
+${recipeNames}
+
+`;
+    } catch (error) {
+      console.warn('Could not retrieve existing recipes:', error.message);
+      return '';
+    }
+  }
+  
+  async getRecentRecipes(recipeManager, limit = 20) {
+    try {
+      // Try to get recent recipes
+      if (recipeManager.getLatest) {
+        const result = await recipeManager.getLatest(limit);
+        return result.meals || [];
+      } else {
+        // Fallback - get some random recipes
+        const results = [];
+        for (let i = 0; i < Math.min(limit, 10); i++) {
+          try {
+            const result = await recipeManager.getRandom();
+            if (result.meals && result.meals[0]) {
+              results.push(result.meals[0]);
+            }
+          } catch (e) {
+            break;
+          }
+        }
+        return results;
+      }
+    } catch (error) {
+      console.warn('Could not get recent recipes:', error.message);
+      return [];
+    }
   }
 
   // Generate a mock recipe for testing when OpenAI API key is not available
