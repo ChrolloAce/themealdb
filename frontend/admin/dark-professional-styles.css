@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* BALANCED DARK THEME WITH PROPER CONTRAST */
+=======
+/* PROFESSIONAL DARK THEME - SERIOUS & ELEGANT */
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
 
 * {
     margin: 0;
@@ -8,6 +12,7 @@
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+<<<<<<< HEAD
     background: #0f1419 !important;
     min-height: 100vh;
     color: #f7f8f9 !important;
@@ -59,6 +64,14 @@ body {
     background: transparent !important;
 }
 
+=======
+    background: #0a0a0a;
+    min-height: 100vh;
+    color: #e5e7eb;
+    line-height: 1.6;
+}
+
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
 /* Modal Styles - Dark Professional */
 .modal {
     display: none;
@@ -100,7 +113,11 @@ body {
     margin-bottom: 2rem;
 }
 
+<<<<<<< HEAD
 /* Form Styles - Better Contrast */
+=======
+/* Form Styles - Professional */
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
 .form-group {
     margin-bottom: 1.5rem;
     text-align: left;
@@ -109,7 +126,11 @@ body {
 .form-group label {
     display: block;
     margin-bottom: 0.5rem;
+<<<<<<< HEAD
     color: #ffffff !important;
+=======
+    color: #d1d5db;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
     font-weight: 500;
     font-size: 0.9rem;
 }
@@ -119,10 +140,17 @@ body {
 .form-group textarea {
     width: 100%;
     padding: 0.875rem 1rem;
+<<<<<<< HEAD
     border: 1px solid #4a5568 !important;
     border-radius: 6px;
     background: #2d3748 !important;
     color: #ffffff !important;
+=======
+    border: 1px solid #374151;
+    border-radius: 6px;
+    background: #111827;
+    color: #f9fafb;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
     font-size: 0.95rem;
     transition: all 0.2s ease;
 }
@@ -131,6 +159,7 @@ body {
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
+<<<<<<< HEAD
     border-color: #667eea !important;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3) !important;
     background: #1a202c !important;
@@ -138,6 +167,15 @@ body {
 
 .form-group input::placeholder {
     color: #a0aec0 !important;
+=======
+    border-color: #6b7280;
+    box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1);
+    background: #1f2937;
+}
+
+.form-group input::placeholder {
+    color: #6b7280;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
 }
 
 /* Button Styles - Professional & Serious */
@@ -215,37 +253,58 @@ body {
     opacity: 1;
 }
 
+<<<<<<< HEAD
 /* Header - Improved Contrast */
 .admin-header {
     background: #161b22 !important;
     padding: 1.5rem 2rem;
     border-bottom: 1px solid #30363d;
+=======
+/* Header - Professional Dark */
+.admin-header {
+    background: #111827;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #1f2937;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .header-left h1 {
+<<<<<<< HEAD
     color: #ffffff !important;
+=======
+    color: #f9fafb;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
     font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 0.25rem;
 }
 
 .user-info {
+<<<<<<< HEAD
     color: #c9d1d9 !important;
+=======
+    color: #9ca3af;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
     font-size: 0.9rem;
 }
 
 /* Navigation - Clean & Professional */
 .admin-nav {
+<<<<<<< HEAD
     background: #1a1a1a !important;
+=======
+    background: #1a1a1a;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
     padding: 0;
     border-bottom: 1px solid #2d2d2d;
     display: flex;
     overflow-x: auto;
 }
 
+<<<<<<< HEAD
 /* COMPREHENSIVE OVERRIDES FOR ALL COMPONENTS */
 
 /* Forms and Inputs - Dark Theme */
@@ -406,6 +465,13 @@ body {
     border: none;
     padding: 1.25rem 1.75rem;
     color: #c9d1d9 !important;
+=======
+.nav-btn {
+    background: transparent;
+    border: none;
+    padding: 1.25rem 1.75rem;
+    color: #9ca3af;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
     font-weight: 500;
     font-size: 0.9rem;
     cursor: pointer;
@@ -416,6 +482,7 @@ body {
 }
 
 .nav-btn:hover {
+<<<<<<< HEAD
     background: #21262d !important;
     color: #ffffff !important;
 }
@@ -424,6 +491,16 @@ body {
     background: #21262d !important;
     color: #ffffff !important;
     border-bottom-color: #667eea !important;
+=======
+    background: #2d2d2d;
+    color: #d1d5db;
+}
+
+.nav-btn.active {
+    background: #2d2d2d;
+    color: #f9fafb;
+    border-bottom-color: #6b7280;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
 }
 
 /* Main Content - Professional Spacing */
@@ -514,6 +591,7 @@ body {
     margin-bottom: 1rem;
 }
 
+<<<<<<< HEAD
 /* Loading States - Professional Dark */
 .loading {
     text-align: center;
@@ -526,6 +604,16 @@ body {
 
 .loading-spinner,
 .spinner {
+=======
+/* Loading States - Professional */
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: #9ca3af;
+}
+
+.loading-spinner {
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
     width: 32px;
     height: 32px;
     border: 3px solid #2d2d2d;
@@ -535,6 +623,7 @@ body {
     margin: 0 auto 1rem;
 }
 
+<<<<<<< HEAD
 .loading.small {
     padding: 1rem !important;
     background: transparent !important;
@@ -546,11 +635,14 @@ body {
     border: none !important;
 }
 
+=======
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 
+<<<<<<< HEAD
 /* ADDITIONAL COMPREHENSIVE OVERRIDES */
 
 /* Form Elements */
@@ -658,6 +750,8 @@ h1, h2, h3, h4, h5, h6 {
     color: #e5e7eb;
 }
 
+=======
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
 /* Error/Success Messages - Professional */
 .error-message {
     background: #7f1d1d;
@@ -707,6 +801,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Remove Login Info Text */
 .login-info {
     display: none !important;
+<<<<<<< HEAD
 }
 
 /* ======================================= */
@@ -867,4 +962,6 @@ p, span, div {
     background: #38a169 !important;
     color: #ffffff !important;
     border: 1px solid #48bb78 !important;
+=======
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
 }
