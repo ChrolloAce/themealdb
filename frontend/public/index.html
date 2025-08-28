@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodDB - Free Recipe API</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">🍽️ FoodDB</h1>
+            <nav class="nav">
+                <a href="#api">API Docs</a>
+                <a href="#examples">Examples</a>
+                <a href="#support">Support</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <section class="hero">
+            <div class="container">
+                <h2 class="hero-title">Free Recipe API</h2>
+                <p class="hero-description">
+                    A comprehensive REST API for recipes, ingredients, and meal information. 
+                    Free to use with test API key "1" for development and educational purposes.
+                </p>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">👍</div>
+                        <h3>Free Recipe API Support</h3>
+                        <p>The API and site will always remain free at point of access.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🔑</div>
+                        <h3>Test API Keys</h3>
+                        <p>You can use the test API key "1" during development of your app or for educational use.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">⬆️</div>
+                        <h3>API Production Key Upgrade</h3>
+                        <p>All supporters have access to the beta version which allows multiple ingredient filters and adding your own meals.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">📧</div>
+                        <h3>Contact</h3>
+                        <p>Email: contact@fooddb.com</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="api" class="api-section">
+            <div class="container">
+                <h2>V1 API</h2>
+                <p class="section-description">API Methods using the developer test key '1' in the URL</p>
+                
+                <div class="api-methods">
+                    <div class="api-group">
+                        <h3>Search & Lookup</h3>
+                        <div class="api-method">
+                            <div class="method-header">
+                                <span class="method-name">Search meal by name</span>
+                                <button class="test-btn" data-endpoint="/api/json/v1/1/search.php?s=Arrabiata">Test</button>
+                            </div>
+                            <code class="method-url">GET /api/json/v1/1/search.php?s=Arrabiata</code>
+                        </div>
+                        
+                        <div class="api-method">
+                            <div class="method-header">
+                                <span class="method-name">List all meals by first letter</span>
+                                <button class="test-btn" data-endpoint="/api/json/v1/1/search.php?f=a">Test</button>
+                            </div>
+                            <code class="method-url">GET /api/json/v1/1/search.php?f=a</code>
+                        </div>
+                        
+                        <div class="api-method">
+                            <div class="method-header">
+                                <span class="method-name">Lookup full meal details by id</span>
+                                <button class="test-btn" data-endpoint="/api/json/v1/1/lookup.php?i=1">Test</button>
+                            </div>
+                            <code class="method-url">GET /api/json/v1/1/lookup.php?i=1</code>
+                        </div>
+                        
+                        <div class="api-method">
+                            <div class="method-header">
+                                <span class="method-name">Lookup a single random meal</span>
+                                <button class="test-btn" data-endpoint="/api/json/v1/1/random.php">Test</button>
+                            </div>
+                            <code class="method-url">GET /api/json/v1/1/random.php</code>
+                        </div>
+                    </div>
+
+                    <div class="api-group">
+                        <h3>Categories & Lists</h3>
+                        <div class="api-method">
+                            <div class="method-header">
+                                <span class="method-name">List all meal categories</span>
+                                <button class="test-btn" data-endpoint="/api/json/v1/1/categories.php">Test</button>
+                            </div>
+                            <code class="method-url">GET /api/json/v1/1/categories.php</code>
+                        </div>
+                        
+                        <div class="api-method">
+                            <div class="method-header">
+                                <span class="method-name">List all Categories</span>
+                                <button class="test-btn" data-endpoint="/api/json/v1/1/list.php?c=list">Test</button>
+                            </div>
+                            <code class="method-url">GET /api/json/v1/1/list.php?c=list</code>
+                        </div>
+                        
+                        <div class="api-method">
+                            <div class="method-header">
+                                <span class="method-name">List all Areas</span>
+                                <button class="test-btn" data-endpoint="/api/json/v1/1/list.php?a=list">Test</button>
+                            </div>
+                            <code class="method-url">GET /api/json/v1/1/list.php?a=list</code>
+                        </div>
+                        
+                        <div class="api-method">
+                            <div class="method-header">
+                                <span class="method-name">List all Ingredients</span>
+                                <button class="test-btn" data-endpoint="/api/json/v1/1/list.php?i=list">Test</button>
+                            </div>
+                            <code class="method-url">GET /api/json/v1/1/list.php?i=list</code>
+                        </div>
+                    </div>
+
+                    <div class="api-group">
+                        <h3>Filtering</h3>
+                        <div class="api-method">
+                            <div class="method-header">
+                                <span class="method-name">Filter by main ingredient</span>
+                                <button class="test-btn" data-endpoint="/api/json/v1/1/filter.php?i=chicken_breast">Test</button>
+                            </div>
+                            <code class="method-url">GET /api/json/v1/1/filter.php?i=chicken_breast</code>
+                        </div>
+                        
+                        <div class="api-method premium">
+                            <div class="method-header">
+                                <span class="method-name">Filter by multi-ingredient <span class="premium-badge">Premium</span></span>
+                                <button class="test-btn premium" disabled>Premium Only</button>
+                            </div>
+                            <code class="method-url">GET /api/json/v1/PREMIUM_KEY/filter.php?i=chicken_breast,garlic,salt</code>
+                        </div>
+                        
+                        <div class="api-method">
+                            <div class="method-header">
+                                <span class="method-name">Filter by Category</span>
+                                <button class="test-btn" data-endpoint="/api/json/v1/1/filter.php?c=Seafood">Test</button>
+                            </div>
+                            <code class="method-url">GET /api/json/v1/1/filter.php?c=Seafood</code>
+                        </div>
+                        
+                        <div class="api-method">
+                            <div class="method-header">
+                                <span class="method-name">Filter by Area</span>
+                                <button class="test-btn" data-endpoint="/api/json/v1/1/filter.php?a=Canadian">Test</button>
+                            </div>
+                            <code class="method-url">GET /api/json/v1/1/filter.php?a=Canadian</code>
+                        </div>
+                    </div>
+
+                    <div class="api-group">
+                        <h3>Premium Features</h3>
+                        <div class="api-method premium">
+                            <div class="method-header">
+                                <span class="method-name">Lookup a selection of 10 random meals <span class="premium-badge">Premium</span></span>
+                                <button class="test-btn premium" disabled>Premium Only</button>
+                            </div>
+                            <code class="method-url">GET /api/json/v1/PREMIUM_KEY/randomselection.php</code>
+                        </div>
+                        
+                        <div class="api-method premium">
+                            <div class="method-header">
+                                <span class="method-name">Latest Meals <span class="premium-badge">Premium</span></span>
+                                <button class="test-btn premium" disabled>Premium Only</button>
+                            </div>
+                            <code class="method-url">GET /api/json/v1/PREMIUM_KEY/latest.php</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="examples" class="examples-section">
+            <div class="container">
+                <h2>API Response Examples</h2>
+                <div class="example-container">
+                    <button class="example-btn active" data-example="search">Search Results</button>
+                    <button class="example-btn" data-example="meal">Meal Details</button>
+                    <button class="example-btn" data-example="categories">Categories</button>
+                </div>
+                
+                <div id="example-content" class="example-content">
+                    <pre id="example-json"></pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="test-section">
+            <div class="container">
+                <h2>API Tester</h2>
+                <div class="tester-controls">
+                    <input type="text" id="api-url" placeholder="Enter API endpoint..." value="/api/json/v1/1/random.php">
+                    <button id="test-custom-btn">Test Endpoint</button>
+                </div>
+                <div id="test-results" class="test-results"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 FoodDB. Free Recipe API for developers.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
