@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FoodDB Admin Panel - AI Recipe Management</title>
-    <link rel="stylesheet" href="/admin-assets/admin-styles.css">
+    <title>FoodDB Admin Dashboard</title>
+    <link rel="stylesheet" href="/admin-assets/dashboard-styles.css">
     <link rel="stylesheet" href="/admin-assets/dark-professional-styles.css">
     <link rel="stylesheet" href="/admin-assets/comprehensive-recipe-styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <!-- Login Modal -->
@@ -27,95 +28,181 @@
         </div>
     </div>
 
-    <!-- Admin Panel -->
-    <div id="adminPanel" class="admin-panel">
-        <!-- Header -->
-        <header class="admin-header">
-            <div class="header-left">
-                <h1>FoodDB Administration</h1>
-                <span class="user-info">Recipe Management System</span>
-            </div>
-            <div class="header-right">
-                <button id="logoutBtn" class="btn btn-outline">Sign Out</button>
-            </div>
-        </header>
-
-        <!-- Navigation -->
-        <nav class="admin-nav">
-            <button class="nav-btn active" data-section="dashboard">Dashboard</button>
-            <button class="nav-btn" data-section="ai-generate">Generate Recipes</button>
-            <button class="nav-btn" data-section="ai-ideas">Recipe Ideas</button>
-            <button class="nav-btn" data-section="manage-recipes">Manage Recipes</button>
-        </nav>
-
-        <!-- Main Content -->
-        <main class="admin-main">
-            <!-- Dashboard Section -->
-            <section id="dashboard" class="admin-section active">
-                <h2>Dashboard</h2>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Total Recipes</h3>
-                        <div class="stat-number" id="totalRecipes">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Categories</h3>
-                        <div class="stat-number" id="totalCategories">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Areas</h3>
-                        <div class="stat-number" id="totalAreas">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Recent Recipes</h3>
-                        <div class="stat-number" id="recentRecipes">0</div>
-                    </div>
+    <!-- Admin Dashboard -->
+    <div id="adminPanel" class="admin-dashboard">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-utensils"></i>
+                    <span>FoodDB</span>
                 </div>
-                
-                <div class="recent-activity">
-                    <h3>Recent Activity</h3>
-                    <div id="recentActivity" class="activity-list"></div>
-                </div>
-            </section>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-section="ai-generate">
+                    <i class="fas fa-magic"></i>
+                    <span>AI Generate</span>
+                </a>
+                <a href="#" class="nav-item" data-section="ai-ideas">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Recipe Ideas</span>
+                </a>
+                <a href="#" class="nav-item" data-section="manage-recipes">
+                    <i class="fas fa-book"></i>
+                    <span>All Recipes</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" id="logoutBtn" class="nav-item logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
 
-            <!-- AI Generate Section -->
-            <section id="ai-generate" class="admin-section">
-                <h2>🤖 AI Recipe Generator</h2>
-                
-                <!-- Quick Generation Buttons -->
-                <!-- Simplified Generation -->
-                <div class="simple-generate-section">
-                    <h3>🤖 AI Recipe Generator</h3>
-                    <form id="generateForm" class="generate-form-simple">
-                        
-                        <!-- Random or Custom Toggle -->
-                        <div class="generation-mode">
-                            <label class="checkbox-label-simple">
-                                <input type="checkbox" id="randomMode" checked> 🎲 Random Recipe
-                            </label>
-                            <p class="mode-description">Uncheck to use custom prompt</p>
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <h1 class="page-title">Dashboard</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
                         </div>
-                        
-                        <!-- Custom Prompt Field (hidden when random is checked) -->
-                        <div id="customPromptSection" class="custom-prompt-section" style="display: none;">
-                            <div class="form-group">
-                                <label>Custom Prompt</label>
-                                <textarea id="customPrompt" rows="4" placeholder="Describe the recipe you want...&#10;&#10;Examples:&#10;• Make me a spicy Italian pasta with seafood&#10;• Create a healthy vegan dessert with chocolate&#10;• I want a comfort food recipe using chicken and potatoes"></textarea>
+                        <div class="user-info">
+                            <span class="user-name">Admin</span>
+                            <span class="user-role">System Administrator</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="admin-section active">
+                    <div class="stats-overview">
+                        <div class="stat-card primary">
+                            <div class="stat-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Total Recipes</h3>
+                                <div class="stat-number" id="totalRecipes">0</div>
+                                <span class="stat-label">Active recipes in database</span>
                             </div>
                         </div>
-                        
-                        <!-- Simple Options -->
-                        <div class="simple-options">
-                            <label class="checkbox-label-simple">
-                                <input type="checkbox" id="generateImage" checked> 🎨 Generate Image
-                            </label>
+                        <div class="stat-card success">
+                            <div class="stat-icon">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Categories</h3>
+                                <div class="stat-number" id="totalCategories">0</div>
+                                <span class="stat-label">Recipe categories</span>
+                            </div>
+                        </div>
+                        <div class="stat-card info">
+                            <div class="stat-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Cuisines</h3>
+                                <div class="stat-number" id="totalAreas">0</div>
+                                <span class="stat-label">Different regions</span>
+                            </div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Recent</h3>
+                                <div class="stat-number" id="recentRecipes">0</div>
+                                <span class="stat-label">Added this week</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-grid">
+                        <div class="recent-activity card">
+                            <div class="card-header">
+                                <h3>Recent Activity</h3>
+                                <button class="btn-icon"><i class="fas fa-sync"></i></button>
+                            </div>
+                            <div id="recentActivity" class="activity-list"></div>
                         </div>
                         
-                        <div class="form-actions-simple">
-                            <button type="submit" class="btn btn-primary btn-large">🚀 Generate Recipe</button>
+                        <div class="quick-actions card">
+                            <div class="card-header">
+                                <h3>Quick Actions</h3>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="action-btn" onclick="document.querySelector('[data-section=\"ai-generate\"]').click()">
+                                    <i class="fas fa-plus-circle"></i>
+                                    <span>Generate Recipe</span>
+                                </button>
+                                <button class="action-btn" onclick="document.querySelector('[data-section=\"ai-ideas\"]').click()">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Get Ideas</span>
+                                </button>
+                                <button class="action-btn" onclick="document.querySelector('[data-section=\"manage-recipes\"]').click()">
+                                    <i class="fas fa-list"></i>
+                                    <span>View All</span>
+                                </button>
+                            </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </section>
+
+                <!-- AI Generate Section -->
+                <section id="ai-generate" class="admin-section">
+                    <div class="generator-container">
+                        <div class="generator-card card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-magic"></i> AI Recipe Generator</h3>
+                            </div>
+                            <form id="generateForm" class="generate-form-modern">
+                                <div class="generation-mode-switch">
+                                    <label class="switch">
+                                        <input type="checkbox" id="randomMode" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                    <span class="switch-label">Random Generation</span>
+                                </div>
+                                
+                                <!-- Custom Prompt Field -->
+                                <div id="customPromptSection" class="custom-prompt-section" style="display: none;">
+                                    <div class="form-group">
+                                        <label>Custom Recipe Prompt</label>
+                                        <textarea id="customPrompt" rows="4" placeholder="Describe the recipe you want...&#10;&#10;Examples:&#10;• Make me a spicy Italian pasta with seafood&#10;• Create a healthy vegan dessert with chocolate&#10;• I want a comfort food recipe using chicken and potatoes"></textarea>
+                                    </div>
+                                </div>
+                                
+                                <!-- Generation Options -->
+                                <div class="generation-options">
+                                    <label class="option-item">
+                                        <input type="checkbox" id="generateImage" checked>
+                                        <span class="option-label"><i class="fas fa-image"></i> Generate Image</span>
+                                    </label>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-generate">
+                                        <i class="fas fa-sparkles"></i>
+                                        <span>Generate Recipe</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 
                 <div id="generateResult" class="result-section"></div>
             </section>

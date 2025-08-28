@@ -37,9 +37,13 @@ class AdminPanel {
     document.getElementById('logoutBtn').addEventListener('click', this.handleLogout.bind(this));
     
     // Navigation
-    this.navButtons.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        this.switchSection(e.target.dataset.section);
+    document.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const section = e.currentTarget.dataset.section;
+        if (section) {
+          this.switchSection(section);
+        }
       });
     });
     
@@ -181,12 +185,31 @@ class AdminPanel {
 
   switchSection(sectionName) {
     // Update navigation
-    this.navButtons.forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`[data-section="${sectionName}"]`).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    const activeNav = document.querySelector(`.nav-item[data-section="${sectionName}"]`);
+    if (activeNav) {
+      activeNav.classList.add('active');
+    }
     
     // Update sections
     this.sections.forEach(section => section.classList.remove('active'));
-    document.getElementById(sectionName).classList.add('active');
+    const targetSection = document.getElementById(sectionName);
+    if (targetSection) {
+      targetSection.classList.add('active');
+    }
+    
+    // Update page title
+    const titles = {
+      'dashboard': 'Dashboard',
+      'ai-generate': 'AI Recipe Generator',
+      'ai-ideas': 'Recipe Ideas',
+      'manage-recipes': 'Manage Recipes'
+    };
+    
+    const pageTitle = document.querySelector('.page-title');
+    if (pageTitle && titles[sectionName]) {
+      pageTitle.textContent = titles[sectionName];
+    }
     
     this.currentSection = sectionName;
     
