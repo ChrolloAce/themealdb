@@ -59,6 +59,11 @@ Return ONLY this JSON format with NO extra text:
   "strInstructions": "Step 1: First step. Step 2: Second step. Step 3: Continue...",
   "strMealThumb": "",
   "strTags": "tag1,tag2,tag3",
+  "strEquipment": "Large skillet, Mixing bowl, Measuring cups, Chef's knife, Cutting board, Wooden spoon",
+  "strPrepTime": "15 minutes",
+  "strCookTime": "30 minutes",
+  "strTotalTime": "45 minutes",
+  "strServings": "4",
   "strIngredient1": "First ingredient", "strMeasure1": "Amount",
   "strIngredient2": "Second ingredient", "strMeasure2": "Amount",
   "strIngredient3": "Third ingredient", "strMeasure3": "Amount",
@@ -97,6 +102,11 @@ Return ONLY this JSON format with NO extra text:
   "strInstructions": "Step 1: First step. Step 2: Second step. Step 3: Continue...",
   "strMealThumb": "",
   "strTags": "${randomTheme},${randomCuisine.toLowerCase()},${randomCategory.toLowerCase()}",
+  "strEquipment": "Large skillet, Mixing bowl, Measuring cups, Chef's knife, Cutting board, Wooden spoon",
+  "strPrepTime": "15 minutes",
+  "strCookTime": "30 minutes",
+  "strTotalTime": "45 minutes",
+  "strServings": "4",
   "strIngredient1": "First ingredient", "strMeasure1": "Amount",
   "strIngredient2": "Second ingredient", "strMeasure2": "Amount",
   "strIngredient3": "Third ingredient", "strMeasure3": "Amount",
@@ -962,12 +972,12 @@ Return ONLY valid JSON with this COMPLETE structure:
       dateModified: new Date().toISOString(),
       
       // TIME AND SERVING INFO - NEVER N/A
-      prepTime: recipeData.prepTime || '15 minutes',
-      cookTime: recipeData.cookTime || '25 minutes', 
-      totalTime: recipeData.totalTime || '40 minutes',
-      servings: recipeData.servings || params.servings || 4,
+      prepTime: recipeData.strPrepTime || recipeData.prepTime || '15 minutes',
+      cookTime: recipeData.strCookTime || recipeData.cookTime || '25 minutes', 
+      totalTime: recipeData.strTotalTime || recipeData.totalTime || '40 minutes',
+      servings: recipeData.strServings || recipeData.servings || params.servings || 4,
       difficulty: recipeData.difficulty || params.difficulty || 'Medium',
-      yield: recipeData.yield || `Serves ${params.servings || 4}`,
+      yield: recipeData.yield || `Serves ${recipeData.strServings || params.servings || 4}`,
       
       // CATEGORY INFO - NEVER N/A
       mealType: recipeData.mealType || params.category || 'Main Dish',
@@ -977,7 +987,8 @@ Return ONLY valid JSON with this COMPLETE structure:
       timeCategory: recipeData.timeCategory || 'Under 1 hour',
       
       // EQUIPMENT - NEVER EMPTY
-      equipment: recipeData.equipment || ['Large pot', 'Wooden spoon', 'Chef\'s knife', 'Cutting board'],
+      equipment: recipeData.strEquipment ? recipeData.strEquipment.split(',').map(e => e.trim()) : 
+                recipeData.equipment || ['Large pot', 'Wooden spoon', 'Chef\'s knife', 'Cutting board', 'Measuring cups'],
       
       // STEP-BY-STEP INSTRUCTIONS ARRAY
       instructionsArray: recipeData.instructionsArray || this.parseInstructionsToArray(recipeData.strInstructions),

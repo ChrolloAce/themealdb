@@ -1,8 +1,12 @@
 /* COMPREHENSIVE RECIPE DISPLAY STYLES - PROFESSIONAL DARK */
 .comprehensive-recipe {
     max-width: 100%;
-    background: #1a1a1a;
-    border: 1px solid #2d2d2d;
+    background: #0f1823 !important;
+    border: 1px solid #1a2332 !important;
+}
+
+.comprehensive-recipe * {
+    color: #ffffff !important;
 }
 
 .recipe-header {
@@ -54,16 +58,17 @@
     gap: 1.5rem;
     margin: 2.5rem 0;
     padding: 2rem;
-    background: #111827;
+    background: #1a2332 !important;
     border-radius: 8px;
-    border: 1px solid #374151;
+    border: 1px solid #2d3a4f !important;
 }
 
 .stat-item {
     text-align: center;
     padding: 1.5rem;
-    background: #1f2937;
+    background: #0f1823 !important;
     border-radius: 6px;
+    color: #ffffff !important;
     border: 1px solid #374151;
     color: #f9fafb;
 }

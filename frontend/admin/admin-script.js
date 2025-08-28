@@ -530,24 +530,36 @@ class AdminPanel {
         <!-- Quick Stats -->
         <div class="recipe-stats-grid">
           <div class="stat-item">
-            <strong>⏱️ Prep</strong><br>${recipe.prepTimeMinutes || 'N/A'} min
+            <strong>⏱️ Prep</strong><br>${recipe.prepTime || recipe.prepTimeMinutes ? recipe.prepTimeMinutes + ' min' : '15 min'}
           </div>
           <div class="stat-item">
-            <strong>🔥 Cook</strong><br>${recipe.cookTimeMinutes || 'N/A'} min
+            <strong>🔥 Cook</strong><br>${recipe.cookTime || recipe.cookTimeMinutes ? recipe.cookTimeMinutes + ' min' : '30 min'}
           </div>
           <div class="stat-item">
-            <strong>⏰ Total</strong><br>${recipe.totalTimeMinutes || 'N/A'} min
+            <strong>⏰ Total</strong><br>${recipe.totalTime || recipe.totalTimeMinutes ? recipe.totalTimeMinutes + ' min' : '45 min'}
           </div>
           <div class="stat-item">
-            <strong>🍽️ Serves</strong><br>${recipe.numberOfServings || '4'}
+            <strong>🍽️ Serves</strong><br>${recipe.servings || recipe.numberOfServings || '4'}
           </div>
           <div class="stat-item">
             <strong>📊 Difficulty</strong><br>${recipe.difficulty || 'Medium'}
           </div>
           <div class="stat-item">
-            <strong>🥘 Yield</strong><br>${recipe.recipeYield || 'N/A'}
+            <strong>🥘 Yield</strong><br>${recipe.yield || recipe.recipeYield || 'Serves 4'}
           </div>
         </div>
+        
+        <!-- Equipment Section -->
+        ${recipe.equipment || recipe.strEquipment ? `
+        <div class="equipment-section">
+          <h4>🔧 Equipment Needed</h4>
+          <div class="equipment-list">
+            ${(recipe.equipment || recipe.strEquipment.split(',')).map(item => 
+              `<span class="equipment-item">• ${typeof item === 'string' ? item.trim() : item}</span>`
+            ).join('')}
+          </div>
+        </div>
+        ` : ''}
 
         <!-- Nutrition Facts -->
         ${recipe.caloriesPerServing ? `
