@@ -486,6 +486,18 @@ class AdminPanel {
   displayRecipeResult(recipe, imageUrl = null, isPreview = false, imageQuality = null) {
     const ingredients = this.getRecipeIngredients(recipe);
     
+    // Parse instructions into steps
+    const instructions = recipe.strInstructions || '';
+    const steps = instructions.split(/Step \d+:|^\d+\.|^\d+\)/gm)
+      .filter(step => step.trim())
+      .map(step => step.replace(/^[:.]/, '').trim());
+    
+    // Parse equipment
+    const equipment = recipe.equipment || recipe.strEquipment || '';
+    const equipmentList = typeof equipment === 'string' 
+      ? equipment.split(',').map(e => e.trim()).filter(e => e)
+      : Array.isArray(equipment) ? equipment : [];
+    
     const qualityBadge = imageQuality === 'ultra-hd' ? 
       '<span style="background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; margin-left: 0.5rem;">🎨 ULTRA-HD AI GENERATED</span>' : '';
     
@@ -504,17 +516,82 @@ class AdminPanel {
     };
 
     this.generateResult.innerHTML = `
-      <div class="recipe-preview comprehensive-recipe">
-        ${imageUrl ? `
-          <div style="position: relative; margin-bottom: 1rem;">
-            <img src="${imageUrl}" alt="${recipe.strMeal}" style="width: 100%; max-width: 400px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-            ${qualityBadge}
-          </div>
-        ` : ''}
-        
+      <div class="recipe-display-modern">
         <!-- Recipe Header -->
-        <div class="recipe-header">
-          <h3>${recipe.strMeal}</h3>
+        <div class="recipe-header-modern">
+          <h1 class="recipe-title-modern">${recipe.strMeal}</h1>
+          ${imageUrl ? `
+            <img src="${imageUrl}" alt="${recipe.strMeal}" style="width: 100%; max-width: 600px; border-radius: 12px; margin-top: 1rem;">
+          ` : ''}
+        </div>
+        
+        <!-- Stats Bar -->
+        <div class="recipe-stats-bar">
+          <div class="stat-badge">
+            <span class="stat-badge-icon">⏱️</span>
+            <div class="stat-badge-content">
+              <span class="stat-badge-label">Prep</span>
+              <span class="stat-badge-value">${recipe.prepTime || '15 min'}</span>
+            </div>
+          </div>
+          <div class="stat-badge">
+            <span class="stat-badge-icon">🔥</span>
+            <div class="stat-badge-content">
+              <span class="stat-badge-label">Cook</span>
+              <span class="stat-badge-value">${recipe.cookTime || '30 min'}</span>
+            </div>
+          </div>
+          <div class="stat-badge">
+            <span class="stat-badge-icon">⏰</span>
+            <div class="stat-badge-content">
+              <span class="stat-badge-label">Total</span>
+              <span class="stat-badge-value">${recipe.totalTime || '45 min'}</span>
+            </div>
+          </div>
+          <div class="stat-badge">
+            <span class="stat-badge-icon">🍽️</span>
+            <div class="stat-badge-content">
+              <span class="stat-badge-label">Serves</span>
+              <span class="stat-badge-value">${recipe.servings || '4'}</span>
+            </div>
+          </div>
+          <div class="stat-badge">
+            <span class="stat-badge-icon">📊</span>
+            <div class="stat-badge-content">
+              <span class="stat-badge-label">Difficulty</span>
+              <span class="stat-badge-value">${recipe.difficulty || 'Medium'}</span>
+            </div>
+          </div>
+          <div class="stat-badge">
+            <span class="stat-badge-icon">🥘</span>
+            <div class="stat-badge-content">
+              <span class="stat-badge-label">Yield</span>
+              <span class="stat-badge-value">${recipe.yield || 'Serves 4'}</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Ingredients Grid -->
+        <div class="ingredients-grid-modern">
+          <div class="ingredients-grid-header">
+            <span class="ingredients-grid-title">🥘 Ingredients</span>
+          </div>
+          <div class="ingredients-container">
+            ${ingredients.map(ing => {
+              const [amount, ...nameParts] = ing.split(' ');
+              const name = nameParts.join(' ');
+              return `
+                <div class="ingredient-card">
+                  <div class="ingredient-icon">🥄</div>
+                  <div class="ingredient-details">
+                    <div class="ingredient-name">${name || ing}</div>
+                    <div class="ingredient-amount">${amount && !name ? ing : amount}</div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
           ${recipe.shortDescription ? `<p class="recipe-description">${recipe.shortDescription}</p>` : ''}
           
           <div class="recipe-badges">
