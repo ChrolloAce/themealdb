@@ -242,20 +242,27 @@ class AdminPanel {
       
       const data = await response.json();
       
-      // Update stats
-      document.getElementById('totalRecipes').textContent = data.stats.totalRecipes;
-      document.getElementById('totalCategories').textContent = data.stats.totalCategories;
-      document.getElementById('totalAreas').textContent = data.stats.totalAreas;
-      document.getElementById('recentRecipes').textContent = data.stats.recentRecipes;
+      // Update stats - check if elements exist
+      const totalRecipesEl = document.getElementById('totalRecipes');
+      const totalCategoriesEl = document.getElementById('totalCategories');
+      const totalAreasEl = document.getElementById('totalAreas');
+      const recentRecipesEl = document.getElementById('recentRecipes');
       
-      // Update recent activity
+      if (totalRecipesEl) totalRecipesEl.textContent = data.stats.totalRecipes;
+      if (totalCategoriesEl) totalCategoriesEl.textContent = data.stats.totalCategories;
+      if (totalAreasEl) totalAreasEl.textContent = data.stats.totalAreas;
+      if (recentRecipesEl) recentRecipesEl.textContent = data.stats.recentRecipes;
+      
+      // Update recent activity if it exists
       const activityList = document.getElementById('recentActivity');
-      activityList.innerHTML = data.recentActivity.map(activity => `
-        <div class="activity-item">
-          <span>${activity.name}</span>
-          <span>${new Date(activity.date).toLocaleDateString()}</span>
-        </div>
-      `).join('');
+      if (activityList && data.recentActivity) {
+        activityList.innerHTML = data.recentActivity.map(activity => `
+          <div class="activity-item">
+            <span>${activity.name}</span>
+            <span>${new Date(activity.date).toLocaleDateString()}</span>
+          </div>
+        `).join('');
+      }
     } catch (error) {
       console.error('Failed to load dashboard:', error);
     }

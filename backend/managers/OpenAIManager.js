@@ -99,7 +99,11 @@ ${existingContext ? 'IMPORTANT: Create something completely different from the e
 
 Make it innovative and delicious. Use unexpected flavor combinations or techniques.
 
-🚨 CRITICAL: NEVER use "N/A", "TBD", or any placeholder text. ALL fields must have real values.
+🚨 CRITICAL: 
+- NEVER use "N/A", "TBD", or any placeholder text. ALL fields must have real values.
+- strEquipment MUST contain a comprehensive list of ALL cooking tools needed (minimum 5-8 items)
+- Include specific sizes: "12-inch skillet", "8-inch chef's knife", "2-quart saucepan"
+- strInstructions MUST be VERY detailed with 7-10 steps minimum
 
 Return ONLY this JSON format with NO extra text:
 {
@@ -996,6 +1000,7 @@ Return ONLY valid JSON with this COMPLETE structure:
       // EQUIPMENT - NEVER EMPTY
       equipment: recipeData.strEquipment ? recipeData.strEquipment.split(',').map(e => e.trim()) : 
                 recipeData.equipment || ['Large pot', 'Wooden spoon', 'Chef\'s knife', 'Cutting board', 'Measuring cups'],
+      strEquipment: recipeData.strEquipment || 'Large skillet (12-inch), Mixing bowl (medium), Measuring cups, Chef\'s knife (8-inch), Cutting board, Wooden spoon, Tongs',
       
       // STEP-BY-STEP INSTRUCTIONS ARRAY
       instructionsArray: recipeData.instructionsArray || this.parseInstructionsToArray(recipeData.strInstructions),
