@@ -159,40 +159,92 @@
     gap: 0.5rem;
 }
 
-/* Instructions Section */
+/* Instructions Section - Enhanced */
 .instructions-modern {
     padding: 2rem;
     background: #0d1117;
     border-top: 1px solid #21262d;
 }
 
+.instructions-intro {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #161b22;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+}
+
+.prep-note {
+    color: #58a6ff;
+    font-weight: 500;
+    margin: 0;
+}
+
 .instruction-step {
     display: flex;
     gap: 1rem;
     margin-bottom: 1.5rem;
-    padding: 1.25rem;
+    padding: 1.5rem;
     background: #161b22;
     border-radius: 8px;
     border: 1px solid #30363d;
+    transition: all 0.2s ease;
+}
+
+.instruction-step:hover {
+    border-color: #58a6ff;
+    transform: translateX(4px);
 }
 
 .step-number {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     background: linear-gradient(135deg, #3b82f6, #8b5cf6);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #ffffff;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 1.125rem;
     flex-shrink: 0;
 }
 
 .step-content {
-    color: #e6edf3;
-    line-height: 1.6;
     flex: 1;
+}
+
+.step-text {
+    color: #e6edf3;
+    line-height: 1.8;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.step-tip {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: rgba(88, 166, 255, 0.1);
+    border: 1px solid rgba(88, 166, 255, 0.3);
+    border-radius: 12px;
+    color: #58a6ff;
+    font-size: 0.875rem;
+    margin-right: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.instructions-footer {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: #161b22;
+    border-radius: 8px;
+    border-left: 4px solid #22c55e;
+}
+
+.serving-note {
+    color: #22c55e;
+    font-weight: 500;
+    margin: 0;
 }
 
 /* Image Generation Section */

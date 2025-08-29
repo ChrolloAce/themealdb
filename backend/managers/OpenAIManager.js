@@ -46,20 +46,27 @@ class OpenAIManager {
 
 User Request: "${params.customPrompt}"
 
-Based on the user's request above, generate a detailed recipe. Make it creative and unique.
+Based on the user's request above, generate a HIGHLY DETAILED recipe with:
+1. VERY DETAILED step-by-step instructions (minimum 7-10 steps) explaining techniques, temperatures, timing, and what to look for
+2. COMPLETE list of cooking equipment/instruments with sizes (e.g., "12-inch skillet", "8-inch chef's knife")
+3. Make it creative and unique
+
 ${existingContext ? 'IMPORTANT: Create something different from the existing recipes to add variety to our collection.' : ''}
 
-🚨 CRITICAL: NEVER use "N/A", "TBD", or any placeholder text. ALL fields must have real values.
+🚨 CRITICAL: 
+- NEVER use "N/A", "TBD", or any placeholder text. ALL fields must have real values.
+- Instructions must be EDUCATIONAL and DETAILED
+- Equipment list must be COMPREHENSIVE with specific sizes/types
 
 Return ONLY this JSON format with NO extra text:
 {
   "strMeal": "Creative Recipe Name",
   "strCategory": "Main category (Beef, Chicken, Seafood, Vegetarian, etc)",
   "strArea": "Cuisine type (Italian, Mexican, Asian, etc)",
-  "strInstructions": "Step 1: First step. Step 2: Second step. Step 3: Continue...",
+  "strInstructions": "Step 1: Begin by gathering all ingredients and equipment. Preheat your oven to the required temperature if needed. Step 2: Prepare all vegetables by washing, peeling, and cutting them into the specified sizes. Step 3: Heat your pan over medium-high heat with oil until shimmering. Step 4: Add ingredients in the proper order, explaining cooking techniques and timing. Step 5: Continue with very detailed steps explaining exactly what to look for (golden brown, fragrant, tender, etc). Step 6: Include specific temperatures, cooking times, and visual/sensory cues. Step 7: Explain plating and garnishing in detail. Each step should be thorough and educational.",
   "strMealThumb": "",
   "strTags": "tag1,tag2,tag3",
-  "strEquipment": "Large skillet, Mixing bowl, Measuring cups, Chef's knife, Cutting board, Wooden spoon",
+  "strEquipment": "Large skillet (12-inch), Mixing bowl (medium), Measuring cups, Chef's knife (8-inch), Cutting board, Wooden spoon, Meat thermometer, Colander, Whisk, Tongs",
   "strPrepTime": "15 minutes",
   "strCookTime": "30 minutes",
   "strTotalTime": "45 minutes",
@@ -99,10 +106,10 @@ Return ONLY this JSON format with NO extra text:
   "strMeal": "Creative Recipe Name",
   "strCategory": "${randomCategory}",
   "strArea": "${randomCuisine}",
-  "strInstructions": "Step 1: First step. Step 2: Second step. Step 3: Continue...",
+  "strInstructions": "Step 1: Begin by gathering all ingredients and equipment. Preheat your oven to the required temperature if needed. Step 2: Prepare all vegetables by washing, peeling, and cutting them into the specified sizes. Step 3: Heat your pan over medium-high heat with oil until shimmering. Step 4: Add ingredients in the proper order, explaining cooking techniques and timing. Step 5: Continue with very detailed steps explaining exactly what to look for (golden brown, fragrant, tender, etc). Step 6: Include specific temperatures, cooking times, and visual/sensory cues. Step 7: Explain plating and garnishing in detail. Each step should be thorough and educational.",
   "strMealThumb": "",
   "strTags": "${randomTheme},${randomCuisine.toLowerCase()},${randomCategory.toLowerCase()}",
-  "strEquipment": "Large skillet, Mixing bowl, Measuring cups, Chef's knife, Cutting board, Wooden spoon",
+  "strEquipment": "Large skillet (12-inch), Mixing bowl (medium), Measuring cups, Chef's knife (8-inch), Cutting board, Wooden spoon, Meat thermometer, Colander, Whisk, Tongs",
   "strPrepTime": "15 minutes",
   "strCookTime": "30 minutes",
   "strTotalTime": "45 minutes",
