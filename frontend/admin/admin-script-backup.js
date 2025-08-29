@@ -611,6 +611,128 @@ class AdminPanel {
     }
   }
 
+
+
+          <h4>🔧 Equipment Needed</h4>
+          <div class="equipment-list">
+            ${(recipe.equipment || recipe.strEquipment.split(',')).map(item => 
+              `<span class="equipment-item">• ${typeof item === 'string' ? item.trim() : item}</span>`
+            ).join('')}
+          </div>
+        </div>
+        ` : ''}
+
+        <!-- Nutrition Facts -->
+        ${recipe.caloriesPerServing ? `
+        <div class="nutrition-panel">
+          <h4>📊 Nutrition Facts (per serving)</h4>
+          <div class="nutrition-grid">
+            <div class="nutrition-item calories">
+              <strong>${recipe.caloriesPerServing}</strong><br>Calories
+            </div>
+            <div class="nutrition-item">
+              <strong>${recipe.protein || 'N/A'}</strong><br>Protein
+            </div>
+            <div class="nutrition-item">
+              <strong>${recipe.carbs || 'N/A'}</strong><br>Carbs
+            </div>
+            <div class="nutrition-item">
+              <strong>${recipe.fat || 'N/A'}</strong><br>Fat
+            </div>
+            <div class="nutrition-item">
+              <strong>${recipe.fiber || 'N/A'}</strong><br>Fiber
+            </div>
+            <div class="nutrition-item">
+              <strong>${recipe.sodium || 'N/A'}</strong><br>Sodium
+            </div>
+          </div>
+          
+          ${recipe.vitaminA || recipe.vitaminC || recipe.iron || recipe.calcium ? `
+          <div class="micronutrients">
+            <h5>Vitamins & Minerals</h5>
+            <div class="micro-grid">
+              ${recipe.vitaminA ? `<span>Vitamin A: ${recipe.vitaminA}</span>` : ''}
+              ${recipe.vitaminC ? `<span>Vitamin C: ${recipe.vitaminC}</span>` : ''}
+              ${recipe.iron ? `<span>Iron: ${recipe.iron}</span>` : ''}
+              ${recipe.calcium ? `<span>Calcium: ${recipe.calcium}</span>` : ''}
+            </div>
+          </div>
+          ` : ''}
+        </div>
+        ` : ''}
+        
+        <!-- Ingredients -->
+        <div class="ingredients-list">
+          <h4>🥘 Ingredients</h4>
+          <ul class="ingredients-enhanced">
+            ${ingredients.map(ing => `<li>${ing}</li>`).join('')}
+          </ul>
+        </div>
+        
+        <!-- Equipment -->
+        ${recipe.strEquipment || parseEquipment(recipe.equipmentRequired).length ? `
+        <div class="equipment-list">
+          <h4>🍳 Required Equipment</h4>
+          <div class="equipment-tags">
+            ${parseEquipment(recipe.equipmentRequired).length ? 
+              parseEquipment(recipe.equipmentRequired).map(item => 
+                `<span class="equipment-tag">${item}</span>`
+              ).join('') :
+              `<p>${recipe.strEquipment}</p>`
+            }
+          </div>
+        </div>
+        ` : ''}
+        
+        <!-- Instructions -->
+        <div class="instructions">
+          <h4>👨‍🍳 Instructions</h4>
+          <div class="instructions-content">${recipe.strInstructions}</div>
+        </div>
+        
+        <!-- Recipe Details -->
+        <div class="recipe-details-grid">
+          <div class="detail-section">
+            <h5>🏷️ Categories</h5>
+            <p><strong>Cuisine:</strong> ${recipe.cuisine || recipe.strArea}</p>
+            <p><strong>Meal Type:</strong> ${recipe.mealType || 'N/A'}</p>
+            <p><strong>Dish Type:</strong> ${recipe.dishType || recipe.strCategory}</p>
+            <p><strong>Main Ingredient:</strong> ${recipe.mainIngredient || 'N/A'}</p>
+          </div>
+          
+          <div class="detail-section">
+            <h5>🎯 Context</h5>
+            <p><strong>Occasion:</strong> ${recipe.occasion || 'Any time'}</p>
+            <p><strong>Season:</strong> ${recipe.seasonality || 'Year-round'}</p>
+            <p><strong>Time Category:</strong> ${recipe.timeCategory || 'N/A'}</p>
+          </div>
+        </div>
+        
+        <!-- Keywords & Search -->
+        ${parseKeywords(recipe.keywords).length ? `
+        <div class="keywords-section">
+          <h5>🔍 Keywords</h5>
+          <div class="keyword-tags">
+            ${parseKeywords(recipe.keywords).map(keyword => 
+              `<span class="keyword-tag">${keyword}</span>`
+            ).join('')}
+          </div>
+        </div>
+        ` : ''}
+        
+        ${recipe.strTags ? `<p><strong>Tags:</strong> ${recipe.strTags}</p>` : ''}
+        ${isPreview ? `<div class="form-actions"><button class="btn btn-primary save-previewed-recipe-btn">💾 Save This Amazing Recipe</button></div>` : ''}
+      </div>
+    `;
+    
+    this.previewedRecipe = recipe;
+    
+    // Set up event listeners for preview buttons if this is a preview
+    if (isPreview) {
+      this.setupPreviewEventListeners();
+    }
+  }
+
   getRecipeIngredients(recipe) {
     const ingredients = [];
     for (let i = 1; i <= 20; i++) {

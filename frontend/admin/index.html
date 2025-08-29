@@ -335,12 +335,17 @@
     <script src="/admin-assets/modern-display.js"></script>
     <script src="/admin-assets/admin-script.js"></script>
     <script>
-      // Override the display function with modern UI
-      if (window.adminPanel) {
-        adminPanel.displayRecipeResult = function(recipe, imageUrl, isPreview, imageQuality) {
-          this.generateResult.innerHTML = displayModernRecipe(recipe, imageUrl);
-        };
-      }
+      // Wait for DOM to be ready
+      document.addEventListener('DOMContentLoaded', () => {
+        // Override the display function with modern UI after adminPanel is created
+        setTimeout(() => {
+          if (window.adminPanel) {
+            adminPanel.displayRecipeResult = function(recipe, imageUrl, isPreview, imageQuality) {
+              this.generateResult.innerHTML = displayModernRecipe(recipe, imageUrl);
+            };
+          }
+        }, 100);
+      });
     </script>
 </body>
 </html>
