@@ -67,6 +67,11 @@ class AdminRoutes {
       ErrorHandler.asyncHandler(this.createRecipeWithAI.bind(this))
     );
     
+    this.router.post('/recipes/generate-images',
+      requirePermission('ai_generate'),
+      ErrorHandler.asyncHandler(this.generateAdditionalImages.bind(this))
+    );
+    
     this.router.post('/recipes/batch-generate', 
       requirePermission('ai_generate'),
       ErrorHandler.asyncHandler(this.batchGenerateRecipes.bind(this))
@@ -239,50 +244,116 @@ class AdminRoutes {
     }
   }
 
+  // Generate additional images for a recipe
+  async generateAdditionalImages(req, res) {
+    const { recipeName, count = 1 } = req.body;
+    
+    try {
+      const imageUrls = [];
+      const variations = ['artistic', 'close-up', 'plated beautifully', 'professional food photography', 'rustic style'];
+      
+      console.log(`🎨 Generating ${count} additional images for ${recipeName}...`);
+      
+      for (let i = 0; i < count; i++) {
+        try {
+          const variation = variations[i % variations.length];
+          const imageData = await this.openaiManager.generateRecipeImage(
+            recipeName,
+            `${variation} delicious food`,
+            null
+          );
+          imageUrls.push(imageData.url);
+          console.log(`  ✅ Image ${i + 1}/${count} generated`);
+        } catch (error) {
+          console.error(`  ❌ Failed to generate image ${i + 1}:`, error.message);
+        }
+      }
+      
+      res.json({
+        success: true,
+        images: imageUrls,
+        count: imageUrls.length,
+        message: `Generated ${imageUrls.length} images`
+      });
+    } catch (error) {
+      console.error('❌ Additional image generation error:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message || 'Failed to generate images'
+      });
+    }
+  }
+  
   // Create recipe with AI and save to database
   async createRecipeWithAI(req, res) {
     const aiParams = req.body;
+    const imageCount = parseInt(req.body.imageCount) || 1;
     
     try {
       // Generate recipe with AI
       const generatedRecipe = await this.openaiManager.generateRecipe(aiParams);
       
-      // Generate image BEFORE saving to avoid update issues
-      let imageUrl = null;
-      if (req.body.generateImage) {
-        try {
-          console.log('🎨 Generating AI image before saving recipe...');
-          
-          const imageData = await this.openaiManager.generateRecipeImage(
-            generatedRecipe.strMeal,
-            `${generatedRecipe.strCategory} dish from ${generatedRecipe.strArea}`,
-            null // No meal ID yet
-          );
-          
-          imageUrl = imageData.url;
-          generatedRecipe.strMealThumb = imageUrl; // Set image URL in recipe before saving
-          
-          console.log('✅ AI image generated successfully!');
-        } catch (imageError) {
-          console.error('❌ Image generation failed:', imageError.message);
-          console.error('❌ Image generation stack:', imageError.stack);
-          
-          // Set placeholder image URL
-          imageUrl = '/images/placeholder-recipe.jpg';
-          generatedRecipe.strMealThumb = imageUrl;
+      // Generate multiple images BEFORE saving to avoid update issues
+      let imageUrls = [];
+      let primaryImageUrl = null;
+      
+      if (req.body.generateImage && imageCount > 0) {
+        console.log(`🎨 Generating ${imageCount} AI images for recipe...`);
+        
+        for (let i = 0; i < imageCount; i++) {
+          try {
+            console.log(`  📸 Generating image ${i + 1}/${imageCount}...`);
+            
+            // Add variation to prompt for different images
+            const variations = ['artistic', 'close-up', 'plated beautifully', 'professional food photography', 'rustic style'];
+            const variation = variations[i % variations.length];
+            
+            const imageData = await this.openaiManager.generateRecipeImage(
+              generatedRecipe.strMeal,
+              `${variation} ${generatedRecipe.strCategory} dish from ${generatedRecipe.strArea}`,
+              null // No meal ID yet
+            );
+            
+            imageUrls.push(imageData.url);
+            
+            // First image becomes the primary thumbnail
+            if (i === 0) {
+              primaryImageUrl = imageData.url;
+              generatedRecipe.strMealThumb = primaryImageUrl;
+            }
+            
+            console.log(`  ✅ Image ${i + 1} generated successfully!`);
+          } catch (imageError) {
+            console.error(`  ❌ Image ${i + 1} generation failed:`, imageError.message);
+            
+            // Add placeholder for failed image
+            if (i === 0) {
+              primaryImageUrl = '/images/placeholder-recipe.jpg';
+              generatedRecipe.strMealThumb = primaryImageUrl;
+            }
+          }
         }
+        
+        console.log(`✅ Generated ${imageUrls.length}/${imageCount} images successfully!`);
       }
       
-      // Save recipe to database (with image URL already included)
+      // Save recipe to database (with primary image URL already included)
       const savedRecipe = await this.recipeManager.create(generatedRecipe);
+      
+      // Store additional images in recipe object for frontend
+      if (savedRecipe.meals && savedRecipe.meals[0]) {
+        savedRecipe.meals[0].additionalImages = imageUrls;
+      }
       
       res.json({
         success: true,
         recipe: savedRecipe.meals[0],
-        imageGenerated: !!imageUrl,
-        imageUrl,
-        imageQuality: imageUrl ? 'ultra-hd' : null,
-        message: 'Recipe created successfully with ULTRA-HIGH QUALITY AI image'
+        imageGenerated: imageUrls.length > 0,
+        imageUrl: primaryImageUrl,
+        imageUrls: imageUrls,
+        imageCount: imageUrls.length,
+        imageQuality: primaryImageUrl ? 'ultra-hd' : null,
+        message: `Recipe created successfully with ${imageUrls.length} AI image(s)`
       });
     } catch (error) {
       console.error('❌ Recipe generation error in route:', error.message);

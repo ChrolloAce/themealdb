@@ -295,8 +295,15 @@ class AdminPanel {
         const data = await response.json();
         
         if (data.success) {
-          this.displayRecipeResult(data.recipe, data.imageUrl);
-          this.showSuccess(this.generateResult, '🎉 Recipe generated successfully!');
+          // Pass all image URLs to display function
+          const recipe = data.recipe;
+          if (data.imageUrls && data.imageUrls.length > 0) {
+            recipe.additionalImages = data.imageUrls;
+          }
+          this.displayRecipeResult(recipe, data.imageUrl);
+          
+          const imageText = data.imageCount > 1 ? `with ${data.imageCount} images` : '';
+          this.showSuccess(this.generateResult, `🎉 Recipe generated successfully ${imageText}!`);
         } else {
           this.showError(this.generateResult, data.message || 'Generation failed');
         }

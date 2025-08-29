@@ -90,6 +90,25 @@ function displayModernRecipe(recipe, imageUrl = null) {
         ` : ''}
       </div>
       
+      ${recipe.additionalImages && recipe.additionalImages.length > 1 ? `
+        <!-- Multiple Images Gallery -->
+        <div class="additional-images-section">
+          <h3 class="section-title"><i class="fas fa-images"></i> Recipe Gallery (${recipe.additionalImages.length} images)</h3>
+          <div class="images-gallery">
+            ${recipe.additionalImages.map((url, index) => `
+              <div class="gallery-image-card">
+                <img src="${url}" alt="${recipe.strMeal} ${index + 1}" onclick="viewImage('${url}')" style="cursor: pointer;">
+                <div class="image-overlay">
+                  <button class="image-action-btn" onclick="event.stopPropagation(); downloadImage('${url}', '${recipe.strMeal}_${index + 1}')" title="Download">
+                    <i class="fas fa-download"></i>
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+      
       <!-- Stats Bar -->
       <div class="recipe-stats-bar">
         <div class="stat-badge">
