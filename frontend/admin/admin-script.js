@@ -477,22 +477,28 @@ class AdminPanel {
     const randomMode = document.getElementById('randomMode')?.checked ?? true;
     const customPrompt = document.getElementById('customPrompt')?.value || '';
     const generateImage = document.getElementById('generateImage')?.checked ?? true;
+    const recipeCount = parseInt(document.getElementById('recipeCount')?.value) || 1;
+    const imageCount = parseInt(document.getElementById('imageCount')?.value) || 1;
+    
+    const baseParams = {
+      generateImage: generateImage,
+      includeExistingContext: true,
+      batchCount: recipeCount,
+      imageCount: imageCount
+    };
     
     if (randomMode) {
       // Random generation with variety
       return {
-        mode: 'random',
-        generateImage: generateImage,
-        // Add variety to prevent duplication
-        includeExistingContext: true
+        ...baseParams,
+        mode: 'random'
       };
     } else {
       // Custom prompt generation
       return {
+        ...baseParams,
         mode: 'custom',
-        customPrompt: customPrompt,
-        generateImage: generateImage,
-        includeExistingContext: true
+        customPrompt: customPrompt
       };
     }
   }

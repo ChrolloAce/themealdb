@@ -161,11 +161,36 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Batch Generation Controls -->
+                                <div class="batch-controls-section">
+                                    <div class="batch-control-group">
+                                        <label class="control-label">
+                                            <i class="fas fa-layer-group"></i> Number of Recipes
+                                        </label>
+                                        <div class="number-selector">
+                                            <button type="button" class="number-btn minus" onclick="adjustNumber('recipeCount', -1)">-</button>
+                                            <input type="number" id="recipeCount" value="1" min="1" max="10" class="number-input">
+                                            <button type="button" class="number-btn plus" onclick="adjustNumber('recipeCount', 1)">+</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="batch-control-group">
+                                        <label class="control-label">
+                                            <i class="fas fa-images"></i> Images per Recipe
+                                        </label>
+                                        <div class="number-selector">
+                                            <button type="button" class="number-btn minus" onclick="adjustNumber('imageCount', -1)">-</button>
+                                            <input type="number" id="imageCount" value="1" min="0" max="5" class="number-input">
+                                            <button type="button" class="number-btn plus" onclick="adjustNumber('imageCount', 1)">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <!-- Generation Options -->
                                 <div class="generation-options">
                                     <label class="option-item">
                                         <input type="checkbox" id="generateImage" checked>
-                                        <span class="option-label"><i class="fas fa-image"></i> Generate Image</span>
+                                        <span class="option-label"><i class="fas fa-image"></i> Generate Images</span>
                                     </label>
                                 </div>
                                 
@@ -335,6 +360,26 @@
     <script src="/admin-assets/modern-display.js"></script>
     <script src="/admin-assets/admin-script.js"></script>
     <script>
+      // Number adjuster function
+      function adjustNumber(inputId, delta) {
+        const input = document.getElementById(inputId);
+        if (input) {
+          const current = parseInt(input.value) || 0;
+          const min = parseInt(input.min) || 0;
+          const max = parseInt(input.max) || 999;
+          const newValue = Math.max(min, Math.min(max, current + delta));
+          input.value = newValue;
+          
+          // Update button text based on count
+          if (inputId === 'recipeCount') {
+            const btn = document.querySelector('.btn-generate span');
+            if (btn) {
+              btn.textContent = newValue > 1 ? `Generate ${newValue} Recipes` : 'Generate Recipe';
+            }
+          }
+        }
+      }
+      
       // Wait for DOM to be ready
       document.addEventListener('DOMContentLoaded', () => {
         // Override the display function with modern UI after adminPanel is created
@@ -345,6 +390,18 @@
             };
           }
         }, 100);
+        
+        // Update button text based on recipe count
+        const recipeCountInput = document.getElementById('recipeCount');
+        if (recipeCountInput) {
+          recipeCountInput.addEventListener('input', (e) => {
+            const count = parseInt(e.target.value) || 1;
+            const btn = document.querySelector('.btn-generate span');
+            if (btn) {
+              btn.textContent = count > 1 ? `Generate ${count} Recipes` : 'Generate Recipe';
+            }
+          });
+        }
       });
     </script>
 </body>

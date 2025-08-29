@@ -250,28 +250,77 @@ async function generateBatchImages(recipeName) {
     </div>
   `;
   
-  // TODO: Call your image generation API here
-  // For now, just simulate with placeholder
-  setTimeout(() => {
-    const images = [];
-    for (let i = 0; i < count; i++) {
-      images.push(`https://via.placeholder.com/400x400?text=Recipe+Image+${i+1}`);
-    }
+  try {
+    // Call the image generation API
+    const response = await fetch('/admin/recipes/generate-images', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${window.adminPanel?.token || ''}`
+      },
+      body: JSON.stringify({
+        recipeName: recipeName,
+        count: count
+      })
+    });
     
-    grid.innerHTML = images.map((url, index) => `
-      <div class="generated-image-card">
-        <img src="${url}" alt="${recipeName} ${index + 1}">
-        <div class="image-overlay">
-          <div class="image-actions">
-            <button class="image-action-btn" title="Download">
-              <i class="fas fa-download"></i>
-            </button>
-            <button class="image-action-btn" title="View">
-              <i class="fas fa-eye"></i>
-            </button>
+    const data = await response.json();
+    
+    if (data.success && data.images) {
+      grid.innerHTML = data.images.map((url, index) => `
+        <div class="generated-image-card">
+          <img src="${url}" alt="${recipeName} ${index + 1}">
+          <div class="image-overlay">
+            <div class="image-actions">
+              <button class="image-action-btn" title="Download" onclick="downloadImage('${url}', '${recipeName}_${index + 1}')">
+                <i class="fas fa-download"></i>
+              </button>
+              <button class="image-action-btn" title="View" onclick="viewImage('${url}')">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    `).join('');
-  }, 2000);
+      `).join('');
+    } else {
+      // Fallback to placeholder images
+      const images = [];
+      for (let i = 0; i < count; i++) {
+        images.push(`https://via.placeholder.com/400x400?text=Recipe+Image+${i+1}`);
+      }
+      
+      grid.innerHTML = images.map((url, index) => `
+        <div class="generated-image-card">
+          <img src="${url}" alt="${recipeName} ${index + 1}">
+          <div class="image-overlay">
+            <div class="image-actions">
+              <button class="image-action-btn" title="Download">
+                <i class="fas fa-download"></i>
+              </button>
+              <button class="image-action-btn" title="View">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+  } catch (error) {
+    console.error('Failed to generate images:', error);
+    grid.innerHTML = '<div class="error-message">Failed to generate images. Please try again.</div>';
+  }
+}
+
+// Helper functions for image actions
+function downloadImage(url, filename) {
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename + '.jpg';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function viewImage(url) {
+  window.open(url, '_blank');
 }
