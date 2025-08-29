@@ -5,6 +5,7 @@ const OpenAIManager = require('../managers/OpenAIManager');
 const RecipeManager = require('../managers/RecipeManager');
 const ImageManager = require('../managers/ImageManager');
 const AdminManager = require('../managers/AdminManager');
+const FirebaseStorageManager = require('../managers/FirebaseStorageManager');
 
 class AdminRoutes {
   constructor(databaseManager) {
@@ -14,6 +15,10 @@ class AdminRoutes {
     this.recipeManager = new RecipeManager(databaseManager);
     this.imageManager = new ImageManager();
     this.adminManager = new AdminManager();
+    this.storageManager = new FirebaseStorageManager();
+    
+    // Initialize Firebase Storage
+    this.storageManager.initialize();
     
     this.setupRoutes();
   }
@@ -75,6 +80,21 @@ class AdminRoutes {
     this.router.post('/recipes/batch-generate', 
       requirePermission('ai_generate'),
       ErrorHandler.asyncHandler(this.batchGenerateRecipes.bind(this))
+    );
+    
+    // Firebase Storage endpoints
+    this.router.post('/storage/upload',
+      requirePermission('write'),
+      ErrorHandler.asyncHandler(this.uploadToStorage.bind(this))
+    );
+    
+    this.router.get('/storage/stats',
+      ErrorHandler.asyncHandler(this.getStorageStats.bind(this))
+    );
+    
+    this.router.delete('/storage/image',
+      requirePermission('delete'),
+      ErrorHandler.asyncHandler(this.deleteFromStorage.bind(this))
     );
     
     // Admin recipe management
@@ -314,11 +334,27 @@ class AdminRoutes {
               null // No meal ID yet
             );
             
-            imageUrls.push(imageData.url);
+            // Upload to Firebase Storage for permanent storage
+            let finalImageUrl = imageData.url;
+            if (this.storageManager.isAvailable()) {
+              try {
+                console.log(`  ☁️ Uploading to Firebase Storage...`);
+                finalImageUrl = await this.storageManager.uploadImageFromUrl(
+                  imageData.url,
+                  generatedRecipe.strMeal,
+                  generatedRecipe.strCategory
+                );
+                console.log(`  ✅ Uploaded to Firebase Storage`);
+              } catch (storageError) {
+                console.error(`  ⚠️ Firebase upload failed, using original URL:`, storageError.message);
+              }
+            }
+            
+            imageUrls.push(finalImageUrl);
             
             // First image becomes the primary thumbnail
             if (i === 0) {
-              primaryImageUrl = imageData.url;
+              primaryImageUrl = finalImageUrl;
               generatedRecipe.strMealThumb = primaryImageUrl;
             }
             
@@ -566,6 +602,90 @@ class AdminRoutes {
     }
   }
 
+  // Upload image to Firebase Storage
+  async uploadToStorage(req, res) {
+    try {
+      const { imageUrl, base64Image, recipeName, category } = req.body;
+      
+      if (!recipeName) {
+        throw new Error('Recipe name is required');
+      }
+      
+      let firebaseUrl;
+      
+      if (imageUrl) {
+        // Upload from URL
+        firebaseUrl = await this.storageManager.uploadImageFromUrl(
+          imageUrl, 
+          recipeName, 
+          category || 'general'
+        );
+      } else if (base64Image) {
+        // Upload from base64
+        firebaseUrl = await this.storageManager.uploadBase64Image(
+          base64Image, 
+          recipeName, 
+          category || 'general'
+        );
+      } else {
+        throw new Error('No image provided (imageUrl or base64Image required)');
+      }
+      
+      res.json({
+        success: true,
+        url: firebaseUrl,
+        message: 'Image uploaded to Firebase Storage successfully'
+      });
+    } catch (error) {
+      console.error('Storage upload error:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message || 'Failed to upload image'
+      });
+    }
+  }
+  
+  // Get storage statistics
+  async getStorageStats(req, res) {
+    try {
+      const stats = await this.storageManager.getStorageStats();
+      res.json({
+        success: true,
+        ...stats
+      });
+    } catch (error) {
+      console.error('Storage stats error:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message || 'Failed to get storage stats'
+      });
+    }
+  }
+  
+  // Delete image from Firebase Storage
+  async deleteFromStorage(req, res) {
+    try {
+      const { imageUrl } = req.body;
+      
+      if (!imageUrl) {
+        throw new Error('Image URL is required');
+      }
+      
+      const deleted = await this.storageManager.deleteImage(imageUrl);
+      
+      res.json({
+        success: deleted,
+        message: deleted ? 'Image deleted successfully' : 'Failed to delete image'
+      });
+    } catch (error) {
+      console.error('Storage delete error:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message || 'Failed to delete image'
+      });
+    }
+  }
+  
   // Delete recipe
   async deleteRecipe(req, res) {
     const recipeId = req.params.id;
