@@ -1,13 +1,22 @@
 {
   "version": 2,
-  "rewrites": [
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/api/[...all]"
+      "src": "backend/server.js",
+      "use": "@vercel/node",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/backend/server.js"
     }
   ],
   "functions": {
-    "api/[...all].js": {
+    "backend/server.js": {
       "maxDuration": 30
     }
   },
@@ -30,6 +39,10 @@
         {
           "key": "X-Robots-Tag",
           "value": "noindex"
+        },
+        {
+          "key": "X-Vercel-Bypass-Challenge",
+          "value": "1"
         }
       ]
     }
