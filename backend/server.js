@@ -67,12 +67,19 @@ class FoodDBServer {
 
     // Add API-specific headers for Vercel security compatibility and mobile app support
     this.app.use('/api', (req, res, next) => {
+      // Headers to bypass Vercel Security Checkpoint
       res.setHeader('X-API-Route', 'true');
       res.setHeader('X-Content-Type-Options', 'nosniff');
       res.setHeader('Cache-Control', 'public, max-age=300');
       res.setHeader('X-Vercel-Bypass-Challenge', '1');
       res.setHeader('X-Robots-Tag', 'noindex');
       res.setHeader('Vary', 'User-Agent, Accept');
+      
+      // Additional headers to identify as legitimate API
+      res.setHeader('X-API-Version', '1.0');
+      res.setHeader('X-Service-Type', 'REST-API');
+      res.setHeader('Content-Type', 'application/json');
+      
       next();
     });
     
