@@ -331,6 +331,27 @@ class RecipeManager {
         throw new Error('Recipe not found');
       }
       
+      // Check if we're using Firebase
+      if (this.db.updateRecipe) {
+        console.log('🔥 Updating recipe in Firebase...');
+        
+        // For Firebase, we need to find the document by idMeal and update it
+        const allRecipes = await this.db.getAllRecipes(1000); // Get more recipes to find the right one
+        const targetRecipe = allRecipes.find(recipe => recipe.idMeal === id || recipe.idMeal === id.toString());
+        
+        if (!targetRecipe) {
+          throw new Error('Recipe not found in Firebase');
+        }
+        
+        // Update the recipe data
+        const updatedData = { ...targetRecipe, ...recipeData };
+        await this.db.updateRecipe(targetRecipe.id, updatedData); // Use Firebase document ID
+        
+        console.log('✅ Recipe updated in Firebase');
+        return await this.getById(id);
+      }
+      
+      // Fallback to SQL for SQLite
       const recipe = new Recipe({ ...existingRecipe.meals[0], ...recipeData });
       const dbData = recipe.toDbFormat();
       

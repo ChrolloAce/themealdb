@@ -313,12 +313,23 @@ class AdminRoutes {
       // Generate recipe with AI
       const generatedRecipe = await this.openaiManager.generateRecipe(aiParams);
       
-      // Generate multiple images BEFORE saving to avoid update issues
+      // Save recipe to database first to get meal ID
+      console.log('💾 Saving recipe to database...');
+      const savedRecipe = await this.recipeManager.create(generatedRecipe);
+      
+      if (!savedRecipe.meals || !savedRecipe.meals[0]) {
+        throw new Error('Failed to save recipe to database');
+      }
+      
+      const mealId = savedRecipe.meals[0].idMeal;
+      console.log(`✅ Recipe saved with ID: ${mealId}`);
+      
+      // Now generate images with proper meal ID for Firebase Storage organization
       let imageUrls = [];
       let primaryImageUrl = null;
       
       if (req.body.generateImage && imageCount > 0) {
-        console.log(`🎨 Generating ${imageCount} AI images for recipe...`);
+        console.log(`🎨 Generating ${imageCount} AI images for recipe ID: ${mealId}...`);
         
         for (let i = 0; i < imageCount; i++) {
           try {
@@ -331,23 +342,27 @@ class AdminRoutes {
             const imageData = await this.openaiManager.generateRecipeImage(
               generatedRecipe.strMeal,
               `${variation} ${generatedRecipe.strCategory} dish from ${generatedRecipe.strArea}`,
-              null // No meal ID yet
+              mealId // Now we have the meal ID!
             );
             
-            // Upload to Firebase Storage for permanent storage
+            // Upload to Firebase Storage with meal ID for proper organization
             let finalImageUrl = imageData.url;
             if (this.storageManager.isAvailable()) {
               try {
-                console.log(`  ☁️ Uploading to Firebase Storage...`);
+                console.log(`  ☁️ Uploading to Firebase Storage with meal ID ${mealId}...`);
                 finalImageUrl = await this.storageManager.uploadImageFromUrl(
                   imageData.url,
                   generatedRecipe.strMeal,
-                  generatedRecipe.strCategory
+                  generatedRecipe.strCategory,
+                  mealId // Pass meal ID for proper organization
                 );
-                console.log(`  ✅ Uploaded to Firebase Storage`);
+                console.log(`  ✅ Uploaded to Firebase Storage: ${finalImageUrl}`);
               } catch (storageError) {
                 console.error(`  ⚠️ Firebase upload failed, using original URL:`, storageError.message);
+                console.error('Full error:', storageError);
               }
+            } else {
+              console.warn('⚠️ Firebase Storage not available, keeping original URL');
             }
             
             imageUrls.push(finalImageUrl);
@@ -355,7 +370,6 @@ class AdminRoutes {
             // First image becomes the primary thumbnail
             if (i === 0) {
               primaryImageUrl = finalImageUrl;
-              generatedRecipe.strMealThumb = primaryImageUrl;
             }
             
             console.log(`  ✅ Image ${i + 1} generated successfully!`);
@@ -365,16 +379,26 @@ class AdminRoutes {
             // Add placeholder for failed image
             if (i === 0) {
               primaryImageUrl = '/images/placeholder-recipe.jpg';
-              generatedRecipe.strMealThumb = primaryImageUrl;
             }
           }
         }
         
         console.log(`✅ Generated ${imageUrls.length}/${imageCount} images successfully!`);
+        
+        // Update recipe with primary image URL if we generated images
+        if (primaryImageUrl) {
+          console.log('🖼️ Updating recipe with primary image URL...');
+          try {
+            await this.recipeManager.update(mealId, { 
+              strMealThumb: primaryImageUrl 
+            });
+            savedRecipe.meals[0].strMealThumb = primaryImageUrl;
+            console.log('✅ Recipe updated with primary image URL');
+          } catch (updateError) {
+            console.error('❌ Failed to update recipe with image URL:', updateError.message);
+          }
+        }
       }
-      
-      // Save recipe to database (with primary image URL already included)
-      const savedRecipe = await this.recipeManager.create(generatedRecipe);
       
       // Store additional images in recipe object for frontend
       if (savedRecipe.meals && savedRecipe.meals[0]) {

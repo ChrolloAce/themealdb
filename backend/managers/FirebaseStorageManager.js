@@ -60,7 +60,7 @@ class FirebaseStorageManager {
    * Check if storage is available
    */
   isAvailable() {
-    return this.initialized && this.bucket !== null;
+    return this.initialized && this.storage !== null;
   }
 
   /**
@@ -87,7 +87,10 @@ class FirebaseStorageManager {
         throw new Error(`Failed to fetch image: ${response.statusText}`);
       }
       
-      const buffer = await response.buffer();
+      console.log('📦 Converting response to buffer...');
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      console.log(`📏 Buffer size: ${buffer.length} bytes`);
       
       // Generate unique filename with proper structure
       const timestamp = Date.now();
@@ -100,6 +103,7 @@ class FirebaseStorageManager {
         : `generated/${category}/${sanitizedName}_${timestamp}_${uniqueId}.jpg`;
       
       // Create storage reference
+      console.log(`📁 Creating Firebase Storage reference: ${fileName}`);
       const storageRef = ref(this.storage, fileName);
       
       // Upload with metadata using Web SDK
@@ -110,16 +114,20 @@ class FirebaseStorageManager {
           recipeName: recipeName,
           category: category,
           originalUrl: imageUrl,
-          uploadedAt: new Date().toISOString()
+          uploadedAt: new Date().toISOString(),
+          mealId: mealId ? mealId.toString() : 'none'
         }
       };
 
+      console.log('☁️ Starting Firebase upload...');
       await uploadBytes(storageRef, buffer, metadata);
+      console.log('✅ Upload complete, getting download URL...');
       
       // Get public URL
       const publicUrl = await getDownloadURL(storageRef);
       
       console.log('✅ Image uploaded to Firebase Storage:', publicUrl);
+      console.log(`🗂️ Storage path: ${fileName}`);
       return publicUrl;
       
     } catch (error) {
