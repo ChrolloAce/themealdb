@@ -46,6 +46,11 @@ class FirebaseStorageManager {
       
       console.log('✅ Firebase Storage initialized successfully (Web SDK)');
       console.log('🗂️ Storage bucket:', this.bucketName);
+      console.log('🔍 Environment check:', {
+        nodeEnv: process.env.NODE_ENV,
+        isVercel: !!process.env.VERCEL,
+        hasFirebaseConfig: !!firebaseConfig.apiKey
+      });
       return true;
     } catch (error) {
       console.error('❌ Firebase Storage initialization failed:', error.message);
@@ -120,6 +125,13 @@ class FirebaseStorageManager {
       };
 
       console.log('☁️ Starting Firebase upload...');
+      console.log('📊 Upload details:', {
+        bufferSize: buffer.length,
+        fileName: fileName,
+        contentType: metadata.contentType,
+        isVercel: !!process.env.VERCEL
+      });
+      
       await uploadBytes(storageRef, buffer, metadata);
       console.log('✅ Upload complete, getting download URL...');
       

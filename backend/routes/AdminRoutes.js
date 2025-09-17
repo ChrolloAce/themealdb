@@ -18,7 +18,9 @@ class AdminRoutes {
     this.storageManager = new FirebaseStorageManager();
     
     // Initialize Firebase Storage
-    this.storageManager.initialize();
+    const storageInitialized = this.storageManager.initialize();
+    console.log('🔥 Firebase Storage Manager initialization result:', storageInitialized);
+    console.log('🔥 Firebase Storage available:', this.storageManager.isAvailable());
     
     this.setupRoutes();
   }
@@ -90,6 +92,10 @@ class AdminRoutes {
     
     this.router.get('/storage/stats',
       ErrorHandler.asyncHandler(this.getStorageStats.bind(this))
+    );
+    
+    this.router.get('/storage/test',
+      ErrorHandler.asyncHandler(this.testFirebaseStorage.bind(this))
     );
     
     this.router.delete('/storage/image',
@@ -347,9 +353,19 @@ class AdminRoutes {
             
             // Upload to Firebase Storage with meal ID for proper organization
             let finalImageUrl = imageData.url;
+            console.log(`🔍 DEBUG: Storage manager available? ${this.storageManager.isAvailable()}`);
+            console.log(`🔍 DEBUG: Image data:`, { url: imageData.url, recipeName: generatedRecipe.strMeal, mealId });
+            
             if (this.storageManager.isAvailable()) {
               try {
                 console.log(`  ☁️ Uploading to Firebase Storage with meal ID ${mealId}...`);
+                console.log(`  📤 Upload params:`, {
+                  url: imageData.url,
+                  recipeName: generatedRecipe.strMeal,
+                  category: generatedRecipe.strCategory,
+                  mealId: mealId
+                });
+                
                 finalImageUrl = await this.storageManager.uploadImageFromUrl(
                   imageData.url,
                   generatedRecipe.strMeal,
@@ -363,6 +379,10 @@ class AdminRoutes {
               }
             } else {
               console.warn('⚠️ Firebase Storage not available, keeping original URL');
+              console.warn('🔍 DEBUG: Storage manager state:', {
+                initialized: this.storageManager.initialized,
+                storage: !!this.storageManager.storage
+              });
             }
             
             imageUrls.push(finalImageUrl);
@@ -682,6 +702,39 @@ class AdminRoutes {
       res.status(500).json({
         success: false,
         message: error.message || 'Failed to get storage stats'
+      });
+    }
+  }
+
+  // Test Firebase Storage initialization
+  async testFirebaseStorage(req, res) {
+    try {
+      console.log('🧪 Testing Firebase Storage...');
+      console.log('🔍 Storage Manager State:');
+      console.log('  - Initialized:', this.storageManager.initialized);
+      console.log('  - Available:', this.storageManager.isAvailable());
+      console.log('  - Storage object:', !!this.storageManager.storage);
+      console.log('  - Bucket name:', this.storageManager.bucketName);
+      
+      const testResult = {
+        initialized: this.storageManager.initialized,
+        available: this.storageManager.isAvailable(),
+        storage: !!this.storageManager.storage,
+        bucketName: this.storageManager.bucketName,
+        timestamp: new Date().toISOString()
+      };
+      
+      res.json({
+        success: true,
+        message: 'Firebase Storage test completed',
+        result: testResult
+      });
+    } catch (error) {
+      console.error('❌ Firebase Storage test failed:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Firebase Storage test failed',
+        error: error.message
       });
     }
   }
