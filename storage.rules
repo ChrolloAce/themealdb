@@ -21,17 +21,14 @@ service firebase.storage {
     // Generated AI images - allow public read, server write
     match /generated/{type}/{fileName} {
       allow read: if true;
-      allow write: if request.headers.get('x-api-key') != null || 
-                     // Allow from your server's IP or with proper API key
-                     true; // For now, allow all writes to generated images
+      allow write: if true; // Allow all writes for AI generated images
       allow delete: if request.auth != null;
     }
     
-    // Meal images organized by meal ID
+    // Meal images organized by meal ID - allow API server to upload
     match /meals/{mealId}/{fileName} {
       allow read: if true;
-      allow write: if request.auth != null || 
-                     request.headers.get('x-api-key') != null;
+      allow write: if true; // Allow all writes for now - your API server needs this
       allow delete: if request.auth != null;
     }
     

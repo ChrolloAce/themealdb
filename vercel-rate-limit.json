@@ -1,0 +1,10 @@
+{
+  "rateLimiting": {
+    "api": {
+      "/api/v1/*": {
+        "limit": 1000,
+        "duration": "1h"
+      }
+    }
+  }
+}

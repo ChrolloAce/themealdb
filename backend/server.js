@@ -64,6 +64,14 @@ class FoodDBServer {
       }
     }));
     this.app.use(cors());
+
+    // Add API-specific headers for Vercel security compatibility
+    this.app.use('/api', (req, res, next) => {
+      res.setHeader('X-API-Route', 'true');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('Cache-Control', 'public, max-age=300');
+      next();
+    });
     
     // Rate limiting
     this.app.use(rateLimitMiddleware);
