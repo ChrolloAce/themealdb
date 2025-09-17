@@ -76,6 +76,7 @@ ${existingContext ? 'IMPORTANT: Create something different from the existing rec
 - NEVER use "N/A", "TBD", or any placeholder text. ALL fields must have real values.
 - Instructions must be EDUCATIONAL and DETAILED
 - Equipment list must be COMPREHENSIVE with specific sizes/types
+- 🚨 ONLY use ingredients from this EXACT list (match names precisely): abalone, acai berry, ackee, acorn squash, active dry yeast, adzuki beans, agar agar, agave nectar, aioli, aleppo pepper, alfalfa sprouts, alfredo sauce, all-purpose flour, allspice, almond butter, almond extract, almond flour, almond milk, almond paste, almonds, anchovies, Anchovy Paste, andouille sausage, anise seeds, annatto, apple, apple butter, applesauce, apricot, apricot jam, arborio rice, Arrowroot powder, artichoke, asafoetida, asiago cheese, Asian Pear, asparagus, avocado, bacon, Baguette, baking powder, baking soda, balsamic vinegar, banana, banana blossom, barbecue sauce, barley, barley flour, basil, basil seeds, Basmati Rice, Bay Leaf, beef, Beef Bourguignon, beef brisket, beef broth, Beef Ribs, beef stock, beef tenderloin, beets, Belacan (shrimp paste), bell pepper, bell peppers, besan (chickpea flour), black beans, black cardamom, black fungus (cloud ear), Black Garlic, Black Pepper, Black Peppercorns, black salt (kala namak), Black Tea, black truffle, Black-Eyed Peas, Blood Sausage, blue cheese, blue cheese dressing, blueberry, bok choy, Bonito Flakes, bourbon, Brandy, Bread, bread flour, Breadcrumbs, Breakfast Sausage, Brie, Broccoli, Broccolini, Brown Mustard Seeds, brown rice, brown sugar, brownie mix, brussels sprouts, buckwheat, buckwheat flour, bulgur, burdock root, butter, butter lettuce, buttermilk, buttermilk powder, butternut squash, cabbage, Cacao Nibs, Cactus Pear (Prickly Pear), Cajun Seasoning, Calamari (Squid), camembert, candied ginger, candied orange peel, candlenut, cane vinegar, canned salmon, canned tomatoes, canned tuna, cannellini beans, Caper Berries, Capers, Caramel Sauce, caraway seeds, carne asada, carolina reaper, carrot, cashew butter, cashew milk, cashews, cassava, catfish, cauliflower, cayenne pepper, celery, celery root (celeriac), champagne vinegar, chana dal, chanterelle mushrooms, char siu sauce, cheddar cheese, cheese, cheese curds, cherry, cherry tomato, chervil, chickpeas, chili oil, chili paste, chili powder, chili sauce, Chinese five-spice, chipotle chili powder, chives, chocolate chips, chocolate hazelnut spread, chocolate syrup, cider, cilantro, cinnamon, cinnamon stick, clam juice, clams, clarified butter, clotted cream, cloves, cocoa powder, coconut, coconut aminos, coconut cream, coconut milk, coconut oil, coconut sugar, coconut vinegar, cod, coffee, cognac, collard greens, condensed milk, coriander seeds, corn, corn flakes, corn oil, corn syrup, corn tortillas, corned beef, cornmeal, cotija cheese, cottage cheese, crab, crab meat, cranberries, cream cheese, cream of coconut, cream of tartar, crème fraîche, cremebrule, cremini mushrooms, cucumber, cumin seeds, curly parsley, currants, curry leaves, curry paste, curry powder, daikon radish, dashi, dates, demi-glace, diced tomatoes, dijon mustard, dill, dill seeds, dried apricots, dried cranberries, dried figs, dried hibiscus, dried shrimp, dried thyme, dry mustard powder, duck, duck eggs, duck fat, duck sauce, dulce de leche, edam cheese, edamame, egg noodles, egg whites, egg yolks, eggplant, eggs, egusi seeds, elderberry, empanadas, enoki mushrooms, espresso powder, evaporated milk, extra virgin olive oil, fava beans, fennel bulb, fennel seeds, fenugreek leaves, fenugreek seeds, fermented black beans, filé powder, fish maw, fish sauce, five-spice powder, flaxseeds, flour tortillas, fontina cheese, forbidden rice (black rice), freekeh, freeze-dried fruit, french dressing, fried onions, frosting, fruit cocktail (canned), garam masala, garlic, garlic chives, garlic powder, garlic scapes, gelatin, gin, ginger, ginger paste, ginger powder, gingersnaps (crushed), glucose syrup, glutinous rice (sticky rice), goat, goat cheese, gochugaru (Korean chili flakes), gochujang, salmon, salt, spaghetti, Spaghetti Carbonara, spinach, sugar, sushi, tiramisu
 
 Return ONLY this JSON format with NO extra text:
 {
@@ -796,14 +797,47 @@ Return JSON with:
 
       const ingredients = seasonalIngredients[season.toLowerCase()] || 'seasonal ingredients';
 
+      const allowedIngredients = [
+        "abalone", "acai berry", "ackee", "acorn squash", "active dry yeast", "adzuki beans", "agar agar", "agave nectar", "aioli", "aleppo pepper",
+        "alfalfa sprouts", "alfredo sauce", "all-purpose flour", "allspice", "almond butter", "almond extract", "almond flour", "almond milk", "almond paste", "almonds",
+        "anchovies", "Anchovy Paste", "andouille sausage", "anise seeds", "annatto", "apple", "apple butter", "applesauce", "apricot", "apricot jam",
+        "arborio rice", "Arrowroot powder", "artichoke", "asafoetida", "asiago cheese", "Asian Pear", "asparagus", "avocado", "bacon", "Baguette",
+        "baking powder", "baking soda", "balsamic vinegar", "banana", "banana blossom", "barbecue sauce", "barley", "barley flour", "basil", "basil seeds",
+        "Basmati Rice", "Bay Leaf", "beef", "Beef Bourguignon", "beef brisket", "beef broth", "Beef Ribs", "beef stock", "beef tenderloin", "beets",
+        "Belacan (shrimp paste)", "bell pepper", "bell peppers", "besan (chickpea flour)", "black beans", "black cardamom", "black fungus (cloud ear)", "Black Garlic", "Black Pepper", "Black Peppercorns",
+        "black salt (kala namak)", "Black Tea", "black truffle", "Black-Eyed Peas", "Blood Sausage", "blue cheese", "blue cheese dressing", "blueberry", "bok choy", "Bonito Flakes",
+        "bourbon", "Brandy", "Bread", "bread flour", "Breadcrumbs", "Breakfast Sausage", "Brie", "Broccoli", "Broccolini", "Brown Mustard Seeds",
+        "brown rice", "brown sugar", "brownie mix", "brussels sprouts", "buckwheat", "buckwheat flour", "bulgur", "burdock root", "butter", "butter lettuce",
+        "buttermilk", "buttermilk powder", "butternut squash", "cabbage", "Cacao Nibs", "Cactus Pear (Prickly Pear)", "Cajun Seasoning", "Calamari (Squid)", "camembert", "candied ginger",
+        "candied orange peel", "candlenut", "cane vinegar", "canned salmon", "canned tomatoes", "canned tuna", "cannellini beans", "Caper Berries", "Capers", "Caramel Sauce",
+        "caraway seeds", "carne asada", "carolina reaper", "carrot", "cashew butter", "cashew milk", "cashews", "cassava", "catfish", "cauliflower",
+        "cayenne pepper", "celery", "celery root (celeriac)", "champagne vinegar", "chana dal", "chanterelle mushrooms", "char siu sauce", "cheddar cheese", "cheese", "cheese curds",
+        "cherry", "cherry tomato", "chervil", "chickpeas", "chili oil", "chili paste", "chili powder", "chili sauce", "Chinese five-spice", "chipotle chili powder",
+        "chives", "chocolate chips", "chocolate hazelnut spread", "chocolate syrup", "cider", "cilantro", "cinnamon", "cinnamon stick", "clam juice", "clams",
+        "clarified butter", "clotted cream", "cloves", "cocoa powder", "coconut", "coconut aminos", "coconut cream", "coconut milk", "coconut oil", "coconut sugar",
+        "coconut vinegar", "cod", "coffee", "cognac", "collard greens", "condensed milk", "coriander seeds", "corn", "corn flakes", "corn oil",
+        "corn syrup", "corn tortillas", "corned beef", "cornmeal", "cotija cheese", "cottage cheese", "crab", "crab meat", "cranberries", "cream cheese",
+        "cream of coconut", "cream of tartar", "crème fraîche", "cremebrule", "cremini mushrooms", "cucumber", "cumin seeds", "curly parsley", "currants", "curry leaves",
+        "curry paste", "curry powder", "daikon radish", "dashi", "dates", "demi-glace", "diced tomatoes", "dijon mustard", "dill", "dill seeds",
+        "dried apricots", "dried cranberries", "dried figs", "dried hibiscus", "dried shrimp", "dried thyme", "dry mustard powder", "duck", "duck eggs", "duck fat",
+        "duck sauce", "dulce de leche", "edam cheese", "edamame", "egg noodles", "egg whites", "egg yolks", "eggplant", "eggs", "egusi seeds",
+        "elderberry", "empanadas", "enoki mushrooms", "espresso powder", "evaporated milk", "extra virgin olive oil", "fava beans", "fennel bulb", "fennel seeds", "fenugreek leaves",
+        "fenugreek seeds", "fermented black beans", "filé powder", "fish maw", "fish sauce", "five-spice powder", "flaxseeds", "flour tortillas", "fontina cheese", "forbidden rice (black rice)",
+        "freekeh", "freeze-dried fruit", "french dressing", "fried onions", "frosting", "fruit cocktail (canned)", "garam masala", "garlic", "garlic chives", "garlic powder",
+        "garlic scapes", "gelatin", "gin", "ginger", "ginger paste", "ginger powder", "gingersnaps (crushed)", "glucose syrup", "glutinous rice (sticky rice)", "goat",
+        "goat cheese", "gochugaru (Korean chili flakes)", "gochujang", "salmon", "salt", "spaghetti", "Spaghetti Carbonara", "spinach", "sugar", "sushi", "tiramisu"
+      ];
+
       const prompt = `Generate ${count} delicious ${season} recipes featuring seasonal ingredients like ${ingredients}. 
+
+🚨 CRITICAL CONSTRAINT: ONLY use ingredients from this EXACT list (match names precisely): ${allowedIngredients.join(', ')}
 
 For each recipe, return JSON format with:
 - strMeal: Recipe name
 - strCategory: Food category
 - strArea: Cuisine origin
 - strInstructions: Detailed cooking instructions
-- ingredients: Object with strIngredient1-20 and strMeasure1-20
+- ingredients: Object with strIngredient1-20 and strMeasure1-20 (MUST use allowed ingredients only)
 - strTags: Comma-separated tags
 - seasonalHighlight: Why this recipe is perfect for ${season}
 
@@ -837,6 +871,38 @@ Return as JSON array.`;
     const restrictionsText = params.dietaryRestrictions.length > 0 
       ? ` The recipe must accommodate these dietary restrictions: ${params.dietaryRestrictions.join(', ')}.`
       : '';
+
+    // 🚨 CRITICAL: ONLY USE INGREDIENTS FROM THIS EXACT LIST - MATCH NAMES PRECISELY
+    const allowedIngredients = [
+      "abalone", "acai berry", "ackee", "acorn squash", "active dry yeast", "adzuki beans", "agar agar", "agave nectar", "aioli", "aleppo pepper",
+      "alfalfa sprouts", "alfredo sauce", "all-purpose flour", "allspice", "almond butter", "almond extract", "almond flour", "almond milk", "almond paste", "almonds",
+      "anchovies", "Anchovy Paste", "andouille sausage", "anise seeds", "annatto", "apple", "apple butter", "applesauce", "apricot", "apricot jam",
+      "arborio rice", "Arrowroot powder", "artichoke", "asafoetida", "asiago cheese", "Asian Pear", "asparagus", "avocado", "bacon", "Baguette",
+      "baking powder", "baking soda", "balsamic vinegar", "banana", "banana blossom", "barbecue sauce", "barley", "barley flour", "basil", "basil seeds",
+      "Basmati Rice", "Bay Leaf", "beef", "Beef Bourguignon", "beef brisket", "beef broth", "Beef Ribs", "beef stock", "beef tenderloin", "beets",
+      "Belacan (shrimp paste)", "bell pepper", "bell peppers", "besan (chickpea flour)", "black beans", "black cardamom", "black fungus (cloud ear)", "Black Garlic", "Black Pepper", "Black Peppercorns",
+      "black salt (kala namak)", "Black Tea", "black truffle", "Black-Eyed Peas", "Blood Sausage", "blue cheese", "blue cheese dressing", "blueberry", "bok choy", "Bonito Flakes",
+      "bourbon", "Brandy", "Bread", "bread flour", "Breadcrumbs", "Breakfast Sausage", "Brie", "Broccoli", "Broccolini", "Brown Mustard Seeds",
+      "brown rice", "brown sugar", "brownie mix", "brussels sprouts", "buckwheat", "buckwheat flour", "bulgur", "burdock root", "butter", "butter lettuce",
+      "buttermilk", "buttermilk powder", "butternut squash", "cabbage", "Cacao Nibs", "Cactus Pear (Prickly Pear)", "Cajun Seasoning", "Calamari (Squid)", "camembert", "candied ginger",
+      "candied orange peel", "candlenut", "cane vinegar", "canned salmon", "canned tomatoes", "canned tuna", "cannellini beans", "Caper Berries", "Capers", "Caramel Sauce",
+      "caraway seeds", "carne asada", "carolina reaper", "carrot", "cashew butter", "cashew milk", "cashews", "cassava", "catfish", "cauliflower",
+      "cayenne pepper", "celery", "celery root (celeriac)", "champagne vinegar", "chana dal", "chanterelle mushrooms", "char siu sauce", "cheddar cheese", "cheese", "cheese curds",
+      "cherry", "cherry tomato", "chervil", "chickpeas", "chili oil", "chili paste", "chili powder", "chili sauce", "Chinese five-spice", "chipotle chili powder",
+      "chives", "chocolate chips", "chocolate hazelnut spread", "chocolate syrup", "cider", "cilantro", "cinnamon", "cinnamon stick", "clam juice", "clams",
+      "clarified butter", "clotted cream", "cloves", "cocoa powder", "coconut", "coconut aminos", "coconut cream", "coconut milk", "coconut oil", "coconut sugar",
+      "coconut vinegar", "cod", "coffee", "cognac", "collard greens", "condensed milk", "coriander seeds", "corn", "corn flakes", "corn oil",
+      "corn syrup", "corn tortillas", "corned beef", "cornmeal", "cotija cheese", "cottage cheese", "crab", "crab meat", "cranberries", "cream cheese",
+      "cream of coconut", "cream of tartar", "crème fraîche", "cremebrule", "cremini mushrooms", "cucumber", "cumin seeds", "curly parsley", "currants", "curry leaves",
+      "curry paste", "curry powder", "daikon radish", "dashi", "dates", "demi-glace", "diced tomatoes", "dijon mustard", "dill", "dill seeds",
+      "dried apricots", "dried cranberries", "dried figs", "dried hibiscus", "dried shrimp", "dried thyme", "dry mustard powder", "duck", "duck eggs", "duck fat",
+      "duck sauce", "dulce de leche", "edam cheese", "edamame", "egg noodles", "egg whites", "egg yolks", "eggplant", "eggs", "egusi seeds",
+      "elderberry", "empanadas", "enoki mushrooms", "espresso powder", "evaporated milk", "extra virgin olive oil", "fava beans", "fennel bulb", "fennel seeds", "fenugreek leaves",
+      "fenugreek seeds", "fermented black beans", "filé powder", "fish maw", "fish sauce", "five-spice powder", "flaxseeds", "flour tortillas", "fontina cheese", "forbidden rice (black rice)",
+      "freekeh", "freeze-dried fruit", "french dressing", "fried onions", "frosting", "fruit cocktail (canned)", "garam masala", "garlic", "garlic chives", "garlic powder",
+      "garlic scapes", "gelatin", "gin", "ginger", "ginger paste", "ginger powder", "gingersnaps (crushed)", "glucose syrup", "glutinous rice (sticky rice)", "goat",
+      "goat cheese", "gochugaru (Korean chili flakes)", "gochujang", "salmon", "salt", "spaghetti", "Spaghetti Carbonara", "spinach", "sugar", "sushi", "tiramisu"
+    ];
 
     const allowedEquipment = [
       "Air fryer", "Broiler pan", "Dutch oven", "Grill", "Grill pan", "Microwave", "Oven", 
@@ -873,10 +939,11 @@ Return as JSON array.`;
 1. 🚫 NEVER EVER use "N/A", "TBD", "Unknown", or any placeholder text
 2. 🚫 ALL fields must have REAL, SPECIFIC values - no generic descriptions
 3. 🚫 ONLY use equipment from this list: ${allowedEquipment.join(', ')}
-4. ✅ Instructions must be ACTUAL cooking steps (not descriptions)
-5. ✅ All times must be specific numbers (15 min, 25 min, etc.)
-6. ✅ All measurements must be precise (2 cups, 1 tbsp, etc.)
-7. ✅ Generate complete ingredient slots 1-20
+4. 🚨 CRITICAL: ONLY use ingredients from this EXACT list - match names PRECISELY: ${allowedIngredients.join(', ')}
+5. ✅ Instructions must be ACTUAL cooking steps (not descriptions)
+6. ✅ All times must be specific numbers (15 min, 25 min, etc.)
+7. ✅ All measurements must be precise (2 cups, 1 tbsp, etc.)
+8. ✅ Generate complete ingredient slots 1-20
 
 ⚠️ IF YOU USE "N/A" ANYWHERE, THE ENTIRE RESPONSE IS INVALID ⚠️
 
