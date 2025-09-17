@@ -126,6 +126,39 @@ class DatabaseManager {
         strIngredient19 TEXT, strMeasure19 TEXT,
         strIngredient20 TEXT, strMeasure20 TEXT,
         strEquipment TEXT,
+        
+        -- Multiple Images Support
+        images TEXT, -- JSON array of image objects
+        imageCount INTEGER DEFAULT 0,
+        additionalImages TEXT, -- JSON array of URLs (legacy compatibility)
+        imageUrls TEXT, -- JSON array of URLs (legacy compatibility)
+        
+        -- Comprehensive Recipe Data
+        instructions TEXT, -- JSON array of steps
+        nutrition TEXT, -- JSON object with nutritional info
+        dietary TEXT, -- JSON object with dietary flags
+        mealType TEXT, -- JSON array
+        dishType TEXT,
+        mainIngredient TEXT,
+        occasion TEXT, -- JSON array
+        seasonality TEXT, -- JSON array
+        equipmentRequired TEXT, -- JSON array
+        skillsRequired TEXT, -- JSON array
+        keywords TEXT, -- JSON array
+        alternateTitles TEXT, -- JSON array
+        commonMisspellings TEXT, -- JSON array
+        allergenFlags TEXT, -- JSON array
+        timeCategory TEXT,
+        ingredientsDetailed TEXT, -- JSON array
+        prepTime INTEGER DEFAULT 0,
+        cookTime INTEGER DEFAULT 0,
+        totalTime INTEGER DEFAULT 0,
+        numberOfServings INTEGER DEFAULT 4,
+        servingSize TEXT,
+        difficulty TEXT DEFAULT 'Medium',
+        yield TEXT,
+        strDescription TEXT,
+        
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
       )
     `;

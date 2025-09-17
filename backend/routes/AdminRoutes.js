@@ -405,24 +405,55 @@ class AdminRoutes {
         
         console.log(`✅ Generated ${imageUrls.length}/${imageCount} images successfully!`);
         
-        // Update recipe with primary image URL if we generated images
-        if (primaryImageUrl) {
-          console.log('🖼️ Updating recipe with primary image URL...');
+        // Update recipe with ALL images in database (not just primary)
+        if (imageUrls.length > 0) {
+          console.log(`🖼️ Updating recipe with ${imageUrls.length} images in database...`);
           try {
-            await this.recipeManager.update(mealId, { 
-              strMealThumb: primaryImageUrl 
-            });
+            // Create images array with metadata
+            const imagesArray = imageUrls.map((url, index) => ({
+              url: url,
+              alt: `${generatedRecipe.strMeal} image ${index + 1}`,
+              isPrimary: index === 0,
+              order: index,
+              metadata: {
+                generated: true,
+                timestamp: new Date().toISOString(),
+                quality: 'ultra-hd'
+              }
+            }));
+            
+            // Update recipe with comprehensive image data
+            const updateData = {
+              strMealThumb: primaryImageUrl,
+              images: imagesArray,
+              imageCount: imageUrls.length,
+              additionalImages: imageUrls, // Legacy compatibility
+              imageUrls: imageUrls // Legacy compatibility
+            };
+            
+            await this.recipeManager.update(mealId, updateData);
+            
+            // Update response object with comprehensive image data
             savedRecipe.meals[0].strMealThumb = primaryImageUrl;
-            console.log('✅ Recipe updated with primary image URL');
+            savedRecipe.meals[0].images = imagesArray;
+            savedRecipe.meals[0].imageCount = imageUrls.length;
+            savedRecipe.meals[0].additionalImages = imageUrls;
+            savedRecipe.meals[0].imageUrls = imageUrls;
+            
+            console.log('✅ Recipe updated with all images in database');
           } catch (updateError) {
-            console.error('❌ Failed to update recipe with image URL:', updateError.message);
+            console.error('❌ Failed to update recipe with images:', updateError.message);
+            
+            // Fallback: at least try to save the primary image
+            try {
+              await this.recipeManager.update(mealId, { strMealThumb: primaryImageUrl });
+              savedRecipe.meals[0].strMealThumb = primaryImageUrl;
+              console.log('✅ Fallback: Primary image saved');
+            } catch (fallbackError) {
+              console.error('❌ Even fallback failed:', fallbackError.message);
+            }
           }
         }
-      }
-      
-      // Store additional images in recipe object for frontend
-      if (savedRecipe.meals && savedRecipe.meals[0]) {
-        savedRecipe.meals[0].additionalImages = imageUrls;
       }
       
       res.json({
@@ -433,7 +464,9 @@ class AdminRoutes {
         imageUrls: imageUrls,
         imageCount: imageUrls.length,
         imageQuality: primaryImageUrl ? 'ultra-hd' : null,
-        message: `Recipe created successfully with ${imageUrls.length} AI image(s)`
+        images: savedRecipe.meals[0].images || [],
+        imageGallery: savedRecipe.meals[0].imageGallery || [],
+        message: `Recipe created successfully with ${imageUrls.length} AI image(s) stored permanently`
       });
     } catch (error) {
       console.error('❌ Recipe generation error in route:', error.message);

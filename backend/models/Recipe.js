@@ -88,6 +88,71 @@ class Recipe {
     this.commonMisspellings = data.commonMisspellings || [];
     this.allergenFlags = data.allergenFlags || [];
     this.timeCategory = data.timeCategory || '';
+
+    // Multiple Images Support - Unlimited Array
+    this.images = [];
+    this.imageCount = 0;
+    
+    // Handle multiple image formats
+    if (Array.isArray(data.images)) {
+      // New format: array of image objects with metadata
+      this.images = data.images.map(img => ({
+        url: img.url || img,
+        alt: img.alt || `${this.strMeal} image`,
+        isPrimary: img.isPrimary || false,
+        order: img.order || 0,
+        metadata: img.metadata || {}
+      }));
+    } else if (Array.isArray(data.imageUrls)) {
+      // Legacy format: simple URL array
+      this.images = data.imageUrls.map((url, index) => ({
+        url: url,
+        alt: `${this.strMeal} image ${index + 1}`,
+        isPrimary: index === 0,
+        order: index,
+        metadata: {}
+      }));
+    } else if (Array.isArray(data.additionalImages)) {
+      // Admin format: additionalImages array
+      this.images = data.additionalImages.map((url, index) => ({
+        url: url,
+        alt: `${this.strMeal} image ${index + 1}`,
+        isPrimary: index === 0,
+        order: index,
+        metadata: {}
+      }));
+    }
+    
+    // Ensure primary image (strMealThumb) is included in images array
+    if (this.strMealThumb) {
+      const primaryExists = this.images.some(img => img.url === this.strMealThumb);
+      if (!primaryExists) {
+        this.images.unshift({
+          url: this.strMealThumb,
+          alt: `${this.strMeal} primary image`,
+          isPrimary: true,
+          order: 0,
+          metadata: {}
+        });
+      } else {
+        // Mark existing image as primary
+        const primaryImg = this.images.find(img => img.url === this.strMealThumb);
+        if (primaryImg) {
+          primaryImg.isPrimary = true;
+          primaryImg.order = 0;
+        }
+      }
+    }
+    
+    // Sort images by order and update count
+    this.images.sort((a, b) => a.order - b.order);
+    this.imageCount = this.images.length;
+    
+    // Update strMealThumb to first image if not set
+    if (!this.strMealThumb && this.images.length > 0) {
+      this.strMealThumb = this.images[0].url;
+      this.images[0].isPrimary = true;
+    }
     
     // Initialize ingredients with enhanced structure
     this.ingredients = [];
@@ -216,7 +281,13 @@ class Recipe {
       commonMisspellings: JSON.stringify(this.commonMisspellings),
       allergenFlags: JSON.stringify(this.allergenFlags),
       timeCategory: this.timeCategory,
-      ingredientsDetailed: JSON.stringify(this.ingredientsDetailed)
+      ingredientsDetailed: JSON.stringify(this.ingredientsDetailed),
+
+      // Multiple Images Support - Store as JSON
+      images: JSON.stringify(this.images),
+      imageCount: this.imageCount,
+      additionalImages: JSON.stringify(this.images.map(img => img.url)), // Legacy compatibility
+      imageUrls: JSON.stringify(this.images.map(img => img.url)) // Legacy compatibility
     };
 
     // Add ingredients and measures for backward compatibility
@@ -275,7 +346,20 @@ class Recipe {
       timeCategory: this.timeCategory,
 
       // Enhanced ingredients
-      ingredientsDetailed: this.ingredientsDetailed
+      ingredientsDetailed: this.ingredientsDetailed,
+
+      // Multiple Images Support - Unlimited Array
+      images: this.images,
+      imageCount: this.imageCount,
+      additionalImages: this.images.map(img => img.url), // Legacy compatibility
+      imageUrls: this.images.map(img => img.url), // Legacy compatibility
+      primaryImage: this.images.find(img => img.isPrimary)?.url || this.strMealThumb,
+      imageGallery: this.images.map(img => ({
+        url: img.url,
+        alt: img.alt,
+        isPrimary: img.isPrimary,
+        order: img.order
+      }))
     };
 
     // Add traditional ingredients format for backward compatibility
@@ -390,6 +474,138 @@ class Recipe {
     }
 
     return detected;
+  }
+
+  // Multiple Images Management Methods
+  
+  // Add a new image to the recipe
+  addImage(imageUrl, options = {}) {
+    const newImage = {
+      url: imageUrl,
+      alt: options.alt || `${this.strMeal} image ${this.images.length + 1}`,
+      isPrimary: options.isPrimary || this.images.length === 0,
+      order: options.order !== undefined ? options.order : this.images.length,
+      metadata: options.metadata || {}
+    };
+    
+    // If this is set as primary, unmark others
+    if (newImage.isPrimary) {
+      this.images.forEach(img => img.isPrimary = false);
+      this.strMealThumb = imageUrl;
+    }
+    
+    this.images.push(newImage);
+    this.images.sort((a, b) => a.order - b.order);
+    this.imageCount = this.images.length;
+    
+    return this.images.length - 1; // Return index of added image
+  }
+  
+  // Remove an image by URL or index
+  removeImage(identifier) {
+    let index = -1;
+    
+    if (typeof identifier === 'number') {
+      index = identifier;
+    } else if (typeof identifier === 'string') {
+      index = this.images.findIndex(img => img.url === identifier);
+    }
+    
+    if (index >= 0 && index < this.images.length) {
+      const removedImage = this.images.splice(index, 1)[0];
+      
+      // If we removed the primary image, make the first remaining image primary
+      if (removedImage.isPrimary && this.images.length > 0) {
+        this.images[0].isPrimary = true;
+        this.strMealThumb = this.images[0].url;
+      } else if (this.images.length === 0) {
+        this.strMealThumb = '';
+      }
+      
+      this.imageCount = this.images.length;
+      return removedImage;
+    }
+    
+    return null;
+  }
+  
+  // Set an image as primary by URL or index
+  setPrimaryImage(identifier) {
+    let targetImage = null;
+    
+    if (typeof identifier === 'number') {
+      targetImage = this.images[identifier];
+    } else if (typeof identifier === 'string') {
+      targetImage = this.images.find(img => img.url === identifier);
+    }
+    
+    if (targetImage) {
+      // Unmark all as primary
+      this.images.forEach(img => img.isPrimary = false);
+      
+      // Mark target as primary
+      targetImage.isPrimary = true;
+      targetImage.order = 0;
+      this.strMealThumb = targetImage.url;
+      
+      // Reorder images
+      this.images.sort((a, b) => a.order - b.order);
+      
+      return true;
+    }
+    
+    return false;
+  }
+  
+  // Get all image URLs as simple array
+  getImageUrls() {
+    return this.images.map(img => img.url);
+  }
+  
+  // Get primary image
+  getPrimaryImage() {
+    return this.images.find(img => img.isPrimary) || this.images[0] || null;
+  }
+  
+  // Get non-primary images
+  getAdditionalImages() {
+    return this.images.filter(img => !img.isPrimary);
+  }
+  
+  // Reorder images
+  reorderImages(newOrder) {
+    if (Array.isArray(newOrder) && newOrder.length === this.images.length) {
+      newOrder.forEach((url, index) => {
+        const image = this.images.find(img => img.url === url);
+        if (image) {
+          image.order = index;
+        }
+      });
+      
+      this.images.sort((a, b) => a.order - b.order);
+      return true;
+    }
+    
+    return false;
+  }
+  
+  // Bulk add images from URL array
+  addMultipleImages(imageUrls, options = {}) {
+    const addedIndices = [];
+    
+    imageUrls.forEach((url, index) => {
+      const imageOptions = {
+        alt: options.alt || `${this.strMeal} image ${this.images.length + index + 1}`,
+        isPrimary: options.makePrimary ? index === 0 : false,
+        order: this.images.length + index,
+        metadata: options.metadata || {}
+      };
+      
+      const addedIndex = this.addImage(url, imageOptions);
+      addedIndices.push(addedIndex);
+    });
+    
+    return addedIndices;
   }
 }
 

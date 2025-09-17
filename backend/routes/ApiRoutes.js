@@ -63,6 +63,22 @@ class ApiRoutes {
       rateLimitManager.requirePremium,
       ErrorHandler.asyncHandler(this.deleteMeal.bind(this))
     );
+    
+    // Image management endpoints
+    v1Router.get('/meals/:id/images', ErrorHandler.asyncHandler(this.getMealImages.bind(this)));
+    v1Router.post('/meals/:id/images', 
+      rateLimitManager.requirePremium,
+      rateLimitManager.getUploadLimiter(),
+      ErrorHandler.asyncHandler(this.addMealImage.bind(this))
+    );
+    v1Router.delete('/meals/:id/images/:imageIndex', 
+      rateLimitManager.requirePremium,
+      ErrorHandler.asyncHandler(this.deleteMealImage.bind(this))
+    );
+    v1Router.put('/meals/:id/images/primary/:imageIndex', 
+      rateLimitManager.requirePremium,
+      ErrorHandler.asyncHandler(this.setPrimaryImage.bind(this))
+    );
 
     // Mount v1 routes
     this.router.use('/json/v1/:key', (req, res, next) => {
@@ -295,6 +311,178 @@ class ApiRoutes {
     } catch (error) {
       console.error('Error accessing image:', error);
       res.status(404).json({ error: 'Image not found' });
+    }
+  }
+
+  // Get all images for a specific meal
+  async getMealImages(req, res) {
+    const { id } = req.params;
+    
+    try {
+      const meal = await this.recipeManager.getById(id);
+      
+      if (!meal || !meal.meals || meal.meals.length === 0) {
+        return res.status(404).json({ error: 'Recipe not found' });
+      }
+      
+      const recipe = meal.meals[0];
+      
+      res.json({
+        success: true,
+        recipeId: id,
+        recipeName: recipe.strMeal,
+        imageCount: recipe.imageCount || 0,
+        primaryImage: recipe.strMealThumb,
+        images: recipe.images || [],
+        imageUrls: recipe.imageUrls || [recipe.strMealThumb].filter(Boolean),
+        additionalImages: recipe.additionalImages || [],
+        imageGallery: recipe.imageGallery || []
+      });
+    } catch (error) {
+      console.error('Error getting meal images:', error);
+      res.status(500).json({ error: 'Failed to retrieve meal images' });
+    }
+  }
+  
+  // Add a new image to a meal
+  async addMealImage(req, res) {
+    const { id } = req.params;
+    const { imageUrl, alt, isPrimary = false, metadata = {} } = req.body;
+    
+    if (!imageUrl) {
+      return res.status(400).json({ error: 'Image URL is required' });
+    }
+    
+    try {
+      const meal = await this.recipeManager.getById(id);
+      
+      if (!meal || !meal.meals || meal.meals.length === 0) {
+        return res.status(404).json({ error: 'Recipe not found' });
+      }
+      
+      const Recipe = require('../models/Recipe');
+      const recipe = new Recipe(meal.meals[0]);
+      
+      // Add the new image
+      const imageIndex = recipe.addImage(imageUrl, {
+        alt: alt || `${recipe.strMeal} image ${recipe.images.length + 1}`,
+        isPrimary: isPrimary,
+        metadata: metadata
+      });
+      
+      // Update the recipe in database
+      await this.recipeManager.update(id, {
+        images: recipe.images,
+        imageCount: recipe.imageCount,
+        strMealThumb: recipe.strMealThumb,
+        additionalImages: recipe.getImageUrls(),
+        imageUrls: recipe.getImageUrls()
+      });
+      
+      res.json({
+        success: true,
+        message: 'Image added successfully',
+        imageIndex: imageIndex,
+        imageCount: recipe.imageCount,
+        images: recipe.images
+      });
+    } catch (error) {
+      console.error('Error adding meal image:', error);
+      res.status(500).json({ error: 'Failed to add image to meal' });
+    }
+  }
+  
+  // Delete an image from a meal
+  async deleteMealImage(req, res) {
+    const { id, imageIndex } = req.params;
+    const index = parseInt(imageIndex);
+    
+    if (isNaN(index)) {
+      return res.status(400).json({ error: 'Invalid image index' });
+    }
+    
+    try {
+      const meal = await this.recipeManager.getById(id);
+      
+      if (!meal || !meal.meals || meal.meals.length === 0) {
+        return res.status(404).json({ error: 'Recipe not found' });
+      }
+      
+      const Recipe = require('../models/Recipe');
+      const recipe = new Recipe(meal.meals[0]);
+      
+      // Remove the image
+      const removedImage = recipe.removeImage(index);
+      
+      if (!removedImage) {
+        return res.status(404).json({ error: 'Image not found at specified index' });
+      }
+      
+      // Update the recipe in database
+      await this.recipeManager.update(id, {
+        images: recipe.images,
+        imageCount: recipe.imageCount,
+        strMealThumb: recipe.strMealThumb,
+        additionalImages: recipe.getImageUrls(),
+        imageUrls: recipe.getImageUrls()
+      });
+      
+      res.json({
+        success: true,
+        message: 'Image deleted successfully',
+        removedImage: removedImage,
+        imageCount: recipe.imageCount,
+        images: recipe.images
+      });
+    } catch (error) {
+      console.error('Error deleting meal image:', error);
+      res.status(500).json({ error: 'Failed to delete image from meal' });
+    }
+  }
+  
+  // Set primary image for a meal
+  async setPrimaryImage(req, res) {
+    const { id, imageIndex } = req.params;
+    const index = parseInt(imageIndex);
+    
+    if (isNaN(index)) {
+      return res.status(400).json({ error: 'Invalid image index' });
+    }
+    
+    try {
+      const meal = await this.recipeManager.getById(id);
+      
+      if (!meal || !meal.meals || meal.meals.length === 0) {
+        return res.status(404).json({ error: 'Recipe not found' });
+      }
+      
+      const Recipe = require('../models/Recipe');
+      const recipe = new Recipe(meal.meals[0]);
+      
+      // Set primary image
+      const success = recipe.setPrimaryImage(index);
+      
+      if (!success) {
+        return res.status(404).json({ error: 'Image not found at specified index' });
+      }
+      
+      // Update the recipe in database
+      await this.recipeManager.update(id, {
+        images: recipe.images,
+        strMealThumb: recipe.strMealThumb,
+        additionalImages: recipe.getImageUrls(),
+        imageUrls: recipe.getImageUrls()
+      });
+      
+      res.json({
+        success: true,
+        message: 'Primary image updated successfully',
+        primaryImage: recipe.getPrimaryImage(),
+        images: recipe.images
+      });
+    } catch (error) {
+      console.error('Error setting primary image:', error);
+      res.status(500).json({ error: 'Failed to set primary image' });
     }
   }
 
