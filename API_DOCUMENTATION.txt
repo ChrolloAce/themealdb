@@ -10,17 +10,15 @@ Local Dev:  http://localhost:3000/api
 
 🔑 API KEYS
 -----------
-Test Key:    1
-             - Free for development and testing
+API Key:     1
+             - Completely FREE for all users
              - Rate limit: 100 requests per 15 minutes
-             - Access to basic endpoints only
-
-Premium Key: [Set API_PREMIUM_KEY in Vercel environment variables]
-             - Higher rate limits
-             - Access to premium features
-             - Multiple ingredient filtering
-             - Latest recipes endpoint
-             - Random selection with custom count
+             - Access to ALL endpoints and features
+             - No premium restrictions
+             - Multiple ingredient filtering included
+             - Latest recipes endpoint included
+             - Random selection with custom count included
+             - CRUD operations included
 
 📡 AUTHENTICATION
 -----------------
@@ -128,29 +126,29 @@ https://themealdb-inky.vercel.app/api/v1/search.php?key=1&s=chicken
     Example:
     GET /api/v1/filter.php?key=1&i=chicken
 
-12. Filter by Multiple Ingredients (PREMIUM ONLY)
-    GET /api/v1/filter.php?key={PREMIUM_KEY}&i={INGREDIENT1,INGREDIENT2,INGREDIENT3}
+12. Filter by Multiple Ingredients (FREE)
+    GET /api/v1/filter.php?key=1&i={INGREDIENT1,INGREDIENT2,INGREDIENT3}
     
     Example:
-    GET /api/v1/filter.php?key=YOUR_PREMIUM_KEY&i=chicken,garlic,onion
+    GET /api/v1/filter.php?key=1&i=chicken,garlic,onion
 
-🔥 PREMIUM ENDPOINTS
--------------------
+🔥 ADVANCED ENDPOINTS (ALL FREE)
+--------------------------------
 
-13. Random Selection with Custom Count (PREMIUM ONLY)
-    GET /api/v1/randomselection.php?key={PREMIUM_KEY}&count={NUMBER}
+13. Random Selection with Custom Count (FREE)
+    GET /api/v1/randomselection.php?key=1&count={NUMBER}
     
     Example:
-    GET /api/v1/randomselection.php?key=YOUR_PREMIUM_KEY&count=10
+    GET /api/v1/randomselection.php?key=1&count=10
     
     Parameters:
     - count: Number of random recipes (max 50)
 
-14. Latest Recipes (PREMIUM ONLY)
-    GET /api/v1/latest.php?key={PREMIUM_KEY}&limit={NUMBER}
+14. Latest Recipes (FREE)
+    GET /api/v1/latest.php?key=1&limit={NUMBER}
     
     Example:
-    GET /api/v1/latest.php?key=YOUR_PREMIUM_KEY&limit=20
+    GET /api/v1/latest.php?key=1&limit=20
     
     Parameters:
     - limit: Number of latest recipes (max 100)
@@ -171,11 +169,11 @@ https://themealdb-inky.vercel.app/api/v1/search.php?key=1&s=chicken
     - categories: Category images
     - ingredients: Ingredient images
 
-📝 CRUD ENDPOINTS (PREMIUM ONLY)
---------------------------------
+📝 CRUD ENDPOINTS (ALL FREE)
+----------------------------
 
-16. Create New Recipe (PREMIUM ONLY)
-    POST /api/v1/meals?key={PREMIUM_KEY}
+16. Create New Recipe (FREE)
+    POST /api/v1/meals?key=1
     
     Headers:
     Content-Type: application/json
@@ -191,11 +189,11 @@ https://themealdb-inky.vercel.app/api/v1/search.php?key=1&s=chicken
       ...
     }
 
-17. Update Recipe (PREMIUM ONLY)
-    PUT /api/v1/meals/{MEAL_ID}?key={PREMIUM_KEY}
+17. Update Recipe (FREE)
+    PUT /api/v1/meals/{MEAL_ID}?key=1
 
-18. Delete Recipe (PREMIUM ONLY)
-    DELETE /api/v1/meals/{MEAL_ID}?key={PREMIUM_KEY}
+18. Delete Recipe (FREE)
+    DELETE /api/v1/meals/{MEAL_ID}?key=1
 
 ================================================================================
                             RESPONSE FORMAT
@@ -296,11 +294,10 @@ Invalid API Key:
   "message": "The provided API key is not valid."
 }
 
-Premium Feature with Test Key:
+All Features Now Free:
 {
-  "error": "Premium feature",
-  "message": "This endpoint requires a premium API key. Please upgrade to access this feature.",
-  "upgrade_info": "Contact us to get your premium API key."
+  "success": true,
+  "message": "All API features are now completely free with any valid API key!"
 }
 
 Rate Limit Exceeded:
@@ -555,25 +552,21 @@ Every response includes rate limit information:
                               PREMIUM FEATURES
 ================================================================================
 
-🚀 UPGRADE TO PREMIUM
---------------------
-To access premium features, set up your premium API key:
+🎉 COMPLETELY FREE API
+---------------------
+All features are now completely FREE for everyone!
 
-1. Add environment variable in Vercel:
-   Name: API_PREMIUM_KEY
-   Value: your_secure_premium_key_here
-
-2. Use your premium key in requests:
-   ?key=your_secure_premium_key_here
-
-💎 PREMIUM BENEFITS
-------------------
-- Higher rate limits
+✅ FREE FEATURES (NO RESTRICTIONS)
+----------------------------------
+- All endpoints accessible with key "1"
 - Multiple ingredient filtering
 - Latest recipes endpoint
 - Random selection with custom count
 - CRUD operations (create, update, delete recipes)
-- Priority support
+- Image uploads and management
+- AI-powered recipe generation (admin panel)
+- No premium keys required
+- Same rate limits for all users
 
 ================================================================================
                               SUPPORT & CONTACT

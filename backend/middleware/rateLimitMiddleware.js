@@ -94,15 +94,9 @@ class RateLimitManager {
     });
   }
 
-  // Middleware to check if premium features are allowed
+  // Middleware to check if premium features are allowed (DISABLED - All features now free)
   requirePremium(req, res, next) {
-    if (req.apiKeyType !== 'premium') {
-      return res.status(403).json({
-        error: 'Premium feature',
-        message: 'This endpoint requires a premium API key. Please upgrade to access this feature.',
-        upgrade_info: 'Contact us to get your premium API key.'
-      });
-    }
+    // All features are now freely accessible with any valid API key
     next();
   }
 }

@@ -164,10 +164,8 @@ class ApiRoutes {
 
     let result;
     if (ingredient) {
-      // Check if premium for multiple ingredients
-      if (ingredient.includes(',') && req.apiKeyType !== 'premium') {
-        throw ErrorHandler.createError('Multiple ingredient filtering requires premium API key', 403);
-      }
+    // Multiple ingredient filtering is now free for all users
+    // (Premium requirement removed)
       
       if (ingredient.includes(',')) {
         result = await this.recipeManager.filterByMultipleIngredients(ingredient);

@@ -119,33 +119,86 @@ ${existingContext ? 'IMPORTANT: Create something completely different from the e
 
 Make it innovative and delicious. Use unexpected flavor combinations or techniques.
 
-🚨 CRITICAL: 
+🚨 CRITICAL REQUIREMENTS:
 - NEVER use "N/A", "TBD", or any placeholder text. ALL fields must have real values.
-- strEquipment MUST contain a comprehensive list of ALL cooking tools needed (minimum 5-8 items)
-- Include specific sizes: "12-inch skillet", "8-inch chef's knife", "2-quart saucepan"
-- strInstructions MUST be VERY detailed with 7-10 steps minimum
+- Instructions MUST be an array of detailed steps (7-10 steps minimum)
+- Include comprehensive nutritional information with realistic values
+- Provide detailed categorization and dietary information
+- Include equipment, skills, and allergen information
+- Generate realistic prep/cook times and serving information
 
 Return ONLY this JSON format with NO extra text:
 {
   "strMeal": "Creative Recipe Name",
+  "strDescription": "Brief appetizing description of the dish (2-3 sentences)",
   "strCategory": "${randomCategory}",
   "strArea": "${randomCuisine}",
-  "strInstructions": "Step 1: Begin by gathering all ingredients and equipment. Preheat your oven to the required temperature if needed. Step 2: Prepare all vegetables by washing, peeling, and cutting them into the specified sizes. Step 3: Heat your pan over medium-high heat with oil until shimmering. Step 4: Add ingredients in the proper order, explaining cooking techniques and timing. Step 5: Continue with very detailed steps explaining exactly what to look for (golden brown, fragrant, tender, etc). Step 6: Include specific temperatures, cooking times, and visual/sensory cues. Step 7: Explain plating and garnishing in detail. Each step should be thorough and educational.",
+  "instructions": [
+    "Begin by gathering all ingredients and equipment. Preheat your oven to the required temperature if needed.",
+    "Prepare all vegetables by washing, peeling, and cutting them into the specified sizes.",
+    "Heat your pan over medium-high heat with oil until shimmering.",
+    "Add ingredients in the proper order, explaining cooking techniques and timing.",
+    "Continue with very detailed steps explaining exactly what to look for (golden brown, fragrant, tender, etc).",
+    "Include specific temperatures, cooking times, and visual/sensory cues.",
+    "Explain plating and garnishing in detail."
+  ],
   "strMealThumb": "",
   "strTags": "${randomTheme},${randomCuisine.toLowerCase()},${randomCategory.toLowerCase()}",
   "strEquipment": "Large skillet (12-inch), Mixing bowl (medium), Measuring cups, Chef's knife (8-inch), Cutting board, Wooden spoon, Meat thermometer, Colander, Whisk, Tongs",
-  "strPrepTime": "15 minutes",
-  "strCookTime": "30 minutes",
-  "strTotalTime": "45 minutes",
-  "strServings": "4",
-  "strIngredient1": "First ingredient", "strMeasure1": "Amount",
-  "strIngredient2": "Second ingredient", "strMeasure2": "Amount",
-  "strIngredient3": "Third ingredient", "strMeasure3": "Amount",
-  "strIngredient4": "Fourth ingredient", "strMeasure4": "Amount",
-  "strIngredient5": "Fifth ingredient", "strMeasure5": "Amount",
-  "strIngredient6": "Sixth ingredient", "strMeasure6": "Amount",
-  "strIngredient7": "", "strMeasure7": "",
-  "strIngredient8": "", "strMeasure8": ""
+  "prepTime": 15,
+  "cookTime": 30,
+  "totalTime": 45,
+  "numberOfServings": 4,
+  "servingSize": "1 cup",
+  "difficulty": "Medium",
+  "yield": "4 servings",
+  "nutrition": {
+    "caloriesPerServing": 350,
+    "protein": 25,
+    "carbs": 35,
+    "fat": 12,
+    "fiber": 6,
+    "sugar": 8,
+    "sodium": 680,
+    "cholesterol": 45,
+    "saturatedFat": 4,
+    "vitaminA": 15,
+    "vitaminC": 25,
+    "iron": 12,
+    "calcium": 8
+  },
+  "dietary": {
+    "vegetarian": false,
+    "vegan": false,
+    "glutenFree": true,
+    "dairyFree": false,
+    "keto": false,
+    "paleo": false
+  },
+  "mealType": ["Dinner"],
+  "dishType": "Main Course",
+  "mainIngredient": "Primary ingredient name",
+  "occasion": ["Weeknight", "Family Dinner"],
+  "seasonality": ["All Season"],
+  "equipmentRequired": ["Skillet", "Knife", "Cutting Board", "Measuring Cups", "Mixing Bowl"],
+  "skillsRequired": ["Chopping", "Sautéing", "Seasoning"],
+  "keywords": ["keyword1", "keyword2", "keyword3"],
+  "allergenFlags": ["dairy", "gluten"],
+  "timeCategory": "Under 1 hour",
+  "ingredientsDetailed": [
+    {"name": "First ingredient", "quantity": "2", "unit": "tbsp", "optional": false, "required": true},
+    {"name": "Second ingredient", "quantity": "1", "unit": "lb", "optional": false, "required": true},
+    {"name": "Third ingredient", "quantity": "4", "unit": "cloves", "optional": false, "required": true},
+    {"name": "Fourth ingredient", "quantity": "1", "unit": "tsp", "optional": false, "required": true},
+    {"name": "Fifth ingredient", "quantity": "1/2", "unit": "tsp", "optional": false, "required": true},
+    {"name": "Sixth ingredient", "quantity": "1", "unit": "can", "optional": false, "required": true}
+  ],
+  "strIngredient1": "First ingredient", "strMeasure1": "2 tbsp",
+  "strIngredient2": "Second ingredient", "strMeasure2": "1 lb",
+  "strIngredient3": "Third ingredient", "strMeasure3": "4 cloves",
+  "strIngredient4": "Fourth ingredient", "strMeasure4": "1 tsp",
+  "strIngredient5": "Fifth ingredient", "strMeasure5": "1/2 tsp",
+  "strIngredient6": "Sixth ingredient", "strMeasure6": "1 can"
 }`;
       }
 
@@ -1037,12 +1090,27 @@ Return ONLY valid JSON with this COMPLETE structure:
 
   // COMPREHENSIVE recipe formatting - NO N/A VALUES EVER
   quickFormatRecipe(recipeData, params) {
+    // Handle instructions array - create strInstructions from array if needed
+    let instructionsArray = recipeData.instructions || [];
+    let strInstructions = recipeData.strInstructions || '';
+    
+    if (instructionsArray.length > 0 && !strInstructions) {
+      strInstructions = instructionsArray.map((step, index) => `Step ${index + 1}: ${step}`).join(' ');
+    } else if (strInstructions && instructionsArray.length === 0) {
+      instructionsArray = this.parseInstructionsToArray(strInstructions);
+    } else if (!strInstructions && instructionsArray.length === 0) {
+      instructionsArray = ['Prepare ingredients according to recipe', 'Cook as directed', 'Serve hot'];
+      strInstructions = instructionsArray.map((step, index) => `Step ${index + 1}: ${step}`).join(' ');
+    }
+
     const recipe = {
       // Core recipe data
       strMeal: recipeData.strMeal || `Delicious ${params.cuisine || 'International'} ${params.category || 'Dish'}`,
+      strDescription: recipeData.strDescription || `A delicious ${params.cuisine || 'international'} ${params.category || 'dish'} that's perfect for any occasion.`,
       strCategory: recipeData.strCategory || params.category || 'Main Dish',
       strArea: recipeData.strArea || params.cuisine || 'International', 
-      strInstructions: recipeData.strInstructions || 'Prepare ingredients. Cook according to recipe. Serve hot.',
+      strInstructions: strInstructions,
+      instructions: instructionsArray,
       strMealThumb: recipeData.strMealThumb || '',
       strTags: recipeData.strTags || `${params.cuisine || 'international'},${params.category || 'dish'},${params.difficulty || 'medium'}`.toLowerCase(),
       strYoutube: '',
@@ -1050,36 +1118,63 @@ Return ONLY valid JSON with this COMPLETE structure:
       dateModified: new Date().toISOString(),
       
       // TIME AND SERVING INFO - NEVER N/A
-      prepTime: recipeData.strPrepTime || recipeData.prepTime || '15 minutes',
-      cookTime: recipeData.strCookTime || recipeData.cookTime || '25 minutes', 
-      totalTime: recipeData.strTotalTime || recipeData.totalTime || '40 minutes',
-      servings: recipeData.strServings || recipeData.servings || params.servings || 4,
+      prepTime: parseInt(recipeData.prepTime) || 15,
+      cookTime: parseInt(recipeData.cookTime) || 25,
+      totalTime: parseInt(recipeData.totalTime) || parseInt(recipeData.prepTime) + parseInt(recipeData.cookTime) || 40,
+      numberOfServings: parseInt(recipeData.numberOfServings) || parseInt(recipeData.servings) || params.servings || 4,
+      servingSize: recipeData.servingSize || '1 cup',
       difficulty: recipeData.difficulty || params.difficulty || 'Medium',
-      yield: recipeData.yield || `Serves ${recipeData.strServings || params.servings || 4}`,
+      yield: recipeData.yield || `${parseInt(recipeData.numberOfServings) || params.servings || 4} servings`,
       
-      // CATEGORY INFO - NEVER N/A
-      mealType: recipeData.mealType || params.category || 'Main Dish',
-      dishType: recipeData.dishType || params.category || 'Main Dish',
+      // COMPREHENSIVE NUTRITIONAL INFO
+      nutrition: recipeData.nutrition || {
+        caloriesPerServing: 350,
+        protein: 25,
+        carbs: 35,
+        fat: 12,
+        fiber: 6,
+        sugar: 8,
+        sodium: 680,
+        cholesterol: 45,
+        saturatedFat: 4,
+        vitaminA: 15,
+        vitaminC: 25,
+        iron: 12,
+        calcium: 8
+      },
+      
+      // DIETARY AND CATEGORIZATION
+      dietary: recipeData.dietary || {
+        vegetarian: false,
+        vegan: false,
+        glutenFree: false,
+        dairyFree: false,
+        keto: false,
+        paleo: false
+      },
+      
+      mealType: Array.isArray(recipeData.mealType) ? recipeData.mealType : [recipeData.mealType || params.category || 'Dinner'],
+      dishType: recipeData.dishType || params.category || 'Main Course',
       mainIngredient: recipeData.mainIngredient || params.mainIngredient || this.extractMainIngredient(recipeData) || 'Mixed ingredients',
-      occasion: recipeData.occasion || 'Any time',
+      occasion: Array.isArray(recipeData.occasion) ? recipeData.occasion : [recipeData.occasion || 'Weeknight'],
+      seasonality: Array.isArray(recipeData.seasonality) ? recipeData.seasonality : [recipeData.seasonality || 'All Season'],
+      equipmentRequired: Array.isArray(recipeData.equipmentRequired) ? recipeData.equipmentRequired : ['Skillet', 'Knife', 'Cutting Board', 'Measuring Cups'],
+      skillsRequired: Array.isArray(recipeData.skillsRequired) ? recipeData.skillsRequired : ['Chopping', 'Cooking'],
+      
+      // SEARCH & FILTER SUPPORT
+      keywords: Array.isArray(recipeData.keywords) ? recipeData.keywords : [params.cuisine || 'international', params.category || 'dish'],
+      alternateTitles: Array.isArray(recipeData.alternateTitles) ? recipeData.alternateTitles : [],
+      commonMisspellings: Array.isArray(recipeData.commonMisspellings) ? recipeData.commonMisspellings : [],
+      allergenFlags: Array.isArray(recipeData.allergenFlags) ? recipeData.allergenFlags : [],
       timeCategory: recipeData.timeCategory || 'Under 1 hour',
+      
+      // ENHANCED INGREDIENTS
+      ingredientsDetailed: Array.isArray(recipeData.ingredientsDetailed) ? recipeData.ingredientsDetailed : [],
       
       // EQUIPMENT - NEVER EMPTY
       equipment: recipeData.strEquipment ? recipeData.strEquipment.split(',').map(e => e.trim()) : 
                 recipeData.equipment || ['Large pot', 'Wooden spoon', 'Chef\'s knife', 'Cutting board', 'Measuring cups'],
-      strEquipment: recipeData.strEquipment || 'Large skillet (12-inch), Mixing bowl (medium), Measuring cups, Chef\'s knife (8-inch), Cutting board, Wooden spoon, Tongs',
-      
-      // STEP-BY-STEP INSTRUCTIONS ARRAY
-      instructionsArray: recipeData.instructionsArray || this.parseInstructionsToArray(recipeData.strInstructions),
-      
-      // NUTRITION INFO - REALISTIC VALUES
-      calories: recipeData.calories || '350',
-      protein: recipeData.protein || '25g',
-      carbs: recipeData.carbs || '40g',
-      fat: recipeData.fat || '12g',
-      fiber: recipeData.fiber || '4g',
-      sugar: recipeData.sugar || '8g',
-      sodium: recipeData.sodium || '580mg'
+      strEquipment: recipeData.strEquipment || 'Large skillet (12-inch), Mixing bowl (medium), Measuring cups, Chef\'s knife (8-inch), Cutting board, Wooden spoon, Tongs'
     };
 
     // Fill ALL 20 ingredient slots - NEVER LEAVE EMPTY
