@@ -1,0 +1,263 @@
+/* COMPREHENSIVE RECIPE DISPLAY STYLES - PROFESSIONAL DARK */
+.comprehensive-recipe {
+    max-width: 100%;
+    background: #0f1823 !important;
+    border: 1px solid #1a2332 !important;
+}
+
+.comprehensive-recipe * {
+    color: #ffffff !important;
+}
+
+.recipe-header {
+    margin-bottom: 2.5rem;
+    text-align: center;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #2d2d2d;
+}
+
+.recipe-description {
+    color: #9ca3af;
+    font-size: 1.1rem;
+    font-style: italic;
+    margin: 1.5rem 0;
+    line-height: 1.6;
+}
+
+.recipe-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid;
+}
+
+.dietary-badge {
+    background: #065f46;
+    color: #f0fdf4;
+    border-color: #047857;
+}
+
+.allergen-badge {
+    background: #7f1d1d;
+    color: #fef2f2;
+    border-color: #991b1b;
+}
+
+.recipe-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1.5rem;
+    margin: 2.5rem 0;
+    padding: 2rem;
+    background: #1a2332 !important;
+    border-radius: 8px;
+    border: 1px solid #2d3a4f !important;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1.5rem;
+    background: #0f1823 !important;
+    border-radius: 6px;
+    color: #ffffff !important;
+    border: 1px solid #374151;
+    color: #f9fafb;
+}
+
+.stat-item strong {
+    color: #d1d5db;
+}
+
+.nutrition-panel {
+    background: #111827;
+    padding: 2.5rem;
+    border-radius: 8px;
+    margin: 2.5rem 0;
+    border: 1px solid #374151;
+}
+
+.nutrition-panel h4 {
+    color: #f9fafb;
+    margin-bottom: 1.5rem;
+}
+
+.nutrition-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.nutrition-item {
+    text-align: center;
+    padding: 1.25rem;
+    background: #1f2937;
+    border-radius: 6px;
+    border: 1px solid #374151;
+    color: #f9fafb;
+}
+
+.nutrition-item.calories {
+    background: #7f1d1d;
+    color: #fef2f2;
+    border-color: #991b1b;
+}
+
+.nutrition-item strong {
+    color: #f9fafb;
+}
+
+.micronutrients {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #374151;
+}
+
+.micronutrients h5 {
+    color: #d1d5db;
+    margin-bottom: 1rem;
+}
+
+.micro-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.micro-grid span {
+    background: #1f2937;
+    color: #f9fafb;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-align: center;
+    border: 1px solid #374151;
+}
+
+.ingredients-enhanced {
+    background: #111827;
+    padding: 2rem;
+    border-radius: 8px;
+    border-left: 3px solid #065f46;
+    color: #f9fafb;
+}
+
+.ingredients-list h4 {
+    color: #f9fafb;
+    margin-bottom: 1rem;
+}
+
+.equipment-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.equipment-tag {
+    background: #1f2937;
+    color: #d1d5db;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    border: 1px solid #374151;
+}
+
+.equipment-list h4 {
+    color: #f9fafb;
+    margin-bottom: 1rem;
+}
+
+.instructions-content {
+    background: #111827;
+    padding: 2rem;
+    border-radius: 8px;
+    border-left: 3px solid #6b7280;
+    line-height: 1.7;
+    color: #e5e7eb;
+}
+
+.instructions h4 {
+    color: #f9fafb;
+    margin-bottom: 1rem;
+}
+
+.recipe-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2.5rem;
+    margin: 2.5rem 0;
+}
+
+.detail-section {
+    background: #111827;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid #374151;
+}
+
+.detail-section h5 {
+    color: #d1d5db;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.detail-section p {
+    color: #9ca3af;
+    margin-bottom: 0.75rem;
+}
+
+.detail-section strong {
+    color: #f9fafb;
+}
+
+.keywords-section {
+    margin: 2.5rem 0;
+}
+
+.keywords-section h5 {
+    color: #f9fafb;
+    margin-bottom: 1rem;
+}
+
+.keyword-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.keyword-tag {
+    background: #1f2937;
+    color: #d1d5db;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    border: 1px solid #374151;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .recipe-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .nutrition-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .recipe-details-grid {
+        grid-template-columns: 1fr;
+    }
+}

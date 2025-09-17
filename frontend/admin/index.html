@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodDB Admin Dashboard</title>
+    <link rel="stylesheet" href="/admin-assets/admin-styles.css">
+    <link rel="stylesheet" href="/admin-assets/dark-professional-styles.css">
+    <link rel="stylesheet" href="/admin-assets/comprehensive-recipe-styles.css">
+    <link rel="stylesheet" href="/admin-assets/dashboard-styles.css">
+    <link rel="stylesheet" href="/admin-assets/recipe-fix-styles.css">
+    <link rel="stylesheet" href="/admin-assets/modern-recipe-ui.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal active">
+        <div class="modal-content">
+            <h2>Admin Access</h2>
+            <p>Enter your PIN to continue</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Enter PIN" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-primary">Access Panel</button>
+            </form>
+            <div id="loginError" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminPanel" class="admin-dashboard">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-utensils"></i>
+                    <span>FoodDB</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-section="ai-generate">
+                    <i class="fas fa-magic"></i>
+                    <span>AI Generate</span>
+                </a>
+                <a href="#" class="nav-item" data-section="ai-ideas">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Recipe Ideas</span>
+                </a>
+                <a href="#" class="nav-item" data-section="manage-recipes">
+                    <i class="fas fa-book"></i>
+                    <span>All Recipes</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" id="logoutBtn" class="nav-item logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <h1 class="page-title">Dashboard</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-info">
+                            <span class="user-name">Admin</span>
+                            <span class="user-role">System Administrator</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="admin-section active">
+                    <div class="stats-overview">
+                        <div class="stat-card primary">
+                            <div class="stat-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Total Recipes</h3>
+                                <div class="stat-number" id="totalRecipes">0</div>
+                                <span class="stat-label">Active recipes in database</span>
+                            </div>
+                        </div>
+                        <div class="stat-card success">
+                            <div class="stat-icon">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Categories</h3>
+                                <div class="stat-number" id="totalCategories">0</div>
+                                <span class="stat-label">Recipe categories</span>
+                            </div>
+                        </div>
+                        <div class="stat-card info">
+                            <div class="stat-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Cuisines</h3>
+                                <div class="stat-number" id="totalAreas">0</div>
+                                <span class="stat-label">Different regions</span>
+                            </div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Recent</h3>
+                                <div class="stat-number" id="recentRecipes">0</div>
+                                <span class="stat-label">Added this week</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                </section>
+
+                <!-- AI Generate Section -->
+                <section id="ai-generate" class="admin-section">
+                    <div class="generator-container">
+                        <div class="generator-card card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-magic"></i> AI Recipe Generator</h3>
+                            </div>
+                            <form id="generateForm" class="generate-form-modern">
+                                <div class="generation-mode-switch">
+                                    <label class="switch">
+                                        <input type="checkbox" id="randomMode" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                    <span class="switch-label">Random Generation</span>
+                                </div>
+                                
+                                <!-- Custom Prompt Field -->
+                                <div id="customPromptSection" class="custom-prompt-section" style="display: none;">
+                                    <div class="form-group">
+                                        <label>Custom Recipe Prompt</label>
+                                        <textarea id="customPrompt" rows="4" placeholder="Describe the recipe you want...&#10;&#10;Examples:&#10;• Make me a spicy Italian pasta with seafood&#10;• Create a healthy vegan dessert with chocolate&#10;• I want a comfort food recipe using chicken and potatoes"></textarea>
+                                    </div>
+                                </div>
+                                
+                                <!-- Batch Generation Controls -->
+                                <div class="batch-controls-section">
+                                    <div class="batch-control-group">
+                                        <label class="control-label">
+                                            <i class="fas fa-layer-group"></i> Number of Recipes
+                                        </label>
+                                        <div class="number-selector">
+                                            <button type="button" class="number-btn minus" onclick="adjustNumber('recipeCount', -1)">-</button>
+                                            <input type="number" id="recipeCount" value="1" min="1" max="10" class="number-input">
+                                            <button type="button" class="number-btn plus" onclick="adjustNumber('recipeCount', 1)">+</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="batch-control-group">
+                                        <label class="control-label">
+                                            <i class="fas fa-images"></i> Images per Recipe
+                                        </label>
+                                        <div class="number-selector">
+                                            <button type="button" class="number-btn minus" onclick="adjustNumber('imageCount', -1)">-</button>
+                                            <input type="number" id="imageCount" value="1" min="0" max="5" class="number-input">
+                                            <button type="button" class="number-btn plus" onclick="adjustNumber('imageCount', 1)">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Generation Options -->
+                                <div class="generation-options">
+                                    <label class="option-item">
+                                        <input type="checkbox" id="generateImage" checked>
+                                        <span class="option-label"><i class="fas fa-image"></i> Generate Images</span>
+                                    </label>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-generate">
+                                        <i class="fas fa-sparkles"></i>
+                                        <span>Generate Recipe</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                
+                    <div id="generateResult" class="result-section"></div>
+                </section>
+
+                <!-- AI Ideas Section -->
+                <section id="ai-ideas" class="admin-section">
+                <h2>💡 AI Recipe Ideas Generator</h2>
+                <form id="ideasForm" class="ideas-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Number of Ideas</label>
+                            <input type="number" id="ideasCount" value="5" min="1" max="20">
+                        </div>
+                        <div class="form-group">
+                            <label>Cuisine Focus</label>
+                            <select id="ideasCuisine">
+                                <option value="any">Any Cuisine</option>
+                                <option value="Italian">Italian</option>
+                                <option value="Asian">Asian</option>
+                                <option value="Mexican">Mexican</option>
+                                <option value="Mediterranean">Mediterranean</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="trendingFocus"> Focus on Trending Recipes
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="seasonalFocus"> Include Seasonal Ingredients
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Generate Ideas</button>
+                </form>
+                
+                <div id="ideasResult" class="ideas-grid"></div>
+            </section>
+
+
+
+            <!-- Manage Recipes Section -->
+            <section id="manage-recipes" class="admin-section">
+                <h2>📝 Manage Recipes</h2>
+                <div class="recipes-controls">
+                    <input type="text" id="recipeSearch" placeholder="Search recipes...">
+                    <button id="refreshRecipes" class="btn btn-outline">Refresh</button>
+                </div>
+                
+                <div id="recipesList" class="recipes-list"></div>
+            </section>
+            </div><!-- End dashboard-content -->
+        </div><!-- End main-content -->
+    </div><!-- End admin-dashboard -->
+
+    <!-- Recipe Edit Modal -->
+    <div id="editRecipeModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>Edit Recipe</h2>
+                <button class="close-btn" id="closeEditModal">&times;</button>
+            </div>
+            <form id="editRecipeForm" class="edit-recipe-form">
+                <input type="hidden" id="editRecipeId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Recipe Name</label>
+                        <input type="text" id="editStrMeal" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="editStrCategory">
+                            <option value="Beef">Beef</option>
+                            <option value="Chicken">Chicken</option>
+                            <option value="Dessert">Dessert</option>
+                            <option value="Lamb">Lamb</option>
+                            <option value="Miscellaneous">Miscellaneous</option>
+                            <option value="Pasta">Pasta</option>
+                            <option value="Pork">Pork</option>
+                            <option value="Seafood">Seafood</option>
+                            <option value="Side">Side</option>
+                            <option value="Starter">Starter</option>
+                            <option value="Vegan">Vegan</option>
+                            <option value="Vegetarian">Vegetarian</option>
+                            <option value="Breakfast">Breakfast</option>
+                            <option value="Goat">Goat</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Area/Cuisine</label>
+                        <select id="editStrArea">
+                            <option value="American">American</option>
+                            <option value="British">British</option>
+                            <option value="Canadian">Canadian</option>
+                            <option value="Chinese">Chinese</option>
+                            <option value="Croatian">Croatian</option>
+                            <option value="Dutch">Dutch</option>
+                            <option value="Egyptian">Egyptian</option>
+                            <option value="French">French</option>
+                            <option value="Greek">Greek</option>
+                            <option value="Indian">Indian</option>
+                            <option value="Irish">Irish</option>
+                            <option value="Italian">Italian</option>
+                            <option value="Jamaican">Jamaican</option>
+                            <option value="Japanese">Japanese</option>
+                            <option value="Kenyan">Kenyan</option>
+                            <option value="Malaysian">Malaysian</option>
+                            <option value="Mexican">Mexican</option>
+                            <option value="Moroccan">Moroccan</option>
+                            <option value="Polish">Polish</option>
+                            <option value="Portuguese">Portuguese</option>
+                            <option value="Russian">Russian</option>
+                            <option value="Spanish">Spanish</option>
+                            <option value="Thai">Thai</option>
+                            <option value="Tunisian">Tunisian</option>
+                            <option value="Turkish">Turkish</option>
+                            <option value="Unknown">Unknown</option>
+                            <option value="Vietnamese">Vietnamese</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Image URL</label>
+                        <input type="url" id="editStrMealThumb" placeholder="https://example.com/image.jpg">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Instructions</label>
+                    <textarea id="editStrInstructions" rows="8" required></textarea>
+                </div>
+                
+                <div class="ingredients-section">
+                    <h3>Ingredients & Measurements</h3>
+                    <div id="editIngredientsContainer"></div>
+                    <button type="button" id="addIngredientBtn" class="btn btn-outline">+ Add Ingredient</button>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" id="cancelEditBtn" class="btn btn-outline">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/admin-assets/modern-display.js"></script>
+    <script src="/admin-assets/admin-script.js"></script>
+    <script>
+      // Number adjuster function
+      function adjustNumber(inputId, delta) {
+        const input = document.getElementById(inputId);
+        if (input) {
+          const current = parseInt(input.value) || 0;
+          const min = parseInt(input.min) || 0;
+          const max = parseInt(input.max) || 999;
+          const newValue = Math.max(min, Math.min(max, current + delta));
+          input.value = newValue;
+          
+          // Update button text based on count
+          if (inputId === 'recipeCount') {
+            const btn = document.querySelector('.btn-generate span');
+            if (btn) {
+              btn.textContent = newValue > 1 ? `Generate ${newValue} Recipes` : 'Generate Recipe';
+            }
+          }
+        }
+      }
+      
+      // Wait for DOM to be ready
+      document.addEventListener('DOMContentLoaded', () => {
+        // Override the display function with modern UI after adminPanel is created
+        setTimeout(() => {
+          if (window.adminPanel) {
+            adminPanel.displayRecipeResult = function(recipe, imageUrl, isPreview, imageQuality) {
+              this.generateResult.innerHTML = displayModernRecipe(recipe, imageUrl);
+            };
+          }
+        }, 100);
+        
+        // Update button text based on recipe count
+        const recipeCountInput = document.getElementById('recipeCount');
+        if (recipeCountInput) {
+          recipeCountInput.addEventListener('input', (e) => {
+            const count = parseInt(e.target.value) || 1;
+            const btn = document.querySelector('.btn-generate span');
+            if (btn) {
+              btn.textContent = count > 1 ? `Generate ${count} Recipes` : 'Generate Recipe';
+            }
+          });
+        }
+      });
+    </script>
+</body>
+</html>
