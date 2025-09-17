@@ -72,6 +72,9 @@ class ApiRoutes {
 
     // Alternative route structure without key in path
     this.router.use('/v1', v1Router);
+
+    // Images endpoint for Firebase Storage access
+    this.router.get('/images/:type/:id?', ErrorHandler.asyncHandler(this.getImage.bind(this)));
   }
 
   // Search meals by name or first letter
@@ -249,6 +252,52 @@ class ApiRoutes {
     }
     
     res.json({ message: 'Meal deleted successfully' });
+  }
+
+  // Get image from Firebase Storage or redirect to Firebase URL
+  async getImage(req, res) {
+    const { type, id } = req.params;
+    const { size = 'medium' } = req.query;
+    
+    try {
+      // For now, construct the Firebase Storage URL pattern
+      // This assumes your images are organized in Firebase Storage
+      const baseUrl = 'https://firebasestorage.googleapis.com/v0/b/fooddb-d274c.appspot.com/o/';
+      
+      let imagePath;
+      switch (type) {
+        case 'meals':
+          imagePath = id ? `meals%2F${id}%2F` : 'generated%2Fai-generated%2F';
+          break;
+        case 'categories':
+          imagePath = 'categories%2F';
+          break;
+        case 'ingredients':
+          imagePath = 'ingredients%2F';
+          break;
+        default:
+          imagePath = 'generated%2Fgeneral%2F';
+      }
+      
+      // For now, return a JSON response with Firebase Storage info
+      // You can enhance this to actually list and return specific images
+      res.json({
+        message: 'Firebase Storage image access',
+        type: type,
+        id: id,
+        size: size,
+        firebaseStorageUrl: `${baseUrl}${imagePath}`,
+        note: 'Images are stored in Firebase Storage at gs://fooddb-d274c.firebasestorage.app',
+        examples: {
+          meals: '/api/images/meals/12345',
+          categories: '/api/images/categories',
+          ingredients: '/api/images/ingredients'
+        }
+      });
+    } catch (error) {
+      console.error('Error accessing image:', error);
+      res.status(404).json({ error: 'Image not found' });
+    }
   }
 
   getRouter() {

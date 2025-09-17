@@ -669,9 +669,47 @@ TECHNICAL SPECIFICATIONS: Ultra-high resolution, professional food photography, 
     return `Ultra-high resolution professional food photography of ${recipeName}. ${description ? description + '. ' : ''}Shot with Canon EOS R5, 100mm f/2.8L macro lens, aperture f/4 for perfect depth of field, ISO 100, 1/60s shutter speed. PREMIUM STUDIO LIGHTING SETUP: Multiple professional lights - large softbox key light, bright fill light, dedicated background lighting for complete illumination, warm color temperature 3200K. Food meticulously styled by world-class food stylist, artfully plated on EXQUISITE, MUSEUM-QUALITY dishware that elevates the food's beauty. CAMERA ANGLE: Top-down (overhead) or 45-degree side angle for maximum visual impact. HERO FRAMING: dish centered and fills 80% of frame as the absolute star. LUMINOUS BACKGROUND: Bright, well-lit natural surface (light wood, bright marble, or warm stone) that glows softly. PERFECT ILLUMINATION: Every detail brilliantly lit with no dark shadows anywhere. Ultra-sharp macro details showing every appetizing texture, glistening surfaces, natural steam, vibrant colors. Commercial food photography quality, Michelin-starred restaurant presentation, magazine cover worthy, photorealistic, indistinguishable from reality. APPETIZING PERFECTION: Colors enhanced for maximum visual appeal, perfect bright exposure, food appears irresistibly delicious. CRITICAL: Show only the finished plated dish on stunning dishware, bright well-lit scene, natural surface background, perfect camera angle, focused entirely on making the food look absolutely beautiful and mouth-watering.`;
   }
 
-  // Download image from DALL-E URL and save locally
+  // Download image from DALL-E URL and save to Firebase Storage
   async downloadAndSaveImage(dalleUrl, recipeName, mealId = null) {
     try {
+      console.log('📥 Starting image download and Firebase upload...');
+      console.log('🖼️ Image URL:', dalleUrl);
+      console.log('📝 Recipe:', recipeName);
+      console.log('🆔 Meal ID:', mealId);
+
+      // Try to upload to Firebase Storage first
+      try {
+        const FirebaseStorageManager = require('./FirebaseStorageManager');
+        const storageManager = new FirebaseStorageManager();
+        
+        // Initialize storage
+        if (storageManager.initialize()) {
+          console.log('🔥 Uploading image to Firebase Storage...');
+          
+          // Upload to Firebase with proper organization
+          const firebaseUrl = await storageManager.uploadImageFromUrl(
+            dalleUrl, 
+            recipeName, 
+            'ai-generated',
+            mealId
+          );
+          
+          console.log('✅ Image uploaded to Firebase Storage:', firebaseUrl);
+          
+          return {
+            url: firebaseUrl,
+            localPath: null, // No local path since it's in Firebase
+            filename: this.extractFilenameFromUrl(firebaseUrl),
+            storage: 'firebase'
+          };
+        }
+      } catch (firebaseError) {
+        console.warn('⚠️ Firebase upload failed, falling back to local storage:', firebaseError.message);
+      }
+
+      // Fallback to local storage if Firebase fails
+      console.log('📁 Falling back to local storage...');
+      
       // Create filename
       const timestamp = Date.now();
       const safeName = this.sanitizeFilename(recipeName);
@@ -707,16 +745,28 @@ TECHNICAL SPECIFICATIONS: Ultra-high resolution, professional food photography, 
         writer.on('error', reject);
       });
 
-      console.log('✅ Image saved successfully!');
+      console.log('✅ Image saved locally!');
 
       return {
         url: publicUrl,
         localPath: localPath,
-        filename: filename
+        filename: filename,
+        storage: 'local'
       };
     } catch (error) {
       console.error('❌ Image download failed:', error.message);
       throw new Error(`Image download failed: ${error.message}`);
+    }
+  }
+
+  // Extract filename from Firebase Storage URL
+  extractFilenameFromUrl(url) {
+    try {
+      const urlParts = url.split('/');
+      const filename = urlParts[urlParts.length - 1];
+      return filename.split('?')[0]; // Remove query parameters
+    } catch (error) {
+      return 'firebase-image.jpg';
     }
   }
 

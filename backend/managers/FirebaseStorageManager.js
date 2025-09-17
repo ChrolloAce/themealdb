@@ -1,37 +1,51 @@
-const admin = require('firebase-admin');
+const { getStorage, ref, uploadBytes, getDownloadURL, uploadBytesResumable } = require('firebase/storage');
+const { initializeApp } = require('firebase/app');
 const fetch = require('node-fetch');
 const { v4: uuidv4 } = require('uuid');
 
 class FirebaseStorageManager {
   constructor() {
     this.initialized = false;
-    this.bucket = null;
+    this.storage = null;
+    this.bucketName = 'fooddb-d274c.firebasestorage.app';
   }
 
   /**
-   * Initialize Firebase Storage
-   * @param {string} bucketName - Optional bucket name override
+   * Initialize Firebase Storage using Web SDK (no service account needed)
    */
-  initialize(bucketName = null) {
+  initialize() {
     try {
       // Check if already initialized
-      if (this.initialized && this.bucket) {
+      if (this.initialized && this.storage) {
         return true;
       }
 
-      // Initialize Firebase Admin if not already done
-      if (!admin.apps.length) {
-        const serviceAccount = require('../../serviceAccountKey.json');
-        admin.initializeApp({
-          credential: admin.credential.cert(serviceAccount),
-          storageBucket: bucketName || process.env.FIREBASE_STORAGE_BUCKET || `${serviceAccount.project_id}.appspot.com`
-        });
+      // Simple Firebase config - matches your existing setup
+      const firebaseConfig = {
+        apiKey: "AIzaSyBLoZwcUJzLLeAbp2ITuedA3ZbCmWPZAAI",
+        authDomain: "fooddb-d274c.firebaseapp.com",
+        projectId: "fooddb-d274c",
+        storageBucket: "fooddb-d274c.firebasestorage.app",
+        messagingSenderId: "282379145030",
+        appId: "1:282379145030:web:4274bb60d94eb138f0df47"
+      };
+
+      // Initialize Firebase app for storage (separate from Firestore)
+      let app;
+      try {
+        app = initializeApp(firebaseConfig, 'storage-app');
+      } catch (error) {
+        // App might already exist, get it
+        const { getApps, getApp } = require('firebase/app');
+        const existingApps = getApps();
+        app = existingApps.find(a => a.name === 'storage-app') || initializeApp(firebaseConfig, 'storage-app');
       }
       
-      this.bucket = admin.storage().bucket();
+      this.storage = getStorage(app);
       this.initialized = true;
       
-      console.log('✅ Firebase Storage initialized successfully');
+      console.log('✅ Firebase Storage initialized successfully (Web SDK)');
+      console.log('🗂️ Storage bucket:', this.bucketName);
       return true;
     } catch (error) {
       console.error('❌ Firebase Storage initialization failed:', error.message);
@@ -54,9 +68,10 @@ class FirebaseStorageManager {
    * @param {string} imageUrl - The image URL to download and store
    * @param {string} recipeName - Name of the recipe for organizing
    * @param {string} category - Optional category for organization
+   * @param {string} mealId - Optional meal ID for organization
    * @returns {Promise<string>} - Public URL of stored image
    */
-  async uploadImageFromUrl(imageUrl, recipeName, category = 'general') {
+  async uploadImageFromUrl(imageUrl, recipeName, category = 'general', mealId = null) {
     try {
       // Ensure storage is initialized
       if (!this.isAvailable()) {
@@ -78,29 +93,31 @@ class FirebaseStorageManager {
       const timestamp = Date.now();
       const uniqueId = uuidv4().substring(0, 8);
       const sanitizedName = recipeName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-      const fileName = `recipes/${category}/${sanitizedName}_${timestamp}_${uniqueId}.jpg`;
       
-      // Create file reference
-      const file = this.bucket.file(fileName);
+      // Organize by meal ID if available, otherwise by category
+      const fileName = mealId 
+        ? `meals/${mealId}/${sanitizedName}_${timestamp}.jpg`
+        : `generated/${category}/${sanitizedName}_${timestamp}_${uniqueId}.jpg`;
       
-      // Upload to Firebase Storage with metadata
-      await file.save(buffer, {
-        metadata: {
-          contentType: 'image/jpeg',
-          cacheControl: 'public, max-age=31536000', // Cache for 1 year
-          metadata: {
-            recipeName: recipeName,
-            category: category,
-            originalUrl: imageUrl,
-            uploadedAt: new Date().toISOString()
-          }
-        },
-        public: true,
-        validation: false
-      });
+      // Create storage reference
+      const storageRef = ref(this.storage, fileName);
+      
+      // Upload with metadata using Web SDK
+      const metadata = {
+        contentType: 'image/jpeg',
+        cacheControl: 'public, max-age=31536000', // Cache for 1 year
+        customMetadata: {
+          recipeName: recipeName,
+          category: category,
+          originalUrl: imageUrl,
+          uploadedAt: new Date().toISOString()
+        }
+      };
+
+      await uploadBytes(storageRef, buffer, metadata);
       
       // Get public URL
-      const publicUrl = `https://storage.googleapis.com/${this.bucket.name}/${fileName}`;
+      const publicUrl = await getDownloadURL(storageRef);
       
       console.log('✅ Image uploaded to Firebase Storage:', publicUrl);
       return publicUrl;
@@ -137,26 +154,24 @@ class FirebaseStorageManager {
       const sanitizedName = recipeName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
       const fileName = `recipes/${category}/${sanitizedName}_${timestamp}_${uniqueId}.jpg`;
       
-      // Create file reference
-      const file = this.bucket.file(fileName);
+      // Create storage reference
+      const storageRef = ref(this.storage, fileName);
       
-      // Upload to Firebase Storage
-      await file.save(buffer, {
-        metadata: {
-          contentType: 'image/jpeg',
-          cacheControl: 'public, max-age=31536000',
-          metadata: {
-            recipeName: recipeName,
-            category: category,
-            uploadedAt: new Date().toISOString()
-          }
-        },
-        public: true,
-        validation: false
-      });
+      // Upload with metadata using Web SDK
+      const metadata = {
+        contentType: 'image/jpeg',
+        cacheControl: 'public, max-age=31536000',
+        customMetadata: {
+          recipeName: recipeName,
+          category: category,
+          uploadedAt: new Date().toISOString()
+        }
+      };
+
+      await uploadBytes(storageRef, buffer, metadata);
       
       // Get public URL
-      const publicUrl = `https://storage.googleapis.com/${this.bucket.name}/${fileName}`;
+      const publicUrl = await getDownloadURL(storageRef);
       
       console.log('✅ Base64 image uploaded to Firebase Storage:', publicUrl);
       return publicUrl;
