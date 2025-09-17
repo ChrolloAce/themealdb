@@ -310,23 +310,126 @@ Rate Limit Exceeded:
 }
 
 ================================================================================
+                              MOBILE APP INTEGRATION
+================================================================================
+
+🍎 iOS SWIFT EXAMPLE
+--------------------
+```swift
+import Foundation
+
+class FoodDBAPI {
+    private let baseURL = "https://themealdb-inky.vercel.app/api/v1"
+    private let apiKey: String
+    
+    init(apiKey: String = "1") {
+        self.apiKey = apiKey
+    }
+    
+    func fetchRandomRecipe(completion: @escaping (Result<Data, Error>) -> Void) {
+        guard let url = URL(string: "\(baseURL)/random.php?key=\(apiKey)") else {
+            completion(.failure(URLError(.badURL)))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.setValue("FoodApp/1.0", forHTTPHeaderField: "User-Agent")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue("XMLHttpRequest", forHTTPHeaderField: "X-Requested-With")
+        request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(URLError(.badServerResponse)))
+                return
+            }
+            
+            completion(.success(data))
+        }.resume()
+    }
+}
+```
+
+🤖 ANDROID KOTLIN EXAMPLE
+-------------------------
+```kotlin
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import java.io.IOException
+
+class FoodDBAPI(private val apiKey: String = "1") {
+    private val baseURL = "https://themealdb-inky.vercel.app/api/v1"
+    private val client = OkHttpClient()
+    
+    fun fetchRandomRecipe(): Response {
+        val request = Request.Builder()
+            .url("$baseURL/random.php?key=$apiKey")
+            .addHeader("User-Agent", "FoodApp/1.0")
+            .addHeader("Accept", "application/json")
+            .addHeader("X-Requested-With", "XMLHttpRequest")
+            .addHeader("Cache-Control", "no-cache")
+            .build()
+            
+        return client.newCall(request).execute()
+    }
+}
+```
+
+📱 IMPORTANT FOR MOBILE APPS
+----------------------------
+To avoid being blocked by Vercel's Security Checkpoint, your mobile app MUST include these headers:
+
+REQUIRED HEADERS:
+- User-Agent: "YourAppName/1.0" (replace with your app name)
+- Accept: "application/json"
+- X-Requested-With: "XMLHttpRequest"
+
+RECOMMENDED HEADERS:
+- Cache-Control: "no-cache" (for fresh data)
+- Connection: "keep-alive" (for better performance)
+
+WITHOUT these headers, your requests will be cancelled with error code -999.
+
+================================================================================
                               CODE EXAMPLES
 ================================================================================
 
 🟨 JAVASCRIPT/FETCH
 -------------------
 // Basic search
-fetch('https://themealdb-inky.vercel.app/api/v1/search.php?key=1&s=chicken')
+fetch('https://themealdb-inky.vercel.app/api/v1/search.php?key=1&s=chicken', {
+  headers: {
+    'User-Agent': 'FoodApp/1.0',
+    'Accept': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest'
+  }
+})
   .then(response => response.json())
   .then(data => console.log(data.meals));
 
 // Random recipe
-fetch('https://themealdb-inky.vercel.app/api/v1/random.php?key=1')
+fetch('https://themealdb-inky.vercel.app/api/v1/random.php?key=1', {
+  headers: {
+    'User-Agent': 'FoodApp/1.0',
+    'Accept': 'application/json'
+  }
+})
   .then(response => response.json())
   .then(data => console.log(data.meals[0]));
 
 // Get categories
-fetch('https://themealdb-inky.vercel.app/api/v1/categories.php?key=1')
+fetch('https://themealdb-inky.vercel.app/api/v1/categories.php?key=1', {
+  headers: {
+    'User-Agent': 'FoodApp/1.0',
+    'Accept': 'application/json'
+  }
+})
   .then(response => response.json())
   .then(data => console.log(data.categories));
 
@@ -346,7 +449,13 @@ class FoodDBAPI {
       if (value) url.searchParams.append(key, value);
     });
 
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'FoodApp/1.0',
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    });
     if (!response.ok) {
       throw new Error(`API Error: ${response.statusText}`);
     }
