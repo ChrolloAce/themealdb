@@ -384,4 +384,3 @@ class SimpleFirebaseManager {
 }
 
 module.exports = SimpleFirebaseManager;
-module.exports = SimpleFirebaseManager;

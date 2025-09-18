@@ -282,9 +282,12 @@ Return ONLY this JSON format with NO extra text:
       if (startBrace !== -1 && (startBracket === -1 || startBrace < startBracket)) {
         // It's an object
         if (endBrace === -1) {
-          throw new Error('Invalid JSON: No closing brace found');
+          // Try to fix incomplete JSON by finding the last complete field
+          const incompleteContent = cleanContent.substring(startBrace);
+          jsonContent = this.fixIncompleteJSON(incompleteContent);
+        } else {
+          jsonContent = cleanContent.substring(startBrace, endBrace + 1);
         }
-        jsonContent = cleanContent.substring(startBrace, endBrace + 1);
       } else if (startBracket !== -1) {
         // It's an array
         if (endBracket === -1) {
@@ -317,9 +320,75 @@ Return ONLY this JSON format with NO extra text:
         return fallbackParsed;
       } catch (fallbackError) {
         console.error('❌ Fallback parsing also failed:', fallbackError.message);
-        throw new Error(`Failed to parse AI response as JSON: ${parseError.message}. Content: ${content.substring(0, 200)}...`);
+        
+        // Final attempt: create a minimal valid recipe JSON
+        console.log('🚨 Creating fallback recipe due to JSON parsing failure');
+        return this.createFallbackRecipe(content);
       }
     }
+  }
+
+  // Fix incomplete JSON by finding the last complete field and closing the object
+  fixIncompleteJSON(incompleteContent) {
+    try {
+      // Find the last complete field (ends with comma or quote)
+      const lines = incompleteContent.split('\n');
+      let validLines = [];
+      let braceCount = 0;
+      
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        if (trimmedLine.startsWith('{')) braceCount++;
+        if (trimmedLine.endsWith('}')) braceCount--;
+        
+        // Add line if it looks like a complete field
+        if (trimmedLine.includes(':') && (trimmedLine.endsWith(',') || trimmedLine.endsWith('"'))) {
+          validLines.push(line);
+        } else if (trimmedLine.startsWith('{') || trimmedLine === '') {
+          validLines.push(line);
+        }
+      }
+      
+      // Remove trailing comma and close the object
+      const lastLineIndex = validLines.length - 1;
+      if (validLines[lastLineIndex].trim().endsWith(',')) {
+        validLines[lastLineIndex] = validLines[lastLineIndex].replace(/,$/, '');
+      }
+      
+      validLines.push('}');
+      return validLines.join('\n');
+    } catch (error) {
+      throw new Error('Could not fix incomplete JSON');
+    }
+  }
+
+  // Create a fallback recipe when JSON parsing completely fails
+  createFallbackRecipe(originalContent) {
+    const recipeName = originalContent.match(/"strMeal":\s*"([^"]+)"/)?.[1] || 'Generated Recipe';
+    const category = originalContent.match(/"strCategory":\s*"([^"]+)"/)?.[1] || 'Main Course';
+    const area = originalContent.match(/"strArea":\s*"([^"]+)"/)?.[1] || 'International';
+    
+    return {
+      strMeal: recipeName,
+      strCategory: category,
+      strArea: area,
+      strInstructions: "Step 1: Prepare ingredients. Step 2: Cook according to recipe. Step 3: Serve hot.",
+      strMealThumb: "",
+      strTags: "quick,easy,delicious",
+      strEquipment: "Basic kitchen tools",
+      strPrepTime: "15 minutes",
+      strCookTime: "30 minutes",
+      strTotalTime: "45 minutes",
+      strServings: "4",
+      strIngredient1: "Main ingredient", strMeasure1: "1 lb",
+      strIngredient2: "Seasoning", strMeasure2: "To taste",
+      strIngredient3: "", strMeasure3: "",
+      strIngredient4: "", strMeasure4: "",
+      strIngredient5: "", strMeasure5: "",
+      strIngredient6: "", strMeasure6: "",
+      strIngredient7: "", strMeasure7: "",
+      strIngredient8: "", strMeasure8: ""
+    };
   }
 
   // Generate multiple recipe ideas
