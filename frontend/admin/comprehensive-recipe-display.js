@@ -504,19 +504,23 @@ class ComprehensiveRecipeDisplay {
 
     // Send to backend
     try {
-      const response = await fetch(`/api/admin/recipes/${this.currentRecipe.idMeal || this.currentRecipe.id}`, {
+      const response = await fetch(`/admin/recipes/${this.currentRecipe.id || this.currentRecipe.idMeal}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
         },
-        body: JSON.stringify(updates)
+        body: JSON.stringify({
+          ...this.currentRecipe,
+          ...updates,
+          dateModified: new Date().toISOString()
+        })
       });
 
       if (response.ok) {
-        this.showNotification('Recipe updated successfully!', 'success');
+        this.showNotification('Recipe saved to Firebase successfully!', 'success');
       } else {
-        this.showNotification('Failed to update recipe', 'error');
+        this.showNotification('Failed to save to Firebase', 'error');
       }
     } catch (error) {
       console.error('Error saving recipe:', error);
@@ -570,22 +574,133 @@ class ComprehensiveRecipeDisplay {
     }
   }
 
-  // Estimate nutrition (fallback)
-  estimateNutrition() {
+  // Estimate nutrition based on ingredients (improved fallback)
+  async estimateNutrition() {
+    // Get ingredients for analysis
+    const ingredients = [];
+    for (let i = 1; i <= 20; i++) {
+      const ing = this.currentRecipe[`strIngredient${i}`];
+      const measure = this.currentRecipe[`strMeasure${i}`];
+      if (ing && ing.trim()) {
+        ingredients.push({ name: ing.toLowerCase(), amount: measure });
+      }
+    }
+    
+    // Base nutritional values per serving
+    let calories = 150; // base calories
+    let protein = 5;
+    let carbs = 20;
+    let fat = 5;
+    let fiber = 2;
+    let sugar = 3;
+    let sodium = 200;
+    let cholesterol = 0;
+    let saturatedFat = 2;
+    
+    // Analyze ingredients for better estimation
+    ingredients.forEach(({ name, amount }) => {
+      // Proteins
+      if (name.includes('chicken') || name.includes('beef') || name.includes('pork')) {
+        calories += 150;
+        protein += 25;
+        fat += 8;
+        cholesterol += 60;
+        saturatedFat += 3;
+      } else if (name.includes('fish') || name.includes('salmon') || name.includes('tuna')) {
+        calories += 120;
+        protein += 22;
+        fat += 5;
+        cholesterol += 40;
+      } else if (name.includes('egg')) {
+        calories += 70;
+        protein += 6;
+        fat += 5;
+        cholesterol += 185;
+      } else if (name.includes('tofu') || name.includes('tempeh')) {
+        calories += 80;
+        protein += 10;
+        fat += 4;
+      }
+      
+      // Carbohydrates
+      if (name.includes('rice') || name.includes('pasta') || name.includes('noodle')) {
+        calories += 150;
+        carbs += 35;
+        fiber += 2;
+      } else if (name.includes('bread') || name.includes('flour')) {
+        calories += 100;
+        carbs += 20;
+        fiber += 1;
+      } else if (name.includes('potato')) {
+        calories += 80;
+        carbs += 20;
+        fiber += 3;
+      }
+      
+      // Vegetables
+      if (name.includes('vegetable') || name.includes('broccoli') || name.includes('carrot') || 
+          name.includes('spinach') || name.includes('tomato') || name.includes('onion')) {
+        calories += 25;
+        carbs += 5;
+        fiber += 2;
+      }
+      
+      // Dairy
+      if (name.includes('milk') || name.includes('cream')) {
+        calories += 60;
+        fat += 4;
+        protein += 3;
+        cholesterol += 15;
+        saturatedFat += 2;
+      } else if (name.includes('cheese')) {
+        calories += 100;
+        fat += 8;
+        protein += 7;
+        cholesterol += 25;
+        saturatedFat += 5;
+      } else if (name.includes('butter')) {
+        calories += 100;
+        fat += 11;
+        saturatedFat += 7;
+        cholesterol += 30;
+      }
+      
+      // Oils and fats
+      if (name.includes('oil') || name.includes('olive')) {
+        calories += 120;
+        fat += 14;
+        saturatedFat += 2;
+      }
+      
+      // Sugar and sweeteners
+      if (name.includes('sugar') || name.includes('honey') || name.includes('syrup')) {
+        calories += 50;
+        carbs += 13;
+        sugar += 12;
+      }
+      
+      // Salt and seasonings
+      if (name.includes('salt') || name.includes('soy sauce')) {
+        sodium += 500;
+      }
+    });
+    
+    // Adjust for servings
+    const servings = this.currentRecipe.numberOfServings || 4;
     const nutrition = {
-      caloriesPerServing: Math.floor(Math.random() * 200 + 300),
-      protein: Math.floor(Math.random() * 20 + 15),
-      carbs: Math.floor(Math.random() * 30 + 20),
-      fat: Math.floor(Math.random() * 15 + 10),
-      fiber: Math.floor(Math.random() * 5 + 3),
-      sugar: Math.floor(Math.random() * 10 + 5),
-      sodium: Math.floor(Math.random() * 500 + 400),
-      cholesterol: Math.floor(Math.random() * 50 + 30),
-      saturatedFat: Math.floor(Math.random() * 8 + 4),
-      vitaminA: Math.floor(Math.random() * 20 + 10),
-      vitaminC: Math.floor(Math.random() * 30 + 15),
-      iron: Math.floor(Math.random() * 15 + 10),
-      calcium: Math.floor(Math.random() * 12 + 8)
+      caloriesPerServing: Math.round(calories / servings),
+      protein: Math.round(protein / servings),
+      carbs: Math.round(carbs / servings),
+      fat: Math.round(fat / servings),
+      fiber: Math.round(fiber / servings),
+      sugar: Math.round(sugar / servings),
+      sodium: Math.round(sodium / servings),
+      cholesterol: Math.round(cholesterol / servings),
+      saturatedFat: Math.round(saturatedFat / servings),
+      vitaminA: Math.round(10 + ingredients.length * 2), // Estimated
+      vitaminC: Math.round(15 + ingredients.length * 3), // Estimated
+      iron: Math.round(10 + ingredients.length), // Estimated
+      calcium: Math.round(8 + ingredients.length * 2) // Estimated
     };
 
     this.currentRecipe.nutrition = nutrition;
@@ -596,7 +711,10 @@ class ComprehensiveRecipeDisplay {
       nutritionGrid.innerHTML = this.renderNutrition(nutrition);
     }
     
-    this.showNotification('Nutrition estimated based on ingredients', 'info');
+    this.showNotification('Nutrition calculated based on ingredients!', 'success');
+    
+    // Auto-save to Firebase
+    await this.saveChanges();
   }
 
   // Add ingredient
@@ -624,11 +742,14 @@ class ComprehensiveRecipeDisplay {
       }
       
       this.showNotification('Ingredient added!', 'success');
+      
+      // Auto-save to Firebase
+      await this.saveChanges();
     }
   }
 
   // Remove ingredient
-  removeIngredient(index) {
+  async removeIngredient(index) {
     if (this.currentRecipe.ingredientsDetailed) {
       this.currentRecipe.ingredientsDetailed.splice(index, 1);
     } else {
@@ -643,10 +764,14 @@ class ComprehensiveRecipeDisplay {
       // Re-attach event listeners after re-rendering
       this.attachEventListeners();
     }
+    
+    // Auto-save to Firebase
+    await this.saveChanges();
+    this.showNotification('Ingredient removed and saved!', 'success');
   }
 
   // Add equipment
-  addEquipment() {
+  async addEquipment() {
     const equipment = prompt('Enter equipment name:');
     
     if (equipment) {
@@ -663,11 +788,14 @@ class ComprehensiveRecipeDisplay {
       }
       
       this.showNotification('Equipment added!', 'success');
+      
+      // Auto-save to Firebase
+      await this.saveChanges();
     }
   }
 
   // Remove equipment
-  removeEquipment(index) {
+  async removeEquipment(index) {
     this.currentRecipe.equipmentRequired.splice(index, 1);
     
     // Re-render equipment
@@ -677,10 +805,14 @@ class ComprehensiveRecipeDisplay {
       // Re-attach event listeners after re-rendering
       this.attachEventListeners();
     }
+    
+    // Auto-save to Firebase
+    await this.saveChanges();
+    this.showNotification('Equipment removed and saved!', 'success');
   }
 
   // Add instruction
-  addInstruction() {
+  async addInstruction() {
     const instruction = prompt('Enter instruction step:');
     
     if (instruction) {
@@ -697,11 +829,14 @@ class ComprehensiveRecipeDisplay {
       }
       
       this.showNotification('Instruction added!', 'success');
+      
+      // Auto-save to Firebase
+      await this.saveChanges();
     }
   }
 
   // Remove instruction
-  removeInstruction(index) {
+  async removeInstruction(index) {
     this.currentRecipe.instructions.splice(index, 1);
     
     // Re-render instructions
@@ -711,6 +846,10 @@ class ComprehensiveRecipeDisplay {
       // Re-attach event listeners after re-rendering
       this.attachEventListeners();
     }
+    
+    // Auto-save to Firebase
+    await this.saveChanges();
+    this.showNotification('Instruction removed and saved!', 'success');
   }
 
   // Show notification
