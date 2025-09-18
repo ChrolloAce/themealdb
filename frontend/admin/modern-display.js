@@ -109,34 +109,41 @@ function displayModernRecipe(recipe, imageUrl = null) {
         </div>
       ` : ''}
       
+      <!-- Recipe Description -->
+      ${recipe.strDescription ? `
+        <div class="recipe-description">
+          <p class="description-text">${recipe.strDescription}</p>
+        </div>
+      ` : ''}
+      
       <!-- Stats Bar -->
       <div class="recipe-stats-bar">
         <div class="stat-badge">
           <span class="stat-badge-icon">⏱️</span>
           <div class="stat-badge-content">
             <span class="stat-badge-label">Prep</span>
-            <span class="stat-badge-value">${recipe.prepTime || recipe.strPrepTime || '15 min'}</span>
+            <span class="stat-badge-value">${recipe.prepTime ? recipe.prepTime + ' min' : recipe.strPrepTime || '15 min'}</span>
           </div>
         </div>
         <div class="stat-badge">
           <span class="stat-badge-icon">🔥</span>
           <div class="stat-badge-content">
             <span class="stat-badge-label">Cook</span>
-            <span class="stat-badge-value">${recipe.cookTime || recipe.strCookTime || '30 min'}</span>
+            <span class="stat-badge-value">${recipe.cookTime ? recipe.cookTime + ' min' : recipe.strCookTime || '30 min'}</span>
           </div>
         </div>
         <div class="stat-badge">
           <span class="stat-badge-icon">⏰</span>
           <div class="stat-badge-content">
             <span class="stat-badge-label">Total</span>
-            <span class="stat-badge-value">${recipe.totalTime || recipe.strTotalTime || '45 min'}</span>
+            <span class="stat-badge-value">${recipe.totalTime ? recipe.totalTime + ' min' : recipe.strTotalTime || '45 min'}</span>
           </div>
         </div>
         <div class="stat-badge">
           <span class="stat-badge-icon">🍽️</span>
           <div class="stat-badge-content">
             <span class="stat-badge-label">Serves</span>
-            <span class="stat-badge-value">${recipe.servings || recipe.strServings || '4'}</span>
+            <span class="stat-badge-value">${recipe.numberOfServings || recipe.servings || recipe.strServings || '4'}</span>
           </div>
         </div>
         <div class="stat-badge">
@@ -150,10 +157,184 @@ function displayModernRecipe(recipe, imageUrl = null) {
           <span class="stat-badge-icon">🥘</span>
           <div class="stat-badge-content">
             <span class="stat-badge-label">Yield</span>
-            <span class="stat-badge-value">${recipe.yield || 'Serves 4'}</span>
+            <span class="stat-badge-value">${recipe.yield || 'Serves ' + (recipe.numberOfServings || '4')}</span>
           </div>
         </div>
       </div>
+      
+      <!-- Nutritional Information -->
+      ${recipe.nutrition ? `
+        <div class="nutrition-section">
+          <div class="ingredients-grid-header">
+            <span class="ingredients-grid-title">📊 Nutritional Information (Per Serving)</span>
+          </div>
+          <div class="nutrition-grid">
+            <div class="nutrition-card primary">
+              <div class="nutrition-icon">🔥</div>
+              <div class="nutrition-details">
+                <div class="nutrition-value">${recipe.nutrition.caloriesPerServing || 0}</div>
+                <div class="nutrition-label">Calories</div>
+              </div>
+            </div>
+            <div class="nutrition-card">
+              <div class="nutrition-icon">🥩</div>
+              <div class="nutrition-details">
+                <div class="nutrition-value">${recipe.nutrition.protein || 0}g</div>
+                <div class="nutrition-label">Protein</div>
+              </div>
+            </div>
+            <div class="nutrition-card">
+              <div class="nutrition-icon">🍞</div>
+              <div class="nutrition-details">
+                <div class="nutrition-value">${recipe.nutrition.carbs || 0}g</div>
+                <div class="nutrition-label">Carbs</div>
+              </div>
+            </div>
+            <div class="nutrition-card">
+              <div class="nutrition-icon">🥑</div>
+              <div class="nutrition-details">
+                <div class="nutrition-value">${recipe.nutrition.fat || 0}g</div>
+                <div class="nutrition-label">Fat</div>
+              </div>
+            </div>
+            <div class="nutrition-card">
+              <div class="nutrition-icon">🌾</div>
+              <div class="nutrition-details">
+                <div class="nutrition-value">${recipe.nutrition.fiber || 0}g</div>
+                <div class="nutrition-label">Fiber</div>
+              </div>
+            </div>
+            <div class="nutrition-card">
+              <div class="nutrition-icon">🍯</div>
+              <div class="nutrition-details">
+                <div class="nutrition-value">${recipe.nutrition.sugar || 0}g</div>
+                <div class="nutrition-label">Sugar</div>
+              </div>
+            </div>
+            <div class="nutrition-card">
+              <div class="nutrition-icon">🧂</div>
+              <div class="nutrition-details">
+                <div class="nutrition-value">${recipe.nutrition.sodium || 0}mg</div>
+                <div class="nutrition-label">Sodium</div>
+              </div>
+            </div>
+            <div class="nutrition-card">
+              <div class="nutrition-icon">🍳</div>
+              <div class="nutrition-details">
+                <div class="nutrition-value">${recipe.nutrition.cholesterol || 0}mg</div>
+                <div class="nutrition-label">Cholesterol</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Vitamins & Minerals -->
+          <div class="vitamins-section">
+            <h4 class="vitamins-title">💊 Vitamins & Minerals (% Daily Value)</h4>
+            <div class="vitamins-grid">
+              <div class="vitamin-item">
+                <span class="vitamin-name">Vitamin A</span>
+                <div class="vitamin-bar">
+                  <div class="vitamin-fill" style="width: ${Math.min(recipe.nutrition.vitaminA || 0, 100)}%"></div>
+                </div>
+                <span class="vitamin-value">${recipe.nutrition.vitaminA || 0}%</span>
+              </div>
+              <div class="vitamin-item">
+                <span class="vitamin-name">Vitamin C</span>
+                <div class="vitamin-bar">
+                  <div class="vitamin-fill" style="width: ${Math.min(recipe.nutrition.vitaminC || 0, 100)}%"></div>
+                </div>
+                <span class="vitamin-value">${recipe.nutrition.vitaminC || 0}%</span>
+              </div>
+              <div class="vitamin-item">
+                <span class="vitamin-name">Iron</span>
+                <div class="vitamin-bar">
+                  <div class="vitamin-fill" style="width: ${Math.min(recipe.nutrition.iron || 0, 100)}%"></div>
+                </div>
+                <span class="vitamin-value">${recipe.nutrition.iron || 0}%</span>
+              </div>
+              <div class="vitamin-item">
+                <span class="vitamin-name">Calcium</span>
+                <div class="vitamin-bar">
+                  <div class="vitamin-fill" style="width: ${Math.min(recipe.nutrition.calcium || 0, 100)}%"></div>
+                </div>
+                <span class="vitamin-value">${recipe.nutrition.calcium || 0}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      ` : ''}
+      
+      <!-- Dietary Information -->
+      ${recipe.dietary ? `
+        <div class="dietary-section">
+          <div class="ingredients-grid-header">
+            <span class="ingredients-grid-title">🥗 Dietary Information</span>
+          </div>
+          <div class="dietary-badges">
+            ${recipe.dietary.vegetarian ? '<span class="dietary-badge vegetarian">🌱 Vegetarian</span>' : ''}
+            ${recipe.dietary.vegan ? '<span class="dietary-badge vegan">🌿 Vegan</span>' : ''}
+            ${recipe.dietary.glutenFree ? '<span class="dietary-badge gluten-free">🌾 Gluten-Free</span>' : ''}
+            ${recipe.dietary.dairyFree ? '<span class="dietary-badge dairy-free">🥛 Dairy-Free</span>' : ''}
+            ${recipe.dietary.keto ? '<span class="dietary-badge keto">🥓 Keto</span>' : ''}
+            ${recipe.dietary.paleo ? '<span class="dietary-badge paleo">🦴 Paleo</span>' : ''}
+            ${recipe.allergenFlags && recipe.allergenFlags.length > 0 ? 
+              recipe.allergenFlags.map(allergen => 
+                `<span class="dietary-badge allergen">⚠️ Contains ${allergen}</span>`
+              ).join('') : ''}
+          </div>
+        </div>
+      ` : ''}
+      
+      <!-- Recipe Categories -->
+      ${(recipe.mealType || recipe.occasion || recipe.seasonality) ? `
+        <div class="categories-section">
+          <div class="ingredients-grid-header">
+            <span class="ingredients-grid-title">🏷️ Categories & Tags</span>
+          </div>
+          <div class="categories-grid">
+            ${recipe.mealType && recipe.mealType.length > 0 ? `
+              <div class="category-group">
+                <h4 class="category-title">🍽️ Meal Type</h4>
+                <div class="category-tags">
+                  ${Array.isArray(recipe.mealType) ? 
+                    recipe.mealType.map(type => `<span class="category-tag meal-type">${type}</span>`).join('') :
+                    `<span class="category-tag meal-type">${recipe.mealType}</span>`}
+                </div>
+              </div>
+            ` : ''}
+            ${recipe.occasion && recipe.occasion.length > 0 ? `
+              <div class="category-group">
+                <h4 class="category-title">🎉 Occasion</h4>
+                <div class="category-tags">
+                  ${Array.isArray(recipe.occasion) ? 
+                    recipe.occasion.map(occ => `<span class="category-tag occasion">${occ}</span>`).join('') :
+                    `<span class="category-tag occasion">${recipe.occasion}</span>`}
+                </div>
+              </div>
+            ` : ''}
+            ${recipe.seasonality && recipe.seasonality.length > 0 ? `
+              <div class="category-group">
+                <h4 class="category-title">🌸 Season</h4>
+                <div class="category-tags">
+                  ${Array.isArray(recipe.seasonality) ? 
+                    recipe.seasonality.map(season => `<span class="category-tag season">${season}</span>`).join('') :
+                    `<span class="category-tag season">${recipe.seasonality}</span>`}
+                </div>
+              </div>
+            ` : ''}
+            ${recipe.skillsRequired && recipe.skillsRequired.length > 0 ? `
+              <div class="category-group">
+                <h4 class="category-title">👨‍🍳 Skills Required</h4>
+                <div class="category-tags">
+                  ${Array.isArray(recipe.skillsRequired) ? 
+                    recipe.skillsRequired.map(skill => `<span class="category-tag skill">${skill}</span>`).join('') :
+                    `<span class="category-tag skill">${recipe.skillsRequired}</span>`}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      ` : ''}
       
       <!-- Ingredients Grid -->
       <div class="ingredients-grid-modern">
