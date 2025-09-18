@@ -18,7 +18,8 @@
   ],
   "functions": {
     "api/[...all].js": {
-      "maxDuration": 30
+      "maxDuration": 30,
+      "runtime": "nodejs18.x"
     }
   },
   "headers": [
