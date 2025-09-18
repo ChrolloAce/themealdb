@@ -30,8 +30,32 @@ class OpenAIManager {
     }
   }
 
-  // Generate a complete recipe based on input parameters
+  // Generate a complete recipe based on input parameters (TWO-STEP APPROACH)
   async generateRecipe(params = {}) {
+    this.checkAvailability();
+    
+    try {
+      console.log('🚀 Starting TWO-STEP recipe generation...');
+      
+      // STEP 1: Generate basic recipe with simple prompt
+      console.log('📝 STEP 1: Generating basic recipe...');
+      const basicRecipe = await this.generateBasicRecipe(params);
+      
+      // STEP 2: Enhance with comprehensive data
+      console.log('📊 STEP 2: Adding comprehensive data...');
+      const comprehensiveRecipe = await this.enhanceRecipeWithComprehensiveData(basicRecipe);
+      
+      console.log('✅ TWO-STEP recipe generation completed successfully');
+      return comprehensiveRecipe;
+      
+    } catch (error) {
+      console.error('❌ TWO-STEP generation failed, falling back to single-step...');
+      return this.generateRecipeSingleStep(params);
+    }
+  }
+
+  // Original single-step generation as fallback
+  async generateRecipeSingleStep(params = {}) {
     this.checkAvailability();
     try {
       console.log('🤖 Starting CONTEXT-AWARE AI recipe generation...');
@@ -420,6 +444,153 @@ Return ONLY this JSON format with NO extra text:
       strIngredient7: "", strMeasure7: "",
       strIngredient8: "", strMeasure8: ""
     };
+  }
+
+  // STEP 1: Generate basic recipe with simple prompt
+  async generateBasicRecipe(params = {}) {
+    const { customPrompt, mode } = params;
+    
+    let basicPrompt;
+    if (mode === 'custom' && customPrompt) {
+      basicPrompt = `Create a ${customPrompt} recipe. Return ONLY this JSON format:
+{
+  "strMeal": "Recipe Name",
+  "strCategory": "Category (Beef, Chicken, Seafood, Vegetarian, etc)",
+  "strArea": "Cuisine (Italian, Mexican, Asian, etc)",
+  "strDescription": "Brief appetizing description (2-3 sentences)",
+  "instructions": ["Step 1: detailed instruction", "Step 2: detailed instruction", "Step 3: detailed instruction"],
+  "strIngredient1": "First ingredient", "strMeasure1": "Amount",
+  "strIngredient2": "Second ingredient", "strMeasure2": "Amount",
+  "strIngredient3": "Third ingredient", "strMeasure3": "Amount",
+  "strIngredient4": "Fourth ingredient", "strMeasure4": "Amount",
+  "strIngredient5": "Fifth ingredient", "strMeasure5": "Amount",
+  "strIngredient6": "Sixth ingredient", "strMeasure6": "Amount"
+}`;
+    } else {
+      // Random recipe
+      const cuisines = ['Italian', 'Mexican', 'Asian', 'Mediterranean', 'Indian', 'French', 'American'];
+      const categories = ['Beef', 'Chicken', 'Seafood', 'Vegetarian', 'Pasta', 'Dessert'];
+      const themes = ['healthy', 'comfort food', 'spicy', 'fresh', 'hearty'];
+      
+      const randomCuisine = cuisines[Math.floor(Math.random() * cuisines.length)];
+      const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+      const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+      
+      basicPrompt = `Create a creative ${randomTheme} ${randomCuisine} ${randomCategory} recipe. Return ONLY this JSON format:
+{
+  "strMeal": "Creative Recipe Name",
+  "strCategory": "${randomCategory}",
+  "strArea": "${randomCuisine}",
+  "strDescription": "Brief appetizing description (2-3 sentences)",
+  "instructions": ["Step 1: detailed instruction", "Step 2: detailed instruction", "Step 3: detailed instruction"],
+  "strIngredient1": "First ingredient", "strMeasure1": "Amount",
+  "strIngredient2": "Second ingredient", "strMeasure2": "Amount",
+  "strIngredient3": "Third ingredient", "strMeasure3": "Amount",
+  "strIngredient4": "Fourth ingredient", "strMeasure4": "Amount",
+  "strIngredient5": "Fifth ingredient", "strMeasure5": "Amount",
+  "strIngredient6": "Sixth ingredient", "strMeasure6": "Amount"
+}`;
+    }
+
+    const completion = await this.openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a chef. Create realistic recipes with real ingredients and detailed instructions. Return only valid JSON.'
+        },
+        {
+          role: 'user',
+          content: basicPrompt
+        }
+      ],
+      temperature: 0.8,
+      max_tokens: 1000 // Smaller for basic recipe
+    });
+
+    return this.parseAIResponse(completion.choices[0].message.content);
+  }
+
+  // STEP 2: Enhance basic recipe with comprehensive data
+  async enhanceRecipeWithComprehensiveData(basicRecipe) {
+    const enhancementPrompt = `Given this basic recipe, add comprehensive nutritional and categorization data:
+
+BASIC RECIPE:
+${JSON.stringify(basicRecipe, null, 2)}
+
+Add the following fields with realistic values (NO zeros, empty strings, or N/A):
+
+Return ONLY this enhanced JSON:
+{
+  ...existing recipe data...,
+  "prepTime": realistic_prep_minutes,
+  "cookTime": realistic_cook_minutes,
+  "totalTime": realistic_total_minutes,
+  "numberOfServings": 4,
+  "servingSize": "1 cup",
+  "difficulty": "Easy/Medium/Hard",
+  "yield": "4 servings",
+  "nutrition": {
+    "caloriesPerServing": realistic_number,
+    "protein": realistic_grams,
+    "carbs": realistic_grams,
+    "fat": realistic_grams,
+    "fiber": realistic_grams,
+    "sugar": realistic_grams,
+    "sodium": realistic_mg,
+    "cholesterol": realistic_mg,
+    "saturatedFat": realistic_grams,
+    "vitaminA": realistic_percentage,
+    "vitaminC": realistic_percentage,
+    "iron": realistic_percentage,
+    "calcium": realistic_percentage
+  },
+  "dietary": {
+    "vegetarian": true/false,
+    "vegan": true/false,
+    "pescatarian": true/false,
+    "glutenFree": true/false,
+    "dairyFree": true/false,
+    "keto": true/false,
+    "paleo": true/false,
+    "halal": true/false,
+    "noRedMeat": true/false,
+    "noPork": true/false,
+    "noShellfish": true/false,
+    "omnivore": true/false
+  },
+  "mealType": ["Breakfast/Lunch/Dinner"],
+  "dishType": "Main Course/Appetizer/Dessert/etc",
+  "mainIngredient": "primary_ingredient",
+  "occasion": ["Weeknight", "Holiday", "etc"],
+  "seasonality": ["Spring", "Summer", "Fall", "Winter", "All Season"],
+  "equipmentRequired": ["specific tools with sizes"],
+  "skillsRequired": ["cooking techniques"],
+  "keywords": ["searchable terms"],
+  "allergenFlags": ["allergens present"],
+  "timeCategory": "Under 30 mins/30-60 mins/1+ hours"
+}`;
+
+    const completion = await this.openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a nutritionist and recipe analyst. Add realistic nutritional and categorization data to recipes. Return only valid JSON.'
+        },
+        {
+          role: 'user',
+          content: enhancementPrompt
+        }
+      ],
+      temperature: 0.3, // Lower temperature for more consistent data
+      max_tokens: 2000
+    });
+
+    const enhancedData = this.parseAIResponse(completion.choices[0].message.content);
+    
+    // Merge basic recipe with enhanced data
+    return { ...basicRecipe, ...enhancedData };
   }
 
   // Generate multiple recipe ideas
