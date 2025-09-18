@@ -68,17 +68,39 @@
             padding: 0.75rem 1.5rem; 
             border-radius: 0.75rem; 
             font-weight: 600; 
-            cursor: pointer; 
+            cursor: pointer !important; 
             transition: all 0.15s; 
             display: flex; 
             align-items: center; 
             gap: 0.5rem;
+            user-select: none;
+            outline: none;
+            position: relative;
+            z-index: 1;
+            pointer-events: auto !important;
         }
-        .nav-btn:hover { border-color: #3b82f6; color: #2563eb; }
+        .nav-btn:hover { 
+            border-color: #3b82f6; 
+            color: #2563eb; 
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59,130,246,0.15);
+        }
+        .nav-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+        .nav-btn:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
         .nav-btn.active { 
             background: #3b82f6; 
             border-color: #3b82f6; 
             color: white; 
+            box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+        }
+        .nav-btn.active:hover {
+            background: #2563eb;
+            border-color: #2563eb;
         }
         .admin-main { flex: 1; padding: 2rem; }
         .admin-section { display: none; }
@@ -171,6 +193,18 @@
             cursor: pointer; 
             transition: all 0.15s; 
             border: 2px solid transparent; 
+            text-decoration: none;
+            user-select: none;
+            outline: none;
+            position: relative;
+            z-index: 1;
+        }
+        .btn:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+        .btn:active {
+            transform: translateY(0) scale(0.98);
         }
         .btn-primary { 
             background: linear-gradient(135deg, #3b82f6, #2563eb); 
@@ -178,8 +212,13 @@
             border-color: #2563eb; 
         }
         .btn-primary:hover { 
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
             transform: translateY(-2px); 
             box-shadow: 0 8px 25px rgba(59,130,246,0.4); 
+        }
+        .btn-primary:active {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: translateY(0) scale(0.98);
         }
         .btn-secondary { 
             background: #f3f4f6; 
@@ -188,7 +227,17 @@
         }
         .btn-secondary:hover { 
             background: #e5e7eb; 
+            border-color: #9ca3af;
             transform: translateY(-1px); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .btn-secondary:active {
+            background: #d1d5db;
+            transform: translateY(0) scale(0.98);
+        }
+        button, input[type="button"], input[type="submit"] {
+            cursor: pointer !important;
+            pointer-events: auto !important;
         }
         .form-group { margin-bottom: 1.5rem; }
         .form-label { 
@@ -249,23 +298,73 @@
         .logout-btn { 
             background: #ef4444; 
             color: white; 
-            border: none; 
+            border: 2px solid #ef4444; 
             padding: 0.5rem 1rem; 
             border-radius: 0.5rem; 
             font-weight: 600; 
             font-size: 0.875rem; 
-            cursor: pointer; 
+            cursor: pointer !important; 
             transition: all 0.15s; 
             display: flex; 
             align-items: center; 
             gap: 0.5rem; 
+            user-select: none;
+            outline: none;
+            position: relative;
+            z-index: 1;
+            pointer-events: auto !important;
         }
         .logout-btn:hover { 
             background: #dc2626; 
+            border-color: #dc2626;
             transform: translateY(-1px); 
+            box-shadow: 0 4px 12px rgba(239,68,68,0.3);
+        }
+        .logout-btn:active {
+            background: #b91c1c;
+            transform: translateY(0) scale(0.98);
+        }
+        .logout-btn:focus {
+            outline: 2px solid #ef4444;
+            outline-offset: 2px;
         }
         .header-right { display: flex; align-items: center; gap: 1rem; }
         .subtitle { font-size: 0.875rem; color: #6b7280; font-weight: 500; }
+        
+        /* Ensure all interactive elements are clickable */
+        button, input[type="button"], input[type="submit"], .btn, .nav-btn {
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Fix any potential z-index issues */
+        .modal { z-index: 9999 !important; }
+        .admin-header { z-index: 100 !important; }
+        .admin-nav { z-index: 90 !important; }
+        
+        /* Ensure buttons respond to touch on mobile */
+        @media (max-width: 768px) {
+            .btn, .nav-btn, .logout-btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
+        }
+        
+        /* Debug styles to make buttons more visible */
+        .btn:not(.btn-primary):not(.btn-secondary) {
+            background: #3b82f6 !important;
+            color: white !important;
+            border: 2px solid #2563eb !important;
+        }
+        
+        /* Ensure form buttons work */
+        form button, form input[type="submit"] {
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            position: relative !important;
+            z-index: 10 !important;
+        }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
