@@ -113,14 +113,31 @@ ${existingContext ? 'IMPORTANT: Create something different from the existing rec
 
 🚨 CRITICAL: ALL fields must have realistic values (no zeros, empty strings, or N/A):
 - strDescription: 2-3 appetizing sentences
-- Times: realistic prep/cook/total minutes (never 0)
+- Times: realistic prep/cook/total minutes (never 0)  
 - servingSize: specify portion like "1 cup", "2 slices"
 - yield: specify output like "4 servings", "12 cookies"
 - nutrition: realistic numbers based on ingredients
 - dietary: appropriate true/false based on ingredients (vegetarian, vegan, pescatarian, glutenFree, dairyFree, keto, paleo, halal, noRedMeat, noPork, noShellfish, omnivore)
 - dishType: specify like "Appetizer", "Soup", "Salad", "Main Course", "Side Dish", "Dessert", "Beverage", "Snack"
 - Arrays: all must have at least 1-2 items
-- Instructions: MUST be array format ["Step 1: detailed instruction", "Step 2: detailed instruction", etc.] with 7-10 educational steps
+
+🔥 INSTRUCTIONS MUST BE EXTREMELY DETAILED (10-15 steps):
+- EVERY step must include specific temperatures, times, and techniques
+- Include exact visual cues (golden brown, bubbling, tender when pierced)
+- Mention specific cooking sounds, smells, and textures to watch for
+- Explain WHY each step is important (develops flavor, ensures doneness)
+- Include troubleshooting tips (if this happens, do this)
+- Specify exact pan sizes, heat levels, and timing
+- Detail prep work (how to cut, what size pieces, proper technique)
+- Instructions: MUST be array format ["Step 1: extremely detailed instruction with temperatures, times, visual cues, and techniques", "Step 2: continue with same level of detail", etc.]
+
+🥄 INGREDIENTS MUST BE ULTRA-SPECIFIC:
+- Include exact measurements with alternatives (1 cup = 240ml)
+- Specify preparation method (diced small 1/4-inch, julienned thin)
+- Include quality indicators (ripe, fresh, room temperature)
+- Mention substitutions where applicable (or 2 tsp dried herbs)
+- For proteins: specify cut, grade, or type (boneless skinless, 85% lean)
+- For produce: specify ripeness, size, variety when relevant
 - 🚨 ONLY use ingredients from this EXACT list (match names precisely): abalone, acai berry, ackee, acorn squash, active dry yeast, adzuki beans, agar agar, agave nectar, aioli, aleppo pepper, alfalfa sprouts, alfredo sauce, all-purpose flour, allspice, almond butter, almond extract, almond flour, almond milk, almond paste, almonds, anchovies, Anchovy Paste, andouille sausage, anise seeds, annatto, apple, apple butter, applesauce, apricot, apricot jam, arborio rice, Arrowroot powder, artichoke, asafoetida, asiago cheese, Asian Pear, asparagus, avocado, bacon, Baguette, baking powder, baking soda, balsamic vinegar, banana, banana blossom, barbecue sauce, barley, barley flour, basil, basil seeds, Basmati Rice, Bay Leaf, beef, Beef Bourguignon, beef brisket, beef broth, Beef Ribs, beef stock, beef tenderloin, beets, Belacan (shrimp paste), bell pepper, bell peppers, besan (chickpea flour), black beans, black cardamom, black fungus (cloud ear), Black Garlic, Black Pepper, Black Peppercorns, black salt (kala namak), Black Tea, black truffle, Black-Eyed Peas, Blood Sausage, blue cheese, blue cheese dressing, blueberry, bok choy, Bonito Flakes, bourbon, Brandy, Bread, bread flour, Breadcrumbs, Breakfast Sausage, Brie, Broccoli, Broccolini, Brown Mustard Seeds, brown rice, brown sugar, brownie mix, brussels sprouts, buckwheat, buckwheat flour, bulgur, burdock root, butter, butter lettuce, buttermilk, buttermilk powder, butternut squash, cabbage, Cacao Nibs, Cactus Pear (Prickly Pear), Cajun Seasoning, Calamari (Squid), camembert, candied ginger, candied orange peel, candlenut, cane vinegar, canned salmon, canned tomatoes, canned tuna, cannellini beans, Caper Berries, Capers, Caramel Sauce, caraway seeds, carne asada, carolina reaper, carrot, cashew butter, cashew milk, cashews, cassava, catfish, cauliflower, cayenne pepper, celery, celery root (celeriac), champagne vinegar, chana dal, chanterelle mushrooms, char siu sauce, cheddar cheese, cheese, cheese curds, cherry, cherry tomato, chervil, chickpeas, chili oil, chili paste, chili powder, chili sauce, Chinese five-spice, chipotle chili powder, chives, chocolate chips, chocolate hazelnut spread, chocolate syrup, cider, cilantro, cinnamon, cinnamon stick, clam juice, clams, clarified butter, clotted cream, cloves, cocoa powder, coconut, coconut aminos, coconut cream, coconut milk, coconut oil, coconut sugar, coconut vinegar, cod, coffee, cognac, collard greens, condensed milk, coriander seeds, corn, corn flakes, corn oil, corn syrup, corn tortillas, corned beef, cornmeal, cotija cheese, cottage cheese, crab, crab meat, cranberries, cream cheese, cream of coconut, cream of tartar, crème fraîche, cremebrule, cremini mushrooms, cucumber, cumin seeds, curly parsley, currants, curry leaves, curry paste, curry powder, daikon radish, dashi, dates, demi-glace, diced tomatoes, dijon mustard, dill, dill seeds, dried apricots, dried cranberries, dried figs, dried hibiscus, dried shrimp, dried thyme, dry mustard powder, duck, duck eggs, duck fat, duck sauce, dulce de leche, edam cheese, edamame, egg noodles, egg whites, egg yolks, eggplant, eggs, egusi seeds, elderberry, empanadas, enoki mushrooms, espresso powder, evaporated milk, extra virgin olive oil, fava beans, fennel bulb, fennel seeds, fenugreek leaves, fenugreek seeds, fermented black beans, filé powder, fish maw, fish sauce, five-spice powder, flaxseeds, flour tortillas, fontina cheese, forbidden rice (black rice), freekeh, freeze-dried fruit, french dressing, fried onions, frosting, fruit cocktail (canned), garam masala, garlic, garlic chives, garlic powder, garlic scapes, gelatin, gin, ginger, ginger paste, ginger powder, gingersnaps (crushed), glucose syrup, glutinous rice (sticky rice), goat, goat cheese, gochugaru (Korean chili flakes), gochujang, salmon, salt, spaghetti, Spaghetti Carbonara, spinach, sugar, sushi, tiramisu
 
 Return ONLY this comprehensive JSON format with NO extra text:
@@ -173,7 +190,24 @@ Make it innovative and delicious. Use unexpected flavor combinations or techniqu
 - dietary: appropriate true/false based on ingredients (vegetarian, vegan, pescatarian, glutenFree, dairyFree, keto, paleo, halal, noRedMeat, noPork, noShellfish, omnivore)
 - dishType: specify like "Appetizer", "Soup", "Salad", "Main Course", "Side Dish", "Dessert", "Beverage", "Snack"
 - Arrays: all must have at least 1-2 items
-- Instructions: MUST be array format ["Step 1: detailed instruction", "Step 2: detailed instruction", etc.] with 7-10 educational steps
+
+🔥 INSTRUCTIONS MUST BE EXTREMELY DETAILED (10-15 steps):
+- EVERY step must include specific temperatures, times, and techniques
+- Include exact visual cues (golden brown, bubbling, tender when pierced)
+- Mention specific cooking sounds, smells, and textures to watch for
+- Explain WHY each step is important (develops flavor, ensures doneness)
+- Include troubleshooting tips (if this happens, do this)
+- Specify exact pan sizes, heat levels, and timing
+- Detail prep work (how to cut, what size pieces, proper technique)
+- Instructions: MUST be array format ["Step 1: extremely detailed instruction with temperatures, times, visual cues, and techniques", "Step 2: continue with same level of detail", etc.]
+
+🥄 INGREDIENTS MUST BE ULTRA-SPECIFIC:
+- Include exact measurements with alternatives (1 cup = 240ml)
+- Specify preparation method (diced small 1/4-inch, julienned thin)
+- Include quality indicators (ripe, fresh, room temperature)
+- Mention substitutions where applicable (or 2 tsp dried herbs)
+- For proteins: specify cut, grade, or type (boneless skinless, 85% lean)
+- For produce: specify ripeness, size, variety when relevant
 
 Return ONLY this JSON format with NO extra text:
 {
@@ -182,13 +216,15 @@ Return ONLY this JSON format with NO extra text:
   "strCategory": "${randomCategory}",
   "strArea": "${randomCuisine}",
   "instructions": [
-    "Begin by gathering all ingredients and equipment. Preheat your oven to the required temperature if needed.",
-    "Prepare all vegetables by washing, peeling, and cutting them into the specified sizes.",
-    "Heat your pan over medium-high heat with oil until shimmering.",
-    "Add ingredients in the proper order, explaining cooking techniques and timing.",
-    "Continue with very detailed steps explaining exactly what to look for (golden brown, fragrant, tender, etc).",
-    "Include specific temperatures, cooking times, and visual/sensory cues.",
-    "Explain plating and garnishing in detail."
+    "Preheat your oven to 375°F (190°C) and position the rack in the center. Line a 12-cup muffin tin with paper liners or grease thoroughly with butter, ensuring no spots are missed to prevent sticking.",
+    "Prep all ingredients: Dice 8 strips of thick-cut bacon into 1/4-inch pieces (about 1 cup total). Crack 8 large eggs into a large mixing bowl and whisk vigorously for 30 seconds until completely smooth with no streaks.",
+    "Heat a large 12-inch skillet over medium heat (setting 5 out of 10). Add diced bacon and cook for 6-8 minutes, stirring every 2 minutes with a wooden spoon. You'll hear gentle sizzling - not violent spattering. Cook until edges are golden brown and fat is rendered but bacon is still slightly chewy, not crispy.",
+    "Remove bacon with slotted spoon to paper towel-lined plate, leaving 2 tablespoons of fat in pan (discard excess). The fat should be golden and fragrant, not dark or burned.",
+    "Season whisked eggs with 1/2 teaspoon kosher salt and 1/4 teaspoon freshly ground black pepper. Add any additional seasonings like garlic powder or herbs at this stage.",
+    "Divide cooked bacon evenly among 12 muffin cups (about 1 tablespoon per cup). Pour egg mixture over bacon, filling each cup about 3/4 full - they will puff during baking.",
+    "Bake for 18-22 minutes until tops are set and lightly golden. Centers should no longer jiggle when gently shaken. A toothpick inserted in center should come out with just a few moist crumbs.",
+    "Cool in pan for 5 minutes before removing - this prevents breaking. Run a knife around edges if needed.",
+    "Serve immediately while warm, or cool completely and refrigerate up to 4 days for meal prep."
   ],
   "strMealThumb": "",
   "strTags": "${randomTheme},${randomCuisine.toLowerCase()},${randomCategory.toLowerCase()}",
@@ -247,12 +283,12 @@ Return ONLY this JSON format with NO extra text:
     {"name": "Fifth ingredient", "quantity": "1/2", "unit": "tsp", "optional": false, "required": true},
     {"name": "Sixth ingredient", "quantity": "1", "unit": "can", "optional": false, "required": true}
   ],
-  "strIngredient1": "First ingredient", "strMeasure1": "2 tbsp",
-  "strIngredient2": "Second ingredient", "strMeasure2": "1 lb",
-  "strIngredient3": "Third ingredient", "strMeasure3": "4 cloves",
-  "strIngredient4": "Fourth ingredient", "strMeasure4": "1 tsp",
-  "strIngredient5": "Fifth ingredient", "strMeasure5": "1/2 tsp",
-  "strIngredient6": "Sixth ingredient", "strMeasure6": "1 can"
+  "strIngredient1": "Thick-cut bacon (applewood smoked preferred)", "strMeasure1": "8 slices (about 8 oz/225g)",
+  "strIngredient2": "Large eggs (room temperature, free-range preferred)", "strMeasure2": "8 eggs (about 1 lb/450g total)",
+  "strIngredient3": "Kosher salt (Diamond Crystal brand)", "strMeasure3": "1/2 teaspoon (3g)",
+  "strIngredient4": "Fresh ground black pepper", "strMeasure4": "1/4 teaspoon (0.5g)",
+  "strIngredient5": "Unsalted butter (for greasing)", "strMeasure5": "2 tablespoons (28g)",
+  "strIngredient6": "Fresh chives (finely chopped, optional)", "strMeasure6": "2 tablespoons (6g)"
 }
 
 🚨 FINAL CHECK: Before responding, verify EVERY field has realistic values:
