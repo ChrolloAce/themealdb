@@ -7,6 +7,7 @@ class AdminPanel {
     this.setupEventListeners();
     this.checkAuthentication();
     this.setupNumberAdjustButtons();
+    this.setupStepperButtons();
   }
 
   initializeElements() {
@@ -1383,6 +1384,32 @@ class AdminPanel {
 
   removeStoredToken() {
     localStorage.removeItem('fooddb_admin_token');
+  }
+
+  // Setup stepper button functionality
+  setupStepperButtons() {
+    document.querySelectorAll('.stepper-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const action = e.currentTarget.dataset.action;
+        const targetId = e.currentTarget.dataset.target;
+        const input = document.getElementById(targetId);
+        
+        if (input) {
+          const currentValue = parseInt(input.value) || 1;
+          const min = parseInt(input.min) || 1;
+          const max = parseInt(input.max) || 10;
+          
+          let newValue = currentValue;
+          if (action === 'increase' && currentValue < max) {
+            newValue = currentValue + 1;
+          } else if (action === 'decrease' && currentValue > min) {
+            newValue = currentValue - 1;
+          }
+          
+          input.value = newValue;
+        }
+      });
+    });
   }
 
   // Edit Recipe functionality
