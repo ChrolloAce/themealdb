@@ -506,11 +506,29 @@ class ComprehensiveRecipeDisplay {
 
     // Send to backend
     try {
-      const response = await fetch(`/admin/recipes/${this.currentRecipe.id || this.currentRecipe.idMeal}`, {
+      const token = localStorage.getItem('adminToken');
+      const recipeId = this.currentRecipe.id || this.currentRecipe.idMeal;
+      
+      console.log('Saving recipe to Firebase...');
+      console.log('Recipe ID:', recipeId);
+      console.log('Token exists:', !!token);
+      console.log('Updates:', updates);
+      
+      if (!token) {
+        this.showNotification('Not authenticated - please login again', 'error');
+        return;
+      }
+      
+      if (!recipeId) {
+        this.showNotification('Recipe ID missing - cannot save', 'error');
+        return;
+      }
+      
+      const response = await fetch(`/admin/recipes/${recipeId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           ...this.currentRecipe,
@@ -519,14 +537,27 @@ class ComprehensiveRecipeDisplay {
         })
       });
 
+      console.log('Save response status:', response.status);
+      
       if (response.ok) {
+        const result = await response.json();
+        console.log('Save successful:', result);
         this.showNotification('Recipe saved to Firebase successfully!', 'success');
       } else {
-        this.showNotification('Failed to save to Firebase', 'error');
+        const errorText = await response.text();
+        console.error('Save failed:', response.status, errorText);
+        
+        if (response.status === 401) {
+          this.showNotification('Authentication expired - please login again', 'error');
+        } else if (response.status === 403) {
+          this.showNotification('No permission to save recipes', 'error');
+        } else {
+          this.showNotification(`Failed to save: ${response.status} ${errorText}`, 'error');
+        }
       }
     } catch (error) {
       console.error('Error saving recipe:', error);
-      this.showNotification('Error saving changes', 'error');
+      this.showNotification(`Error saving changes: ${error.message}`, 'error');
     }
   }
 
@@ -544,36 +575,9 @@ class ComprehensiveRecipeDisplay {
       }
     }
 
-    // Call nutrition API or use local calculation
-    try {
-      const response = await fetch('/api/admin/calculate-nutrition', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
-        },
-        body: JSON.stringify({ ingredients, servings: this.currentRecipe.numberOfServings || 4 })
-      });
-
-      if (response.ok) {
-        const nutrition = await response.json();
-        this.currentRecipe.nutrition = nutrition;
-        
-        // Re-render nutrition section
-        const nutritionGrid = document.querySelector('.nutrition-grid');
-        if (nutritionGrid) {
-          nutritionGrid.innerHTML = this.renderNutrition(nutrition);
-        }
-        
-        this.showNotification('Nutrition calculated successfully!', 'success');
-      } else {
-        // Fallback to estimated values
-        this.estimateNutrition();
-      }
-    } catch (error) {
-      console.error('Error calculating nutrition:', error);
-      this.estimateNutrition();
-    }
+    // Use local calculation (API endpoint doesn't exist yet)
+    console.log('Using local nutrition estimation for ingredients:', ingredients);
+    await this.estimateNutrition();
   }
 
   // Estimate nutrition based on ingredients (improved fallback)
