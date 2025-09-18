@@ -961,13 +961,16 @@ class AdminPanel {
                   <td class="col-actions">
                     <div class="action-buttons">
                       <button class="btn-action-table btn-primary view-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}" title="View Full Details">
-                        👁️
+                        <span class="btn-icon">👁️</span>
+                        <span class="btn-text">View</span>
                       </button>
                       <button class="btn-action-table btn-secondary improve-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}" title="Improve with AI">
-                        🤖
+                        <span class="btn-icon">🤖</span>
+                        <span class="btn-text">Edit</span>
                       </button>
                       <button class="btn-action-table btn-danger delete-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}" title="Delete Recipe">
-                        🗑️
+                        <span class="btn-icon">🗑️</span>
+                        <span class="btn-text">Delete</span>
                       </button>
                     </div>
                   </td>
