@@ -137,10 +137,14 @@ class AdminRoutes {
         try {
           console.log('🎨 Generating ULTRA-HIGH QUALITY AI image for preview recipe...');
           
+          // Extract ingredients for image generation
+          const ingredients = this.extractIngredientNames(recipe);
+          
           const imageData = await this.openaiManager.generateRecipeImage(
             recipe.strMeal,
             `${recipe.strCategory} dish from ${recipe.strArea}`,
-            null // No meal ID for preview
+            null, // No meal ID for preview
+            ingredients
           );
           
           imageUrl = imageData.url;
@@ -233,9 +237,21 @@ class AdminRoutes {
     });
   }
 
+  // Helper method to extract ingredient names from recipe
+  extractIngredientNames(recipe) {
+    const ingredients = [];
+    for (let i = 1; i <= 20; i++) {
+      const ingredient = recipe[`strIngredient${i}`];
+      if (ingredient && ingredient.trim()) {
+        ingredients.push(ingredient.trim());
+      }
+    }
+    return ingredients;
+  }
+
   // Generate recipe image
   async generateRecipeImage(req, res) {
-    const { recipeName, description, mealId } = req.body;
+    const { recipeName, description, mealId, ingredients } = req.body;
     
     if (!recipeName) {
       return res.status(400).json({
@@ -247,7 +263,7 @@ class AdminRoutes {
     try {
       console.log(`🎨 Starting AI image generation for: ${recipeName}`);
       
-      const imageData = await this.openaiManager.generateRecipeImage(recipeName, description, mealId);
+      const imageData = await this.openaiManager.generateRecipeImage(recipeName, description, mealId, ingredients || []);
       
       console.log('✅ AI image generation completed!');
       
@@ -286,7 +302,8 @@ class AdminRoutes {
           const imageData = await this.openaiManager.generateRecipeImage(
             recipeName,
             `${variation} delicious food`,
-            null
+            null,
+            [] // No specific ingredients for additional images
           );
           imageUrls.push(imageData.url);
           console.log(`  ✅ Image ${i + 1}/${count} generated`);
@@ -345,10 +362,14 @@ class AdminRoutes {
             const variations = ['artistic', 'close-up', 'plated beautifully', 'professional food photography', 'rustic style'];
             const variation = variations[i % variations.length];
             
+            // Extract ingredients for accurate image generation
+            const ingredients = this.extractIngredientNames(generatedRecipe);
+            
             const imageData = await this.openaiManager.generateRecipeImage(
               generatedRecipe.strMeal,
               `${variation} ${generatedRecipe.strCategory} dish from ${generatedRecipe.strArea}`,
-              mealId // Now we have the meal ID!
+              mealId, // Now we have the meal ID!
+              ingredients
             );
             
             // Upload to Firebase Storage with meal ID for proper organization
@@ -508,10 +529,14 @@ class AdminRoutes {
           try {
             console.log(`🎨 Generating AI image for: ${generatedRecipe.strMeal}`);
             
+            // Extract ingredients for accurate image generation
+            const ingredients = this.extractIngredientNames(generatedRecipe);
+            
             const imageData = await this.openaiManager.generateRecipeImage(
               generatedRecipe.strMeal,
               `${generatedRecipe.strCategory} dish from ${generatedRecipe.strArea}`,
-              savedRecipe.meals[0].idMeal
+              savedRecipe.meals[0].idMeal,
+              ingredients
             );
             imageUrl = imageData.url;
             

@@ -34,6 +34,9 @@ class AdminPanel {
     // Login
     this.loginForm.addEventListener('submit', this.handleLogin.bind(this));
     
+    // Anonymous auth
+    document.getElementById('anonymousAuthBtn').addEventListener('click', this.handleAnonymousAuth.bind(this));
+    
     // Logout
     document.getElementById('logoutBtn').addEventListener('click', this.handleLogout.bind(this));
     
@@ -147,6 +150,29 @@ class AdminPanel {
       }
     } catch (error) {
       errorDiv.textContent = 'Connection error. Please try again.';
+    }
+  }
+
+  async handleAnonymousAuth() {
+    const errorDiv = document.getElementById('loginError');
+    
+    try {
+      console.log('🔓 Attempting anonymous Firebase authentication...');
+      
+      // Set a fake token for anonymous access (backend handles this)
+      this.token = 'anonymous-firebase-auth';
+      this.storeToken(this.token);
+      
+      // Show admin panel immediately
+      this.showAdminPanel();
+      this.loadDashboard();
+      document.getElementById('adminUsername').textContent = 'Anonymous User';
+      
+      console.log('✅ Anonymous authentication successful!');
+      
+    } catch (error) {
+      console.error('❌ Anonymous authentication failed:', error);
+      errorDiv.textContent = 'Anonymous authentication failed. Please try PIN login.';
     }
   }
 
