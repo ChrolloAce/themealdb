@@ -88,13 +88,22 @@ class SimpleFirebaseManager {
   async getAllRecipes(limitCount = 50) {
     try {
       const recipesRef = collection(this.db, this.collections.recipes);
-      const q = query(recipesRef, orderBy('dateModified', 'desc'), limit(limitCount));
+      // Remove ordering to get truly random selection from all recipes
+      const q = query(recipesRef, limit(limitCount));
       const querySnapshot = await getDocs(q);
       
-      return querySnapshot.docs.map(doc => ({
+      const recipes = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+      
+      // Shuffle the array for better randomness
+      for (let i = recipes.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [recipes[i], recipes[j]] = [recipes[j], recipes[i]];
+      }
+      
+      return recipes;
     } catch (error) {
       console.error('❌ Error getting recipes from Firebase:', error);
       throw error;
