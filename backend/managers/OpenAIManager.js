@@ -72,26 +72,15 @@ Based on the user's request above, generate a HIGHLY DETAILED recipe with:
 
 ${existingContext ? 'IMPORTANT: Create something different from the existing recipes to add variety to our collection.' : ''}
 
-🚨 CRITICAL REQUIREMENTS - EVERY FIELD MUST BE FILLED:
-- NEVER use "N/A", "TBD", empty strings, or zero values. ALL fields must have realistic values.
-- strDescription: Write 2-3 appetizing sentences describing the dish
-- prepTime, cookTime, totalTime: MUST be realistic numbers (never 0)
-- servingSize: MUST specify portion size like "1 cup", "2 slices", "1 bowl"  
-- yield: MUST specify what the recipe makes like "4 servings", "12 cookies", "2 cups sauce"
-- nutrition: ALL values must be realistic numbers based on ingredients (never 0)
-- dietary: Set appropriate true/false values based on ingredients
-- mealType: MUST include at least one value like ["Breakfast"], ["Lunch"], ["Dinner"]
-- dishType: MUST specify like "Soup", "Salad", "Main Course", "Dessert"
-- mainIngredient: MUST specify the primary ingredient
-- occasion: MUST include at least one like ["Weeknight"], ["Holiday"], ["Summer BBQ"]
-- seasonality: MUST include at least one like ["Spring"], ["All Season"]
-- equipmentRequired: MUST list 5-8 specific tools with sizes
-- skillsRequired: MUST list 3-5 cooking techniques
-- keywords: MUST include 4-6 searchable terms
-- allergenFlags: MUST identify all allergens present
-- timeCategory: MUST categorize like "Under 30 mins", "30-60 mins", "1+ hours"
-- Instructions must be EDUCATIONAL and DETAILED
-- Equipment list must be COMPREHENSIVE with specific sizes/types
+🚨 CRITICAL: ALL fields must have realistic values (no zeros, empty strings, or N/A):
+- strDescription: 2-3 appetizing sentences
+- Times: realistic prep/cook/total minutes (never 0)
+- servingSize: specify portion like "1 cup", "2 slices"
+- yield: specify output like "4 servings", "12 cookies"
+- nutrition: realistic numbers based on ingredients
+- dietary: appropriate true/false based on ingredients
+- Arrays: all must have at least 1-2 items
+- Instructions: detailed educational steps
 - 🚨 ONLY use ingredients from this EXACT list (match names precisely): abalone, acai berry, ackee, acorn squash, active dry yeast, adzuki beans, agar agar, agave nectar, aioli, aleppo pepper, alfalfa sprouts, alfredo sauce, all-purpose flour, allspice, almond butter, almond extract, almond flour, almond milk, almond paste, almonds, anchovies, Anchovy Paste, andouille sausage, anise seeds, annatto, apple, apple butter, applesauce, apricot, apricot jam, arborio rice, Arrowroot powder, artichoke, asafoetida, asiago cheese, Asian Pear, asparagus, avocado, bacon, Baguette, baking powder, baking soda, balsamic vinegar, banana, banana blossom, barbecue sauce, barley, barley flour, basil, basil seeds, Basmati Rice, Bay Leaf, beef, Beef Bourguignon, beef brisket, beef broth, Beef Ribs, beef stock, beef tenderloin, beets, Belacan (shrimp paste), bell pepper, bell peppers, besan (chickpea flour), black beans, black cardamom, black fungus (cloud ear), Black Garlic, Black Pepper, Black Peppercorns, black salt (kala namak), Black Tea, black truffle, Black-Eyed Peas, Blood Sausage, blue cheese, blue cheese dressing, blueberry, bok choy, Bonito Flakes, bourbon, Brandy, Bread, bread flour, Breadcrumbs, Breakfast Sausage, Brie, Broccoli, Broccolini, Brown Mustard Seeds, brown rice, brown sugar, brownie mix, brussels sprouts, buckwheat, buckwheat flour, bulgur, burdock root, butter, butter lettuce, buttermilk, buttermilk powder, butternut squash, cabbage, Cacao Nibs, Cactus Pear (Prickly Pear), Cajun Seasoning, Calamari (Squid), camembert, candied ginger, candied orange peel, candlenut, cane vinegar, canned salmon, canned tomatoes, canned tuna, cannellini beans, Caper Berries, Capers, Caramel Sauce, caraway seeds, carne asada, carolina reaper, carrot, cashew butter, cashew milk, cashews, cassava, catfish, cauliflower, cayenne pepper, celery, celery root (celeriac), champagne vinegar, chana dal, chanterelle mushrooms, char siu sauce, cheddar cheese, cheese, cheese curds, cherry, cherry tomato, chervil, chickpeas, chili oil, chili paste, chili powder, chili sauce, Chinese five-spice, chipotle chili powder, chives, chocolate chips, chocolate hazelnut spread, chocolate syrup, cider, cilantro, cinnamon, cinnamon stick, clam juice, clams, clarified butter, clotted cream, cloves, cocoa powder, coconut, coconut aminos, coconut cream, coconut milk, coconut oil, coconut sugar, coconut vinegar, cod, coffee, cognac, collard greens, condensed milk, coriander seeds, corn, corn flakes, corn oil, corn syrup, corn tortillas, corned beef, cornmeal, cotija cheese, cottage cheese, crab, crab meat, cranberries, cream cheese, cream of coconut, cream of tartar, crème fraîche, cremebrule, cremini mushrooms, cucumber, cumin seeds, curly parsley, currants, curry leaves, curry paste, curry powder, daikon radish, dashi, dates, demi-glace, diced tomatoes, dijon mustard, dill, dill seeds, dried apricots, dried cranberries, dried figs, dried hibiscus, dried shrimp, dried thyme, dry mustard powder, duck, duck eggs, duck fat, duck sauce, dulce de leche, edam cheese, edamame, egg noodles, egg whites, egg yolks, eggplant, eggs, egusi seeds, elderberry, empanadas, enoki mushrooms, espresso powder, evaporated milk, extra virgin olive oil, fava beans, fennel bulb, fennel seeds, fenugreek leaves, fenugreek seeds, fermented black beans, filé powder, fish maw, fish sauce, five-spice powder, flaxseeds, flour tortillas, fontina cheese, forbidden rice (black rice), freekeh, freeze-dried fruit, french dressing, fried onions, frosting, fruit cocktail (canned), garam masala, garlic, garlic chives, garlic powder, garlic scapes, gelatin, gin, ginger, ginger paste, ginger powder, gingersnaps (crushed), glucose syrup, glutinous rice (sticky rice), goat, goat cheese, gochugaru (Korean chili flakes), gochujang, salmon, salt, spaghetti, Spaghetti Carbonara, spinach, sugar, sushi, tiramisu
 
 Return ONLY this comprehensive JSON format with NO extra text:
@@ -135,25 +124,15 @@ ${existingContext ? 'IMPORTANT: Create something completely different from the e
 
 Make it innovative and delicious. Use unexpected flavor combinations or techniques.
 
-🚨 CRITICAL REQUIREMENTS - EVERY FIELD MUST BE FILLED:
-- NEVER use "N/A", "TBD", empty strings, or zero values. ALL fields must have realistic values.
-- strDescription: Write 2-3 appetizing sentences describing the dish
-- prepTime, cookTime, totalTime: MUST be realistic numbers (never 0)
-- servingSize: MUST specify portion size like "1 cup", "2 slices", "1 bowl"
-- yield: MUST specify what the recipe makes like "4 servings", "12 cookies", "2 cups sauce"
-- nutrition: ALL values must be realistic numbers based on ingredients (never 0)
-- dietary: Set appropriate true/false values based on ingredients
-- mealType: MUST include at least one value like ["Breakfast"], ["Lunch"], ["Dinner"]
-- dishType: MUST specify like "Soup", "Salad", "Main Course", "Dessert"
-- mainIngredient: MUST specify the primary ingredient
-- occasion: MUST include at least one like ["Weeknight"], ["Holiday"], ["Summer BBQ"]
-- seasonality: MUST include at least one like ["Spring"], ["All Season"]
-- equipmentRequired: MUST list 5-8 specific tools with sizes
-- skillsRequired: MUST list 3-5 cooking techniques
-- keywords: MUST include 4-6 searchable terms
-- allergenFlags: MUST identify all allergens present
-- timeCategory: MUST categorize like "Under 30 mins", "30-60 mins", "1+ hours"
-- Instructions MUST be an array of 7-10 detailed educational steps
+🚨 CRITICAL: ALL fields must have realistic values (no zeros, empty strings, or N/A):
+- strDescription: 2-3 appetizing sentences
+- Times: realistic prep/cook/total minutes (never 0)  
+- servingSize: specify portion like "1 cup", "2 slices"
+- yield: specify output like "4 servings", "12 cookies"
+- nutrition: realistic numbers based on ingredients
+- dietary: appropriate true/false based on ingredients
+- Arrays: all must have at least 1-2 items
+- Instructions: 7-10 detailed educational steps
 
 Return ONLY this JSON format with NO extra text:
 {
@@ -254,7 +233,7 @@ Return ONLY this JSON format with NO extra text:
           }
         ],
         temperature: 0.7,
-        max_tokens: 800 // Reduced for speed
+        max_tokens: 3000 // Increased to prevent JSON truncation
       });
 
       console.log('✅ OpenAI API call successful, processing response...');
@@ -357,9 +336,14 @@ Return ONLY this JSON format with NO extra text:
         return fallbackParsed;
       } catch (fallbackError) {
         console.error('❌ Fallback parsing also failed:', fallbackError.message);
+        console.error('🔍 Raw AI response that failed parsing:');
+        console.error('📄 Content length:', content.length);
+        console.error('📄 First 500 chars:', content.substring(0, 500));
+        console.error('📄 Last 500 chars:', content.substring(Math.max(0, content.length - 500)));
         
         // Final attempt: create a minimal valid recipe JSON
-        console.log('🚨 Creating fallback recipe due to JSON parsing failure');
+        console.log('🚨 FALLBACK TRIGGERED: Creating generic recipe due to JSON parsing failure');
+        console.log('🚨 This means the AI generated malformed JSON - check logs above');
         return this.createFallbackRecipe(content);
       }
     }
