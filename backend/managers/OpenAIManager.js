@@ -30,33 +30,12 @@ class OpenAIManager {
     }
   }
 
-  // Generate a complete recipe based on input parameters (TWO-STEP APPROACH)
+  // Generate a complete recipe based on input parameters (OPTIMIZED SINGLE-STEP)
   async generateRecipe(params = {}) {
     this.checkAvailability();
     
-    try {
-      console.log('🚀 Starting TWO-STEP recipe generation...');
-      
-      // STEP 1: Generate basic recipe with simple prompt
-      console.log('📝 STEP 1: Generating basic recipe...');
-      const basicRecipe = await this.generateBasicRecipe(params);
-      
-      // STEP 2: Enhance with comprehensive data
-      console.log('📊 STEP 2: Adding comprehensive data...');
-      try {
-        const comprehensiveRecipe = await this.enhanceRecipeWithComprehensiveData(basicRecipe);
-        console.log('✅ TWO-STEP recipe generation completed successfully');
-        return comprehensiveRecipe;
-      } catch (step2Error) {
-        console.error('❌ STEP 2 failed, returning basic recipe with minimal enhancements:', step2Error.message);
-        // Add minimal required fields to basic recipe
-        return this.addMinimalEnhancements(basicRecipe);
-      }
-      
-    } catch (error) {
-      console.error('❌ TWO-STEP generation failed, falling back to single-step...');
-      return this.generateRecipeSingleStep(params);
-    }
+    console.log('🚀 Starting OPTIMIZED single-step recipe generation...');
+    return this.generateOptimizedRecipe(params);
   }
 
   // Original single-step generation as fallback
@@ -449,6 +428,107 @@ Return ONLY this JSON format with NO extra text:
       strIngredient7: "", strMeasure7: "",
       strIngredient8: "", strMeasure8: ""
     };
+  }
+
+  // OPTIMIZED single-step recipe generation
+  async generateOptimizedRecipe(params = {}) {
+    const { customPrompt, mode } = params;
+    
+    let optimizedPrompt;
+    if (mode === 'custom' && customPrompt) {
+      optimizedPrompt = `Create a ${customPrompt} recipe with comprehensive data. Return ONLY this JSON:`;
+    } else {
+      // Random recipe
+      const cuisines = ['Italian', 'Mexican', 'Asian', 'Mediterranean', 'Indian', 'French'];
+      const categories = ['Beef', 'Chicken', 'Seafood', 'Vegetarian', 'Pasta', 'Dessert'];
+      const randomCuisine = cuisines[Math.floor(Math.random() * cuisines.length)];
+      const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+      
+      optimizedPrompt = `Create a creative ${randomCuisine} ${randomCategory} recipe with comprehensive data. Return ONLY this JSON:`;
+    }
+
+    optimizedPrompt += `
+{
+  "strMeal": "Recipe Name",
+  "strCategory": "Category",
+  "strArea": "Cuisine",
+  "strDescription": "2-3 sentence description",
+  "instructions": ["Step 1: instruction", "Step 2: instruction", "Step 3: instruction"],
+  "strIngredient1": "ingredient", "strMeasure1": "amount",
+  "strIngredient2": "ingredient", "strMeasure2": "amount",
+  "strIngredient3": "ingredient", "strMeasure3": "amount",
+  "strIngredient4": "ingredient", "strMeasure4": "amount",
+  "strIngredient5": "ingredient", "strMeasure5": "amount",
+  "strIngredient6": "ingredient", "strMeasure6": "amount",
+  "prepTime": 15,
+  "cookTime": 25,
+  "totalTime": 40,
+  "numberOfServings": 4,
+  "servingSize": "1 serving",
+  "difficulty": "Medium",
+  "yield": "4 servings",
+  "strEquipment": "cooking tools",
+  "nutrition": {
+    "caloriesPerServing": 400,
+    "protein": 25,
+    "carbs": 30,
+    "fat": 15,
+    "fiber": 5,
+    "sugar": 8,
+    "sodium": 600,
+    "cholesterol": 50,
+    "saturatedFat": 6,
+    "vitaminA": 15,
+    "vitaminC": 20,
+    "iron": 12,
+    "calcium": 10
+  },
+  "dietary": {
+    "vegetarian": false,
+    "vegan": false,
+    "pescatarian": false,
+    "glutenFree": false,
+    "dairyFree": false,
+    "keto": false,
+    "paleo": false,
+    "halal": true,
+    "noRedMeat": false,
+    "noPork": true,
+    "noShellfish": true,
+    "omnivore": true
+  },
+  "mealType": ["Dinner"],
+  "dishType": "Main Course",
+  "mainIngredient": "main ingredient",
+  "occasion": ["Weeknight"],
+  "seasonality": ["All Season"],
+  "equipmentRequired": ["tools"],
+  "skillsRequired": ["techniques"],
+  "keywords": ["terms"],
+  "allergenFlags": ["allergens"],
+  "timeCategory": "30-60 mins"
+}
+
+Fill with realistic values based on the recipe. NO zeros or empty strings.`;
+
+    const completion = await this.openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a chef and nutritionist. Create complete recipes with realistic data. Return only valid JSON.'
+        },
+        {
+          role: 'user',
+          content: optimizedPrompt
+        }
+      ],
+      temperature: 0.8,
+      max_tokens: 2000 // Balanced for speed and completeness
+    });
+
+    const recipeData = this.parseAIResponse(completion.choices[0].message.content);
+    return this.quickFormatRecipe(recipeData, params);
   }
 
   // STEP 1: Generate basic recipe with simple prompt
