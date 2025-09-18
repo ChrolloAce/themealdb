@@ -85,11 +85,23 @@ class SimpleFirebaseManager {
   }
 
   // Get all recipes
-  async getAllRecipes(limitCount = 50) {
+  async getAllRecipes(limitCount = 200) {
     try {
       const recipesRef = collection(this.db, this.collections.recipes);
-      // Remove ordering to get truly random selection from all recipes
-      const q = query(recipesRef, limit(limitCount));
+      
+      // For truly random selection, we need to get more recipes
+      // If limitCount is high, get ALL recipes without limit for best randomness
+      let q;
+      if (limitCount >= 100) {
+        // Get ALL recipes for maximum randomness
+        q = query(recipesRef);
+        console.log('🎲 Getting ALL recipes for maximum randomness');
+      } else {
+        // Use limit for smaller requests
+        q = query(recipesRef, limit(limitCount));
+        console.log(`🎲 Getting ${limitCount} recipes`);
+      }
+      
       const querySnapshot = await getDocs(q);
       
       const recipes = querySnapshot.docs.map(doc => ({
@@ -97,11 +109,24 @@ class SimpleFirebaseManager {
         ...doc.data()
       }));
       
-      // Shuffle the array for better randomness
+      console.log(`📊 Retrieved ${recipes.length} total recipes from Firebase`);
+      
+      // Advanced shuffling algorithm for better randomness
       for (let i = recipes.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [recipes[i], recipes[j]] = [recipes[j], recipes[i]];
       }
+      
+      // Additional shuffle for extra randomness
+      const shuffleTimes = Math.floor(Math.random() * 3) + 1;
+      for (let shuffle = 0; shuffle < shuffleTimes; shuffle++) {
+        for (let i = recipes.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [recipes[i], recipes[j]] = [recipes[j], recipes[i]];
+        }
+      }
+      
+      console.log(`🔀 Applied ${shuffleTimes + 1} rounds of shuffling`);
       
       return recipes;
     } catch (error) {
@@ -358,4 +383,5 @@ class SimpleFirebaseManager {
   }
 }
 
+module.exports = SimpleFirebaseManager;
 module.exports = SimpleFirebaseManager;

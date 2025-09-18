@@ -75,12 +75,19 @@ class RecipeManager {
     try {
       // Check if we're using Firebase
       if (this.db.getAllRecipes) {
-        const recipes = await this.db.getAllRecipes(50); // Get more recipes for better randomness
+        // Get a larger sample for better randomness
+        const recipes = await this.db.getAllRecipes(200); // Increased from 50 to 200
         if (!recipes || recipes.length === 0) {
           return { meals: null };
         }
-        const randomIndex = Math.floor(Math.random() * recipes.length);
-        const randomRecipe = recipes[randomIndex];
+        
+        // Double randomization for better distribution
+        const firstShuffle = Math.floor(Math.random() * recipes.length);
+        const secondShuffle = Math.floor(Math.random() * recipes.length);
+        const finalIndex = Math.floor((firstShuffle + secondShuffle) / 2);
+        const randomRecipe = recipes[finalIndex % recipes.length];
+        
+        console.log(`🎲 Selected recipe ${finalIndex + 1} of ${recipes.length}: ${randomRecipe.strMeal}`);
         return { meals: [new Recipe(randomRecipe).toApiFormat()] };
       }
       
