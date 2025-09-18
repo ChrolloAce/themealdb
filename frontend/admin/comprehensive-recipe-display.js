@@ -117,7 +117,7 @@ class ComprehensiveRecipeDisplay {
           <div class="ingredients-list">
             ${this.renderIngredients(recipe)}
           </div>
-          <button class="btn-add" onclick="recipeDisplay.addIngredient()">
+          <button class="btn-add" id="btn-add-ingredient-section">
             <i class="fas fa-plus"></i> Add Ingredient
           </button>
         </div>
@@ -128,7 +128,7 @@ class ComprehensiveRecipeDisplay {
           <div class="instructions-list">
             ${this.renderInstructions(recipe)}
           </div>
-          <button class="btn-add" onclick="recipeDisplay.addInstruction()">
+          <button class="btn-add" id="btn-add-instruction-section">
             <i class="fas fa-plus"></i> Add Step
           </button>
         </div>
@@ -136,7 +136,7 @@ class ComprehensiveRecipeDisplay {
         <!-- Nutrition Section -->
         <div class="nutrition-section">
           <h3><i class="fas fa-chart-pie"></i> Nutritional Information</h3>
-          <button class="btn-action btn-calculate" onclick="recipeDisplay.calculateMacros()">
+          <button class="btn-action btn-calculate" id="btn-calculate-macros-section">
             <i class="fas fa-calculator"></i> Recalculate Nutrition
           </button>
           <div class="nutrition-grid">
@@ -158,7 +158,7 @@ class ComprehensiveRecipeDisplay {
           <div class="equipment-list">
             ${this.renderEquipment(recipe.equipmentRequired || [])}
           </div>
-          <button class="btn-add" onclick="recipeDisplay.addEquipment()">
+          <button class="btn-add" id="btn-add-equipment-section">
             <i class="fas fa-plus"></i> Add Equipment
           </button>
         </div>
@@ -242,7 +242,7 @@ class ComprehensiveRecipeDisplay {
   
   // Attach event listeners to avoid inline handlers (CSP compliance)
   attachEventListeners() {
-    // Quick action buttons
+    // Quick action buttons in header
     const calcMacrosBtn = document.getElementById('btn-calculate-macros');
     if (calcMacrosBtn) {
       calcMacrosBtn.addEventListener('click', () => this.calculateMacros());
@@ -262,6 +262,45 @@ class ComprehensiveRecipeDisplay {
     if (toggleEditBtn) {
       toggleEditBtn.addEventListener('click', () => this.toggleEditMode());
     }
+    
+    // Section-specific add buttons
+    const addIngredientSectionBtn = document.getElementById('btn-add-ingredient-section');
+    if (addIngredientSectionBtn) {
+      addIngredientSectionBtn.addEventListener('click', () => this.addIngredient());
+    }
+    
+    const addInstructionBtn = document.getElementById('btn-add-instruction-section');
+    if (addInstructionBtn) {
+      addInstructionBtn.addEventListener('click', () => this.addInstruction());
+    }
+    
+    const calcMacrosSectionBtn = document.getElementById('btn-calculate-macros-section');
+    if (calcMacrosSectionBtn) {
+      calcMacrosSectionBtn.addEventListener('click', () => this.calculateMacros());
+    }
+    
+    const addEquipmentSectionBtn = document.getElementById('btn-add-equipment-section');
+    if (addEquipmentSectionBtn) {
+      addEquipmentSectionBtn.addEventListener('click', () => this.addEquipment());
+    }
+    
+    // Remove buttons for ingredients (using event delegation)
+    document.querySelectorAll('[data-ingredient-idx]').forEach(btn => {
+      const idx = parseInt(btn.dataset.ingredientIdx);
+      btn.addEventListener('click', () => this.removeIngredient(idx));
+    });
+    
+    // Remove buttons for instructions
+    document.querySelectorAll('[data-instruction-idx]').forEach(btn => {
+      const idx = parseInt(btn.dataset.instructionIdx);
+      btn.addEventListener('click', () => this.removeInstruction(idx));
+    });
+    
+    // Remove buttons for equipment
+    document.querySelectorAll('[data-equipment-idx]').forEach(btn => {
+      const idx = parseInt(btn.dataset.equipmentIdx);
+      btn.addEventListener('click', () => this.removeEquipment(idx));
+    });
   }
 
   // Render ingredients with detailed info
@@ -275,7 +314,7 @@ class ComprehensiveRecipeDisplay {
           <span class="ingredient-name">${ing.name}</span>
           <span class="ingredient-amount">${ing.quantity} ${ing.unit}</span>
           ${ing.optional ? '<span class="optional-badge">Optional</span>' : ''}
-          ${this.editMode ? '<button class="btn-remove" onclick="recipeDisplay.removeIngredient(' + idx + ')">×</button>' : ''}
+          ${this.editMode ? '<button class="btn-remove" data-ingredient-idx="' + idx + '">×</button>' : ''}
         </div>
       `).join('');
     }
@@ -289,7 +328,7 @@ class ComprehensiveRecipeDisplay {
           <div class="ingredient-item" data-index="${i}">
             <span class="ingredient-name">${ingredient}</span>
             <span class="ingredient-amount">${measure || ''}</span>
-            ${this.editMode ? '<button class="btn-remove" onclick="recipeDisplay.removeIngredient(' + i + ')">×</button>' : ''}
+            ${this.editMode ? '<button class="btn-remove" data-ingredient-idx="' + i + '">×</button>' : ''}
           </div>
         `);
       }
@@ -305,7 +344,7 @@ class ComprehensiveRecipeDisplay {
         <div class="instruction-step" data-index="${idx}">
           <span class="step-number">${idx + 1}</span>
           <p class="step-text">${step}</p>
-          ${this.editMode ? '<button class="btn-remove" onclick="recipeDisplay.removeInstruction(' + idx + ')">×</button>' : ''}
+          ${this.editMode ? '<button class="btn-remove" data-instruction-idx="' + idx + '">×</button>' : ''}
         </div>
       `).join('');
     }
@@ -391,7 +430,7 @@ class ComprehensiveRecipeDisplay {
       <div class="equipment-item" data-index="${idx}">
         <i class="fas fa-tools"></i>
         <span>${item}</span>
-        ${this.editMode ? '<button class="btn-remove" onclick="recipeDisplay.removeEquipment(' + idx + ')">×</button>' : ''}
+        ${this.editMode ? '<button class="btn-remove" data-equipment-idx="' + idx + '">×</button>' : ''}
       </div>
     `).join('');
   }
@@ -601,6 +640,8 @@ class ComprehensiveRecipeDisplay {
     const ingredientsList = document.querySelector('.ingredients-list');
     if (ingredientsList) {
       ingredientsList.innerHTML = this.renderIngredients(this.currentRecipe);
+      // Re-attach event listeners after re-rendering
+      this.attachEventListeners();
     }
   }
 
@@ -633,6 +674,8 @@ class ComprehensiveRecipeDisplay {
     const equipmentList = document.querySelector('.equipment-list');
     if (equipmentList) {
       equipmentList.innerHTML = this.renderEquipment(this.currentRecipe.equipmentRequired);
+      // Re-attach event listeners after re-rendering
+      this.attachEventListeners();
     }
   }
 
@@ -665,6 +708,8 @@ class ComprehensiveRecipeDisplay {
     const instructionsList = document.querySelector('.instructions-list');
     if (instructionsList) {
       instructionsList.innerHTML = this.renderInstructions(this.currentRecipe);
+      // Re-attach event listeners after re-rendering
+      this.attachEventListeners();
     }
   }
 

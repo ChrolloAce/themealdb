@@ -165,9 +165,9 @@
                                             <i class="fas fa-layer-group"></i> Number of Recipes
                                         </label>
                                         <div class="number-selector">
-                                            <button type="button" class="number-btn minus" onclick="adjustNumber('recipeCount', -1)">-</button>
+                                            <button type="button" class="number-btn minus" data-adjust="recipeCount" data-value="-1">-</button>
                                             <input type="number" id="recipeCount" value="1" min="1" max="10" class="number-input">
-                                            <button type="button" class="number-btn plus" onclick="adjustNumber('recipeCount', 1)">+</button>
+                                            <button type="button" class="number-btn plus" data-adjust="recipeCount" data-value="1">+</button>
                                         </div>
                                     </div>
                                     
@@ -176,9 +176,9 @@
                                             <i class="fas fa-images"></i> Images per Recipe
                                         </label>
                                         <div class="number-selector">
-                                            <button type="button" class="number-btn minus" onclick="adjustNumber('imageCount', -1)">-</button>
+                                            <button type="button" class="number-btn minus" data-adjust="imageCount" data-value="-1">-</button>
                                             <input type="number" id="imageCount" value="1" min="0" max="5" class="number-input">
-                                            <button type="button" class="number-btn plus" onclick="adjustNumber('imageCount', 1)">+</button>
+                                            <button type="button" class="number-btn plus" data-adjust="imageCount" data-value="1">+</button>
                                         </div>
                                     </div>
                                 </div>

@@ -6,6 +6,7 @@ class AdminPanel {
     this.initializeElements();
     this.setupEventListeners();
     this.checkAuthentication();
+    this.setupNumberAdjustButtons();
   }
 
   initializeElements() {
@@ -150,6 +151,22 @@ class AdminPanel {
     } else {
       this.showLoginModal();
     }
+  }
+  
+  // Setup number adjustment buttons to avoid inline handlers (CSP compliance)
+  setupNumberAdjustButtons() {
+    document.querySelectorAll('[data-adjust]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const inputId = e.target.dataset.adjust;
+        const value = parseInt(e.target.dataset.value);
+        const input = document.getElementById(inputId);
+        if (input) {
+          const currentVal = parseInt(input.value) || 1;
+          const newVal = Math.max(1, Math.min(10, currentVal + value));
+          input.value = newVal;
+        }
+      });
+    });
   }
 
   async verifyToken() {
@@ -877,11 +894,16 @@ class AdminPanel {
           <div class="empty-state">
             <h3>No recipes found</h3>
             <p>Start by generating some recipes with AI!</p>
-            <button class="btn btn-primary" onclick="adminPanel.switchSection('ai-generate')">
+            <button class="btn btn-primary" id="btn-go-to-generate">
               🤖 Generate Recipes
             </button>
           </div>
         `;
+        // Add event listener for the generate button
+        const goToGenerateBtn = document.getElementById('btn-go-to-generate');
+        if (goToGenerateBtn) {
+          goToGenerateBtn.addEventListener('click', () => this.switchSection('ai-generate'));
+        }
         return;
       }
       
