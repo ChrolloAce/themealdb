@@ -314,7 +314,7 @@ class ComprehensiveRecipeDisplay {
           <span class="ingredient-name">${ing.name}</span>
           <span class="ingredient-amount">${ing.quantity} ${ing.unit}</span>
           ${ing.optional ? '<span class="optional-badge">Optional</span>' : ''}
-          ${this.editMode ? '<button class="btn-remove" data-ingredient-idx="' + idx + '">×</button>' : ''}
+          ${this.editMode ? `<button class="btn-remove" data-ingredient-idx="${idx}">×</button>` : ''}
         </div>
       `).join('');
     }
@@ -328,7 +328,7 @@ class ComprehensiveRecipeDisplay {
           <div class="ingredient-item" data-index="${i}">
             <span class="ingredient-name">${ingredient}</span>
             <span class="ingredient-amount">${measure || ''}</span>
-            ${this.editMode ? '<button class="btn-remove" data-ingredient-idx="' + i + '">×</button>' : ''}
+            ${this.editMode ? `<button class="btn-remove" data-ingredient-idx="${i}">×</button>` : ''}
           </div>
         `);
       }
@@ -344,7 +344,7 @@ class ComprehensiveRecipeDisplay {
         <div class="instruction-step" data-index="${idx}">
           <span class="step-number">${idx + 1}</span>
           <p class="step-text">${step}</p>
-          ${this.editMode ? '<button class="btn-remove" data-instruction-idx="' + idx + '">×</button>' : ''}
+          ${this.editMode ? `<button class="btn-remove" data-instruction-idx="${idx}">×</button>` : ''}
         </div>
       `).join('');
     }
@@ -430,7 +430,7 @@ class ComprehensiveRecipeDisplay {
       <div class="equipment-item" data-index="${idx}">
         <i class="fas fa-tools"></i>
         <span>${item}</span>
-        ${this.editMode ? '<button class="btn-remove" data-equipment-idx="' + idx + '">×</button>' : ''}
+        ${this.editMode ? `<button class="btn-remove" data-equipment-idx="${idx}">×</button>` : ''}
       </div>
     `).join('');
   }
@@ -872,11 +872,40 @@ class ComprehensiveRecipeDisplay {
   }
 }
 
-// Export class globally and initialize
-window.ComprehensiveRecipeDisplay = ComprehensiveRecipeDisplay;
-window.recipeDisplay = new ComprehensiveRecipeDisplay();
+// Export class globally and initialize with error handling
+try {
+  console.log('Starting to export ComprehensiveRecipeDisplay...');
+  window.ComprehensiveRecipeDisplay = ComprehensiveRecipeDisplay;
+  console.log('Class exported successfully');
+  
+  window.recipeDisplay = new ComprehensiveRecipeDisplay();
+  console.log('Instance created successfully');
 
-// Debug logging
-console.log('Comprehensive Recipe Display loaded successfully');
-console.log('window.recipeDisplay:', window.recipeDisplay);
-console.log('window.ComprehensiveRecipeDisplay:', window.ComprehensiveRecipeDisplay);
+  // Debug logging
+  console.log('Comprehensive Recipe Display loaded successfully');
+  console.log('window.recipeDisplay:', window.recipeDisplay);
+  console.log('window.ComprehensiveRecipeDisplay:', window.ComprehensiveRecipeDisplay);
+} catch (error) {
+  console.error('ERROR loading Comprehensive Recipe Display:', error);
+  console.error('Error stack:', error.stack);
+  
+  // Create a minimal fallback
+  window.ComprehensiveRecipeDisplay = class {
+    renderRecipe(recipe, container) {
+      container.innerHTML = `
+        <div style="padding: 20px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px;">
+          <h3>⚠️ Fallback Display</h3>
+          <p>The comprehensive display failed to load, but here's the basic recipe data:</p>
+          <h4>${recipe.strMeal || 'Unnamed Recipe'}</h4>
+          <p><strong>Category:</strong> ${recipe.strCategory || 'Unknown'}</p>
+          <p><strong>Cuisine:</strong> ${recipe.strArea || 'Unknown'}</p>
+          <p><strong>Instructions:</strong></p>
+          <p style="white-space: pre-wrap;">${recipe.strInstructions || 'No instructions available'}</p>
+          <p><strong>Error:</strong> ${error.message}</p>
+        </div>
+      `;
+    }
+  };
+  
+  window.recipeDisplay = new window.ComprehensiveRecipeDisplay();
+}
