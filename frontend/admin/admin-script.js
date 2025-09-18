@@ -37,12 +37,13 @@ class AdminPanel {
     document.getElementById('logoutBtn').addEventListener('click', this.handleLogout.bind(this));
     
     // Navigation
-    document.querySelectorAll('.nav-item').forEach(link => {
+    document.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const section = e.currentTarget.dataset.section;
         if (section) {
           this.switchSection(section);
+          this.updatePageTitle(section);
         }
       });
     });
@@ -361,13 +362,14 @@ class AdminPanel {
 
   showAdminPanel() {
     this.loginModal.classList.remove('active');
+    this.adminPanel.style.display = 'flex';
     this.adminPanel.classList.add('active');
   }
 
   switchSection(sectionName) {
     // Update navigation
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    const activeNav = document.querySelector(`.nav-item[data-section="${sectionName}"]`);
+    document.querySelectorAll('.nav-link').forEach(item => item.classList.remove('active'));
+    const activeNav = document.querySelector(`.nav-link[data-section="${sectionName}"]`);
     if (activeNav) {
       activeNav.classList.add('active');
     }
