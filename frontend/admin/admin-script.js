@@ -1053,11 +1053,30 @@ class AdminPanel {
       
       // Use the comprehensive display component
       const container = document.getElementById('comprehensiveRecipeContent');
+      
+      // Wait for component to load if needed
       if (window.recipeDisplay) {
         window.recipeDisplay.renderRecipe(recipe, container);
+      } else if (window.ComprehensiveRecipeDisplay) {
+        // Initialize if class exists but instance doesn't
+        window.recipeDisplay = new window.ComprehensiveRecipeDisplay();
+        window.recipeDisplay.renderRecipe(recipe, container);
       } else {
-        console.error('Comprehensive recipe display not loaded');
-        container.innerHTML = '<p>Error: Display component not loaded</p>';
+        // Fallback - try to load after a short delay
+        setTimeout(() => {
+          if (window.recipeDisplay) {
+            window.recipeDisplay.renderRecipe(recipe, container);
+          } else {
+            console.error('Comprehensive recipe display not loaded');
+            container.innerHTML = `
+              <div class="error-message">
+                <h3>Display Error</h3>
+                <p>The comprehensive recipe display component failed to load.</p>
+                <p>Recipe data:</p>
+                <pre>${JSON.stringify(recipe, null, 2)}</pre>
+              </div>`;
+          }
+        }, 500);
       }
       
     } catch (error) {

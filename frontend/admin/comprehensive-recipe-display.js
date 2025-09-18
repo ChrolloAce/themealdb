@@ -245,61 +245,61 @@ class ComprehensiveRecipeDisplay {
     // Quick action buttons in header
     const calcMacrosBtn = document.getElementById('btn-calculate-macros');
     if (calcMacrosBtn) {
-      calcMacrosBtn.addEventListener('click', () => this.calculateMacros());
+      calcMacrosBtn.addEventListener('click', async () => await this.calculateMacros());
     }
     
     const addIngredientBtn = document.getElementById('btn-add-ingredient');
     if (addIngredientBtn) {
-      addIngredientBtn.addEventListener('click', () => this.addIngredient());
+      addIngredientBtn.addEventListener('click', async () => await this.addIngredient());
     }
     
     const addEquipmentBtn = document.getElementById('btn-add-equipment');
     if (addEquipmentBtn) {
-      addEquipmentBtn.addEventListener('click', () => this.addEquipment());
+      addEquipmentBtn.addEventListener('click', async () => await this.addEquipment());
     }
     
     const toggleEditBtn = document.getElementById('btn-toggle-edit');
     if (toggleEditBtn) {
-      toggleEditBtn.addEventListener('click', () => this.toggleEditMode());
+      toggleEditBtn.addEventListener('click', async () => await this.toggleEditMode());
     }
     
     // Section-specific add buttons
     const addIngredientSectionBtn = document.getElementById('btn-add-ingredient-section');
     if (addIngredientSectionBtn) {
-      addIngredientSectionBtn.addEventListener('click', () => this.addIngredient());
+      addIngredientSectionBtn.addEventListener('click', async () => await this.addIngredient());
     }
     
     const addInstructionBtn = document.getElementById('btn-add-instruction-section');
     if (addInstructionBtn) {
-      addInstructionBtn.addEventListener('click', () => this.addInstruction());
+      addInstructionBtn.addEventListener('click', async () => await this.addInstruction());
     }
     
     const calcMacrosSectionBtn = document.getElementById('btn-calculate-macros-section');
     if (calcMacrosSectionBtn) {
-      calcMacrosSectionBtn.addEventListener('click', () => this.calculateMacros());
+      calcMacrosSectionBtn.addEventListener('click', async () => await this.calculateMacros());
     }
     
     const addEquipmentSectionBtn = document.getElementById('btn-add-equipment-section');
     if (addEquipmentSectionBtn) {
-      addEquipmentSectionBtn.addEventListener('click', () => this.addEquipment());
+      addEquipmentSectionBtn.addEventListener('click', async () => await this.addEquipment());
     }
     
     // Remove buttons for ingredients (using event delegation)
     document.querySelectorAll('[data-ingredient-idx]').forEach(btn => {
       const idx = parseInt(btn.dataset.ingredientIdx);
-      btn.addEventListener('click', () => this.removeIngredient(idx));
+      btn.addEventListener('click', async () => await this.removeIngredient(idx));
     });
     
     // Remove buttons for instructions
     document.querySelectorAll('[data-instruction-idx]').forEach(btn => {
       const idx = parseInt(btn.dataset.instructionIdx);
-      btn.addEventListener('click', () => this.removeInstruction(idx));
+      btn.addEventListener('click', async () => await this.removeInstruction(idx));
     });
     
     // Remove buttons for equipment
     document.querySelectorAll('[data-equipment-idx]').forEach(btn => {
       const idx = parseInt(btn.dataset.equipmentIdx);
-      btn.addEventListener('click', () => this.removeEquipment(idx));
+      btn.addEventListener('click', async () => await this.removeEquipment(idx));
     });
   }
 
@@ -436,13 +436,13 @@ class ComprehensiveRecipeDisplay {
   }
 
   // Toggle edit mode
-  toggleEditMode() {
+  async toggleEditMode() {
     this.editMode = !this.editMode;
     
     if (this.editMode) {
       this.enableEditMode();
     } else {
-      this.saveChanges();
+      await this.saveChanges();
     }
     
     // Re-render with new mode
