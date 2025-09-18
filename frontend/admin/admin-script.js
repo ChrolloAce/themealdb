@@ -1008,14 +1008,26 @@ class AdminPanel {
       const modal = document.createElement('div');
       modal.className = 'comprehensive-recipe-modal';
       modal.innerHTML = `
-        <div class="modal-overlay" onclick="this.parentElement.remove()"></div>
+        <div class="modal-overlay"></div>
         <div class="modal-content-large">
-          <button class="close-modal-btn" onclick="this.closest('.comprehensive-recipe-modal').remove()">×</button>
+          <button class="close-modal-btn">×</button>
           <div id="comprehensiveRecipeContent"></div>
         </div>
       `;
       
       document.body.appendChild(modal);
+      
+      // Add event listeners for closing the modal
+      const overlay = modal.querySelector('.modal-overlay');
+      const closeBtn = modal.querySelector('.close-modal-btn');
+      
+      if (overlay) {
+        overlay.addEventListener('click', () => modal.remove());
+      }
+      
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => modal.remove());
+      }
       
       // Use the comprehensive display component
       const container = document.getElementById('comprehensiveRecipeContent');

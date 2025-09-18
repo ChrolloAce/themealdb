@@ -15,16 +15,16 @@ class ComprehensiveRecipeDisplay {
         <div class="recipe-header-actions">
           <h2 class="recipe-title">${recipe.strMeal || 'Untitled Recipe'}</h2>
           <div class="quick-actions">
-            <button class="btn-action" onclick="recipeDisplay.calculateMacros()">
+            <button class="btn-action" id="btn-calculate-macros">
               <i class="fas fa-calculator"></i> Calculate Macros
             </button>
-            <button class="btn-action" onclick="recipeDisplay.addIngredient()">
+            <button class="btn-action" id="btn-add-ingredient">
               <i class="fas fa-plus"></i> Add Ingredient
             </button>
-            <button class="btn-action" onclick="recipeDisplay.addEquipment()">
+            <button class="btn-action" id="btn-add-equipment">
               <i class="fas fa-tools"></i> Add Equipment
             </button>
-            <button class="btn-action" onclick="recipeDisplay.toggleEditMode()">
+            <button class="btn-action" id="btn-toggle-edit">
               <i class="fas fa-edit"></i> ${this.editMode ? 'Save Changes' : 'Edit Mode'}
             </button>
           </div>
@@ -231,9 +231,36 @@ class ComprehensiveRecipeDisplay {
       </div>
     `;
 
+    // Attach event listeners after rendering
+    this.attachEventListeners();
+    
     // Initialize edit mode if needed
     if (this.editMode) {
       this.enableEditMode();
+    }
+  }
+  
+  // Attach event listeners to avoid inline handlers (CSP compliance)
+  attachEventListeners() {
+    // Quick action buttons
+    const calcMacrosBtn = document.getElementById('btn-calculate-macros');
+    if (calcMacrosBtn) {
+      calcMacrosBtn.addEventListener('click', () => this.calculateMacros());
+    }
+    
+    const addIngredientBtn = document.getElementById('btn-add-ingredient');
+    if (addIngredientBtn) {
+      addIngredientBtn.addEventListener('click', () => this.addIngredient());
+    }
+    
+    const addEquipmentBtn = document.getElementById('btn-add-equipment');
+    if (addEquipmentBtn) {
+      addEquipmentBtn.addEventListener('click', () => this.addEquipment());
+    }
+    
+    const toggleEditBtn = document.getElementById('btn-toggle-edit');
+    if (toggleEditBtn) {
+      toggleEditBtn.addEventListener('click', () => this.toggleEditMode());
     }
   }
 
