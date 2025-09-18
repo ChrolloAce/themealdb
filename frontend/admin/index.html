@@ -4,17 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FoodDB Admin Dashboard</title>
-    <link rel="stylesheet" href="/admin-assets/theme.css">
-    <link rel="stylesheet" href="/admin-assets/admin-styles.css">
-    <link rel="stylesheet" href="/admin-assets/dark-professional-styles.css">
-    <link rel="stylesheet" href="/admin-assets/comprehensive-recipe-styles.css">
-    <link rel="stylesheet" href="/admin-assets/dashboard-styles.css">
-    <link rel="stylesheet" href="/admin-assets/recipe-fix-styles.css">
-    <link rel="stylesheet" href="/admin-assets/modern-recipe-ui.css">
+    <link rel="stylesheet" href="/admin-assets/design-system.css">
+    <link rel="stylesheet" href="/admin-assets/shell-layout.css">
+    <link rel="stylesheet" href="/admin-assets/dashboard-components.css">
     <link rel="stylesheet" href="/admin-assets/comprehensive-recipe-display.css">
     <link rel="stylesheet" href="/admin-assets/recipes-table-styles.css">
-    <link rel="stylesheet" href="/admin-assets/layout-fixes.css">
-    <link rel="stylesheet" href="/admin-assets/recipe-table-overrides.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -36,15 +30,284 @@
         </div>
     </div>
 
-    <!-- Admin Dashboard -->
-    <div id="adminPanel" class="admin-dashboard">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- App Shell -->
+    <div id="adminPanel" class="app-shell" style="display: none;">
+        <!-- Left Rail Navigation -->
+        <aside class="left-rail" id="leftRail">
+            <div class="rail-header">
+                <div class="rail-logo">🍴</div>
+                <div class="rail-brand">FoodDB</div>
+            </div>
+            
+            <nav class="rail-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-section="dashboard">
+                            <span class="nav-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </span>
+                            <span class="nav-text">Dashboard</span>
+                            <div class="nav-tooltip">Dashboard</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="generate">
+                            <span class="nav-icon">
+                                <i class="fas fa-magic"></i>
+                            </span>
+                            <span class="nav-text">AI Generate</span>
+                            <div class="nav-tooltip">AI Generate</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="allRecipes">
+                            <span class="nav-icon">
                     <i class="fas fa-utensils"></i>
-                    <span>FoodDB</span>
+                            </span>
+                            <span class="nav-text">All Recipes</span>
+                            <div class="nav-tooltip">All Recipes</div>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="rail-footer">
+                <a href="#" class="logout-link" id="logoutBtn">
+                    <span class="nav-icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </span>
+                    <span class="nav-text">Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Layout -->
+        <div class="main-layout" id="mainLayout">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                    <nav class="breadcrumb" id="breadcrumb" style="display: none;">
+                        <div class="breadcrumb-item">
+                            <a href="#" class="breadcrumb-link">Recipes</a>
+                        </div>
+                        <span class="breadcrumb-separator">
+                            <i class="fas fa-chevron-right"></i>
+                        </span>
+                        <div class="breadcrumb-item">
+                            <span>Recipe Name</span>
+                        </div>
+                    </nav>
                 </div>
+                
+                <div class="top-bar-right">
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    
+                    <div class="topbar-search">
+                        <i class="fas fa-search topbar-search-icon"></i>
+                        <input type="text" class="topbar-search-input" placeholder="Search recipes...">
+                    </div>
+                    
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <div class="notification-badge"></div>
+                    </button>
+                    
+                    <div class="user-info">
+                        <div class="user-avatar">SA</div>
+                        <div class="user-details">
+                            <div class="user-name">System Administrator</div>
+                            <div class="user-role">Admin</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="content-area">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="admin-section active">
+                    <!-- Metrics Row -->
+                    <div class="metrics-row">
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-icon-wrapper recipes">
+                                    <i class="fas fa-utensils"></i>
+                                </div>
+                            </div>
+                            <div class="metric-content">
+                                <h3 class="metric-title">Total Recipes</h3>
+                                <div class="metric-value" id="totalRecipes">0</div>
+                                <div class="metric-delta positive">
+                                    <span class="delta-icon">▲</span>
+                                    <span>12% this week</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-icon-wrapper categories">
+                                    <i class="fas fa-tags"></i>
+                                </div>
+                            </div>
+                            <div class="metric-content">
+                                <h3 class="metric-title">Categories</h3>
+                                <div class="metric-value" id="totalCategories">0</div>
+                                <div class="metric-delta neutral">
+                                    <span>No change</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-icon-wrapper cuisines">
+                                    <i class="fas fa-globe-americas"></i>
+                                </div>
+                            </div>
+                            <div class="metric-content">
+                                <h3 class="metric-title">Cuisines</h3>
+                                <div class="metric-value" id="totalCuisines">0</div>
+                                <div class="metric-delta positive">
+                                    <span class="delta-icon">▲</span>
+                                    <span>2 new</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-icon-wrapper recent">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                            <div class="metric-content">
+                                <h3 class="metric-title">Recent</h3>
+                                <div class="metric-value" id="recentRecipes">0</div>
+                                <div class="metric-delta positive">
+                                    <span class="delta-icon">▲</span>
+                                    <span>This week</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Section -->
+                    <div class="activity-section">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Recipe Activity</h3>
+                                <p class="chart-subtitle">Recipes created over time</p>
+                            </div>
+                            <div class="chart-placeholder">
+                                <span>📈 Activity chart will be displayed here</span>
+                            </div>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <div class="legend-color primary"></div>
+                                    <span>Created</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color success"></div>
+                                    <span>Published</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color warning"></div>
+                                    <span>Modified</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-card">
+                            <div class="activity-header">
+                                <h3 class="activity-title">Recent Actions</h3>
+                                <p class="activity-subtitle">Latest activity in your workspace</p>
+                            </div>
+                            <ul class="activity-list" id="recentActivity">
+                                <li class="activity-item">
+                                    <div class="activity-icon recipe">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-label">New recipe created</div>
+                                        <div class="activity-time">2 minutes ago</div>
+                                    </div>
+                                    <button class="activity-menu">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Insights Section -->
+                    <div class="insights-section">
+                        <div class="insights-card">
+                            <div class="insights-header">
+                                <h3 class="insights-title">Top Cuisines</h3>
+                            </div>
+                            <div class="donut-placeholder"></div>
+                            <ul class="cuisine-list">
+                                <li class="cuisine-item">
+                                    <div class="cuisine-color" style="background: var(--color-primary);"></div>
+                                    <span class="cuisine-name">Italian</span>
+                                    <span class="cuisine-count">24</span>
+                                </li>
+                                <li class="cuisine-item">
+                                    <div class="cuisine-color" style="background: var(--color-success);"></div>
+                                    <span class="cuisine-name">Mexican</span>
+                                    <span class="cuisine-count">18</span>
+                                </li>
+                                <li class="cuisine-item">
+                                    <div class="cuisine-color" style="background: var(--color-warning);"></div>
+                                    <span class="cuisine-name">Asian</span>
+                                    <span class="cuisine-count">12</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="insights-card">
+                            <div class="insights-header">
+                                <h3 class="insights-title">Data Quality</h3>
+                            </div>
+                            <ul class="quality-list">
+                                <li class="quality-item">
+                                    <div class="quality-header">
+                                        <span class="quality-label">Recipes with Images</span>
+                                        <span class="quality-percentage">85%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 85%;"></div>
+                                    </div>
+                                </li>
+                                <li class="quality-item">
+                                    <div class="quality-header">
+                                        <span class="quality-label">Complete Nutrition</span>
+                                        <span class="quality-percentage">72%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill warning" style="width: 72%;"></div>
+                                    </div>
+                                </li>
+                                <li class="quality-item">
+                                    <div class="quality-header">
+                                        <span class="quality-label">Full Instructions</span>
+                                        <span class="quality-percentage">94%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 94%;"></div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
             </div>
             <nav class="sidebar-nav">
                 <a href="#" class="nav-item active" data-section="dashboard">
