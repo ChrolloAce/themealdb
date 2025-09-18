@@ -720,7 +720,7 @@ class ComprehensiveRecipeDisplay {
   }
 
   // Add ingredient
-  addIngredient() {
+  async addIngredient() {
     const name = prompt('Enter ingredient name:');
     const amount = prompt('Enter amount:');
     
