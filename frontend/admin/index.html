@@ -4,14 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FoodDB Admin Dashboard</title>
-    <link rel="stylesheet" href="/admin-assets/admin-styles.css">
-    <link rel="stylesheet" href="/admin-assets/dark-professional-styles.css">
-    <link rel="stylesheet" href="/admin-assets/comprehensive-recipe-styles.css">
-    <link rel="stylesheet" href="/admin-assets/dashboard-styles.css">
-    <link rel="stylesheet" href="/admin-assets/recipe-fix-styles.css">
-    <link rel="stylesheet" href="/admin-assets/modern-recipe-ui.css">
-    <link rel="stylesheet" href="/admin-assets/comprehensive-recipe-display.css">
-    <link rel="stylesheet" href="/admin-assets/recipes-table-styles.css">
+    <link rel="stylesheet" href="modern-admin-styles.css">
+    <link rel="stylesheet" href="comprehensive-recipe-display.css">
+    <link rel="stylesheet" href="recipes-table-styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -35,120 +30,132 @@
 
     <!-- Admin Dashboard -->
     <div id="adminPanel" class="admin-dashboard">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <i class="fas fa-utensils"></i>
-                    <span>FoodDB</span>
-                </div>
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1>🍽️ FoodDB Admin</h1>
+                <div class="subtitle">Recipe Management Dashboard</div>
             </div>
-            <nav class="sidebar-nav">
-                <a href="#" class="nav-item active" data-section="dashboard">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="#" class="nav-item" data-section="ai-generate">
-                    <i class="fas fa-magic"></i>
-                    <span>AI Generate</span>
-                </a>
-                <a href="#" class="nav-item" data-section="manage-recipes">
-                    <i class="fas fa-book"></i>
-                    <span>All Recipes</span>
-                </a>
-            </nav>
-            <div class="sidebar-footer">
-                <a href="#" id="logoutBtn" class="nav-item logout">
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-avatar">A</div>
+                    <span class="user-name">Admin</span>
+                </div>
+                <button id="logoutBtn" class="logout-btn">
                     <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </a>
+                    Logout
+                </button>
             </div>
-        </aside>
+        </header>
 
-        <!-- Main Content Area -->
-        <div class="main-content">
-            <!-- Top Bar -->
-            <header class="topbar">
-                <div class="topbar-left">
-                    <h1 class="page-title">Dashboard</h1>
-                </div>
-                <div class="topbar-right">
-                    <div class="user-profile">
-                        <div class="user-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="user-info">
-                            <span class="user-name">Admin</span>
-                            <span class="user-role">System Administrator</span>
-                        </div>
-                    </div>
-                </div>
-            </header>
+        <!-- Navigation -->
+        <nav class="admin-nav">
+            <button class="nav-btn active" data-section="dashboard">
+                <i class="fas fa-chart-line"></i>
+                Dashboard
+            </button>
+            <button class="nav-btn" data-section="ai-generate">
+                <i class="fas fa-magic"></i>
+                AI Generate
+            </button>
+            <button class="nav-btn" data-section="manage-recipes">
+                <i class="fas fa-book"></i>
+                All Recipes
+            </button>
+        </nav>
 
-            <!-- Dashboard Content -->
-            <div class="dashboard-content">
-                <!-- Dashboard Section -->
-                <section id="dashboard" class="admin-section active">
-                    <div class="stats-overview">
-                        <div class="stat-card primary">
-                            <div class="stat-icon">
-                                <i class="fas fa-utensils"></i>
-                            </div>
-                            <div class="stat-content">
-                                <h3>Total Recipes</h3>
-                                <div class="stat-number" id="totalRecipes">0</div>
-                                <span class="stat-label">Active recipes in database</span>
-                            </div>
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="admin-section active">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard Overview
+                    </h2>
+                    <p class="section-description">Monitor your recipe database performance and key metrics</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--gradient-primary);">
+                            <i class="fas fa-utensils"></i>
                         </div>
-                        <div class="stat-card success">
-                            <div class="stat-icon">
-                                <i class="fas fa-tags"></i>
-                            </div>
-                            <div class="stat-content">
-                                <h3>Categories</h3>
-                                <div class="stat-number" id="totalCategories">0</div>
-                                <span class="stat-label">Recipe categories</span>
-                            </div>
-                        </div>
-                        <div class="stat-card info">
-                            <div class="stat-icon">
-                                <i class="fas fa-globe"></i>
-                            </div>
-                            <div class="stat-content">
-                                <h3>Cuisines</h3>
-                                <div class="stat-number" id="totalAreas">0</div>
-                                <span class="stat-label">Different regions</span>
-                            </div>
-                        </div>
-                        <div class="stat-card warning">
-                            <div class="stat-icon">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="stat-content">
-                                <h3>Recent</h3>
-                                <div class="stat-number" id="recentRecipes">0</div>
-                                <span class="stat-label">Added this week</span>
-                            </div>
-                        </div>
+                        <div class="stat-value" id="totalRecipes">0</div>
+                        <div class="stat-label">Total Recipes</div>
                     </div>
                     
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--gradient-success);">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="stat-value" id="totalCategories">0</div>
+                        <div class="stat-label">Categories</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--gradient-warning);">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="stat-value" id="totalAreas">0</div>
+                        <div class="stat-label">Cuisines</div>
+                            </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: var(--gradient-danger);">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-value" id="recentRecipes">0</div>
+                        <div class="stat-label">Recent Recipes</div>
+                            </div>
+                        </div>
 
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-rocket"></i>
+                            Quick Actions
+                        </h3>
+                            </div>
+                    <div class="flex gap-4">
+                        <button class="btn btn-primary" onclick="adminPanel.showSection('ai-generate')">
+                            <i class="fas fa-magic"></i>
+                            Generate Recipe
+                        </button>
+                        <button class="btn btn-secondary" onclick="adminPanel.showSection('manage-recipes')">
+                            <i class="fas fa-book"></i>
+                            View All Recipes
+                        </button>
+                    </div>
+                </div>
                 </section>
 
                 <!-- AI Generate Section -->
                 <section id="ai-generate" class="admin-section">
-                    <div class="generator-container">
-                        <div class="generator-card card">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-magic"></i>
+                        AI Recipe Generator
+                    </h2>
+                    <p class="section-description">Generate unique, detailed recipes using artificial intelligence</p>
+                </div>
+
+                <div class="card">
                             <div class="card-header">
-                                <h3><i class="fas fa-magic"></i> AI Recipe Generator</h3>
+                        <h3 class="card-title">
+                            <i class="fas fa-robot"></i>
+                            Recipe Generation Settings
+                        </h3>
                             </div>
-                            <form id="generateForm" class="generate-form-modern">
-                                <div class="generation-mode-switch">
-                                    <label class="switch">
+                    <form id="generateForm">
+                        <div class="form-group">
+                            <label class="form-label flex items-center gap-2">
                                         <input type="checkbox" id="randomMode" checked>
-                                        <span class="slider"></span>
+                                <span>Random Generation Mode</span>
                                     </label>
-                                    <span class="switch-label">Random Generation</span>
+                            <p style="color: var(--gray-500); font-size: var(--text-sm); margin-top: var(--space-1);">
+                                Toggle off to use specific filters for targeted recipe generation
+                            </p>
                                 </div>
                                 
                                 <!-- Custom Generation Filters -->
@@ -263,41 +270,70 @@
                                 </div>
                                 
                                 <!-- Generation Options -->
-                                <div class="generation-options">
-                                    <label class="option-item">
-                                        <input type="checkbox" id="generateImage" checked>
-                                        <span class="option-label"><i class="fas fa-image"></i> Generate Images</span>
-                                    </label>
-                                </div>
-                                
-                                <div class="form-actions">
-                                    <button type="submit" class="btn btn-generate">
-                                        <i class="fas fa-sparkles"></i>
-                                        <span>Generate Recipe</span>
-                                    </button>
-                                </div>
-                            </form>
+                        <div class="form-group">
+                            <label class="form-label flex items-center gap-2">
+                                <input type="checkbox" id="generateImage" checked>
+                                <span><i class="fas fa-image"></i> Generate Images</span>
+                            </label>
                         </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary btn-lg w-full">
+                                <i class="fas fa-sparkles"></i>
+                                Generate Recipe
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Generation Results -->
+                <div id="generateResult" class="card" style="display: none;">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-sparkles"></i>
+                            Generated Recipe
+                        </h3>
                     </div>
-                
-                    <div id="generateResult" class="result-section"></div>
-                </section>
+                    <div id="generateContent"></div>
+                </div>
+            </section>
 
 
 
 
             <!-- Manage Recipes Section -->
             <section id="manage-recipes" class="admin-section">
-                <h2>📝 Manage Recipes</h2>
-                <div class="recipes-controls">
-                    <input type="text" id="recipeSearch" placeholder="Search recipes...">
-                    <button id="refreshRecipes" class="btn btn-outline">Refresh</button>
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-book"></i>
+                        Manage Recipes
+                    </h2>
+                    <p class="section-description">View, edit, and manage all recipes in your database</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-table"></i>
+                            Recipe Database
+                        </h3>
+                        <button class="btn btn-primary" onclick="adminPanel.showSection('ai-generate')">
+                            <i class="fas fa-plus"></i>
+                            Add Recipe
+                        </button>
+                    </div>
+                    <div class="flex gap-4 mb-6">
+                        <input type="text" id="recipeSearch" placeholder="Search recipes..." class="form-input flex-1">
+                        <button id="refreshRecipes" class="btn btn-secondary">
+                            <i class="fas fa-refresh"></i>
+                            Refresh
+                        </button>
                 </div>
                 
                 <div id="recipesList" class="recipes-list"></div>
+                </div>
             </section>
-            </div><!-- End dashboard-content -->
-        </div><!-- End main-content -->
+        </main>
     </div><!-- End admin-dashboard -->
 
     <!-- Recipe Edit Modal -->
