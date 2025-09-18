@@ -30,6 +30,36 @@ class OpenAIManager {
     }
   }
 
+  // Build prompt from filter criteria
+  buildFilterPrompt(filters) {
+    const criteria = [];
+    
+    if (filters.categories && filters.categories.length > 0) {
+      criteria.push(`Meal Category: ${filters.categories.join(' OR ')}`);
+    }
+    
+    if (filters.dishTypes && filters.dishTypes.length > 0) {
+      criteria.push(`Dish Type: ${filters.dishTypes.join(' OR ')}`);
+    }
+    
+    if (filters.cuisines && filters.cuisines.length > 0) {
+      criteria.push(`Cuisine: ${filters.cuisines.join(' OR ')}`);
+    }
+    
+    if (filters.dietary && filters.dietary.length > 0) {
+      criteria.push(`Dietary Requirements: ${filters.dietary.join(' AND ')}`);
+    }
+    
+    if (criteria.length === 0) {
+      return 'Create a random, creative recipe.';
+    }
+    
+    return `Create a recipe that meets these specific criteria:
+${criteria.map(c => `- ${c}`).join('\n')}
+
+The recipe MUST match ALL specified criteria where possible. Be creative within these constraints.`;
+  }
+
   // Generate a complete recipe based on input parameters (OPTIMIZED SINGLE-STEP)
   async generateRecipe(params = {}) {
     this.checkAvailability();
@@ -66,14 +96,15 @@ class OpenAIManager {
       // Handle different generation modes
       let comprehensivePrompt;
       
-      if (params.mode === 'custom' && params.customPrompt) {
-        // Custom prompt mode
-        console.log('🎯 Using CUSTOM PROMPT mode');
+      if (params.mode === 'filtered' && params.filters) {
+        // Filtered generation mode
+        console.log('🎯 Using FILTERED generation mode');
+        const filterPrompt = this.buildFilterPrompt(params.filters);
         comprehensivePrompt = `${existingContext}
 
-User Request: "${params.customPrompt}"
+${filterPrompt}
 
-Based on the user's request above, generate a HIGHLY DETAILED recipe with:
+Generate a HIGHLY DETAILED recipe that matches the specified criteria with:
 1. VERY DETAILED step-by-step instructions (minimum 7-10 steps) explaining techniques, temperatures, timing, and what to look for
 2. COMPLETE list of cooking equipment/instruments with sizes (e.g., "12-inch skillet", "8-inch chef's knife")
 3. Make it creative and unique
@@ -432,11 +463,15 @@ Return ONLY this JSON format with NO extra text:
 
   // OPTIMIZED single-step recipe generation
   async generateOptimizedRecipe(params = {}) {
-    const { customPrompt, mode } = params;
+    const { mode, filters } = params;
     
     let optimizedPrompt;
-    if (mode === 'custom' && customPrompt) {
-      optimizedPrompt = `Create a ${customPrompt} recipe with comprehensive data. Return ONLY this JSON:`;
+    if (mode === 'filtered' && filters) {
+      // Filtered generation
+      const filterPrompt = this.buildFilterPrompt(filters);
+      optimizedPrompt = `${filterPrompt}
+
+Generate a recipe that matches these criteria with comprehensive data. Return ONLY this JSON:`;
     } else {
       // Random recipe
       const cuisines = ['Italian', 'Mexican', 'Asian', 'Mediterranean', 'Indian', 'French'];

@@ -53,17 +53,28 @@ class AdminPanel {
     
     // Handle random mode toggle
     const randomModeCheckbox = document.getElementById('randomMode');
-    const customPromptSection = document.getElementById('customPromptSection');
+    const customFiltersSection = document.getElementById('customFiltersSection');
     
-    if (randomModeCheckbox && customPromptSection) {
+    if (randomModeCheckbox && customFiltersSection) {
       randomModeCheckbox.addEventListener('change', () => {
         if (randomModeCheckbox.checked) {
-          customPromptSection.style.display = 'none';
+          customFiltersSection.style.display = 'none';
         } else {
-          customPromptSection.style.display = 'block';
+          customFiltersSection.style.display = 'block';
         }
       });
     }
+
+    // Initialize generation filters
+    this.generationFilters = {
+      categories: new Set(),
+      dishTypes: new Set(),
+      cuisines: new Set(),
+      dietary: new Set()
+    };
+
+    // Setup generation filter buttons
+    this.setupGenerationFilters();
     
     if (this.ideasForm) {
       this.ideasForm.addEventListener('submit', this.handleGenerateIdeas.bind(this));
@@ -167,6 +178,135 @@ class AdminPanel {
         }
       });
     });
+  }
+
+  setupGenerationFilters() {
+    // Setup filter button event listeners
+    document.querySelectorAll('.category-filter').forEach(btn => {
+      btn.addEventListener('click', () => this.toggleGenerationFilter('categories', btn.dataset.category, btn));
+    });
+    
+    document.querySelectorAll('.dish-filter').forEach(btn => {
+      btn.addEventListener('click', () => this.toggleGenerationFilter('dishTypes', btn.dataset.dish, btn));
+    });
+    
+    document.querySelectorAll('.cuisine-filter').forEach(btn => {
+      btn.addEventListener('click', () => this.toggleGenerationFilter('cuisines', btn.dataset.cuisine, btn));
+    });
+    
+    document.querySelectorAll('.dietary-filter').forEach(btn => {
+      btn.addEventListener('click', () => this.toggleGenerationFilter('dietary', btn.dataset.dietary, btn));
+    });
+
+    // Setup clear filters button
+    const clearBtn = document.getElementById('clearGenerationFilters');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', this.clearGenerationFilters.bind(this));
+    }
+
+    // Initialize display
+    this.updateGenerationFiltersDisplay();
+  }
+
+  toggleGenerationFilter(filterType, value, buttonElement) {
+    const filterSet = this.generationFilters[filterType];
+    
+    if (filterSet.has(value)) {
+      // Remove filter
+      filterSet.delete(value);
+      buttonElement.classList.remove('active');
+    } else {
+      // Add filter
+      filterSet.add(value);
+      buttonElement.classList.add('active');
+    }
+    
+    this.updateGenerationFiltersDisplay();
+  }
+
+  clearGenerationFilters() {
+    // Clear all filter sets
+    this.generationFilters.categories.clear();
+    this.generationFilters.dishTypes.clear();
+    this.generationFilters.cuisines.clear();
+    this.generationFilters.dietary.clear();
+    
+    // Remove active class from all filter buttons
+    document.querySelectorAll('.filter-btn-small.active').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    
+    // Update display
+    this.updateGenerationFiltersDisplay();
+  }
+
+  updateGenerationFiltersDisplay() {
+    const activeFiltersContainer = document.getElementById('activeGenerationFilters');
+    if (!activeFiltersContainer) return;
+    
+    // Clear existing tags
+    activeFiltersContainer.innerHTML = '';
+    
+    // Add filter tags for each active filter
+    const allFilters = [];
+    
+    // Add category filters
+    this.generationFilters.categories.forEach(category => {
+      allFilters.push({ type: 'categories', value: category, label: `🍽️ ${category}` });
+    });
+    
+    // Add dish type filters
+    this.generationFilters.dishTypes.forEach(dish => {
+      allFilters.push({ type: 'dishTypes', value: dish, label: `🍳 ${dish}` });
+    });
+    
+    // Add cuisine filters
+    this.generationFilters.cuisines.forEach(cuisine => {
+      allFilters.push({ type: 'cuisines', value: cuisine, label: `🌍 ${cuisine}` });
+    });
+    
+    // Add dietary filters
+    this.generationFilters.dietary.forEach(dietary => {
+      allFilters.push({ type: 'dietary', value: dietary, label: `🥗 ${dietary}` });
+    });
+    
+    // Create filter tags
+    allFilters.forEach(filter => {
+      const tag = document.createElement('div');
+      tag.className = 'generation-filter-tag';
+      tag.innerHTML = `
+        ${filter.label}
+        <button class="remove-filter" data-type="${filter.type}" data-value="${filter.value}">×</button>
+      `;
+      activeFiltersContainer.appendChild(tag);
+      
+      // Add remove event listener
+      const removeBtn = tag.querySelector('.remove-filter');
+      removeBtn.addEventListener('click', () => {
+        this.removeGenerationFilter(filter.type, filter.value);
+      });
+    });
+    
+    // Show "None" if no filters active
+    if (allFilters.length === 0) {
+      const noneTag = document.createElement('span');
+      noneTag.className = 'no-filters-text';
+      noneTag.textContent = 'No filters selected - will generate random recipe';
+      activeFiltersContainer.appendChild(noneTag);
+    }
+  }
+
+  removeGenerationFilter(filterType, value) {
+    const filterSet = this.generationFilters[filterType];
+    filterSet.delete(value);
+    
+    // Update button state
+    const button = document.querySelector(`[data-${filterType.replace('dishTypes', 'dish').replace('cuisines', 'cuisine').replace('categories', 'category').replace('dietary', 'dietary')}="${value}"]`);
+    if (button) {
+      button.classList.remove('active');
+    }
+    
+    this.updateGenerationFiltersDisplay();
   }
 
   async verifyToken() {
@@ -498,7 +638,6 @@ class AdminPanel {
 
   getGenerateFormData() {
     const randomMode = document.getElementById('randomMode')?.checked ?? true;
-    const customPrompt = document.getElementById('customPrompt')?.value || '';
     const generateImage = document.getElementById('generateImage')?.checked ?? true;
     const recipeCount = parseInt(document.getElementById('recipeCount')?.value) || 1;
     const imageCount = parseInt(document.getElementById('imageCount')?.value) || 1;
@@ -517,11 +656,18 @@ class AdminPanel {
         mode: 'random'
       };
     } else {
-      // Custom prompt generation
+      // Custom generation with filters
+      const filters = {
+        categories: Array.from(this.generationFilters.categories),
+        dishTypes: Array.from(this.generationFilters.dishTypes),
+        cuisines: Array.from(this.generationFilters.cuisines),
+        dietary: Array.from(this.generationFilters.dietary)
+      };
+      
       return {
         ...baseParams,
-        mode: 'custom',
-        customPrompt: customPrompt
+        mode: 'filtered',
+        filters: filters
       };
     }
   }

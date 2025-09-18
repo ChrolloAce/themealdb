@@ -984,3 +984,271 @@ body {
         flex-direction: column;
     }
 }
+
+/* Custom Generation Filters */
+.custom-filters-section {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    border: 1px solid #e5e7eb;
+}
+
+.filters-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.filter-category {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+}
+
+.filter-category-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-buttons-grid {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.categories-filter-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.dish-types-filter-grid {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.cuisines-filter-grid {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.dietary-filter-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.filter-btn-small {
+    background: #f9fafb;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #4b5563;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 36px;
+}
+
+.filter-btn-small:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+    transform: translateY(-1px);
+}
+
+.filter-btn-small.active {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border-color: #2563eb;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.filter-btn-small.active:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* Category-specific colors for active state */
+.category-filter.active {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border-color: #d97706;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.category-filter.active:hover {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+.dish-filter.active {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-color: #059669;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.dish-filter.active:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.cuisine-filter.active {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    border-color: #7c3aed;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.cuisine-filter.active:hover {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.dietary-filter.active {
+    background: linear-gradient(135deg, #ec4899, #db2777);
+    border-color: #db2777;
+    box-shadow: 0 2px 8px rgba(236, 72, 153, 0.3);
+}
+
+.dietary-filter.active:hover {
+    background: linear-gradient(135deg, #db2777, #be185d);
+    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+}
+
+/* Active Filters Display */
+.active-generation-filters {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    border: 1px solid #e5e7eb;
+}
+
+.active-filters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.active-filters-label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.clear-filters-btn {
+    background: #f9fafb;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clear-filters-btn:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+}
+
+.active-filters-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    min-height: 24px;
+    align-items: center;
+}
+
+.no-filters-text {
+    color: #9ca3af;
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
+.generation-filter-tag {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    animation: slideIn 0.3s ease;
+}
+
+.generation-filter-tag .remove-filter {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 10px;
+    transition: background 0.2s;
+}
+
+.generation-filter-tag .remove-filter:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Filter responsive adjustments */
+@media (max-width: 768px) {
+    .categories-filter-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dish-types-filter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cuisines-filter-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dietary-filter-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filter-btn-small {
+        font-size: 0.75rem;
+        padding: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .categories-filter-grid,
+    .dietary-filter-grid,
+    .cuisines-filter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .active-filters-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+}

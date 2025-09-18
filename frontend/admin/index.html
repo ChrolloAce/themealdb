@@ -151,11 +151,89 @@
                                     <span class="switch-label">Random Generation</span>
                                 </div>
                                 
-                                <!-- Custom Prompt Field -->
-                                <div id="customPromptSection" class="custom-prompt-section" style="display: none;">
-                                    <div class="form-group">
-                                        <label>Custom Recipe Prompt</label>
-                                        <textarea id="customPrompt" rows="4" placeholder="Describe the recipe you want...&#10;&#10;Examples:&#10;• Make me a spicy Italian pasta with seafood&#10;• Create a healthy vegan dessert with chocolate&#10;• I want a comfort food recipe using chicken and potatoes"></textarea>
+                                <!-- Custom Generation Filters -->
+                                <div id="customFiltersSection" class="custom-filters-section" style="display: none;">
+                                    <div class="filters-grid">
+                                        <!-- Meal Categories -->
+                                        <div class="filter-category">
+                                            <h4 class="filter-category-title">🍽️ Meal Categories</h4>
+                                            <div class="filter-buttons-grid categories-filter-grid">
+                                                <button type="button" class="filter-btn-small category-filter" data-category="Breakfast">🌅 Breakfast</button>
+                                                <button type="button" class="filter-btn-small category-filter" data-category="Brunch">🥐 Brunch</button>
+                                                <button type="button" class="filter-btn-small category-filter" data-category="Lunch">🥪 Lunch</button>
+                                                <button type="button" class="filter-btn-small category-filter" data-category="Dinner">🍽️ Dinner</button>
+                                                <button type="button" class="filter-btn-small category-filter" data-category="Snack">🍿 Snack</button>
+                                                <button type="button" class="filter-btn-small category-filter" data-category="Dessert">🍰 Dessert</button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Dish Types -->
+                                        <div class="filter-category">
+                                            <h4 class="filter-category-title">🍳 Dish Types</h4>
+                                            <div class="filter-buttons-grid dish-types-filter-grid">
+                                                <button type="button" class="filter-btn-small dish-filter" data-dish="Appetizers">🥗 Appetizers</button>
+                                                <button type="button" class="filter-btn-small dish-filter" data-dish="Side Dishes">🥕 Side Dishes</button>
+                                                <button type="button" class="filter-btn-small dish-filter" data-dish="Main Courses">🍖 Main Courses</button>
+                                                <button type="button" class="filter-btn-small dish-filter" data-dish="Soups">🍲 Soups</button>
+                                                <button type="button" class="filter-btn-small dish-filter" data-dish="Salads">🥙 Salads</button>
+                                                <button type="button" class="filter-btn-small dish-filter" data-dish="Sandwiches & Wraps">🌯 Sandwiches & Wraps</button>
+                                                <button type="button" class="filter-btn-small dish-filter" data-dish="Burgers">🍔 Burgers</button>
+                                                <button type="button" class="filter-btn-small dish-filter" data-dish="Pizza & Flatbreads">🍕 Pizza & Flatbreads</button>
+                                                <button type="button" class="filter-btn-small dish-filter" data-dish="Pasta & Noodles">🍝 Pasta & Noodles</button>
+                                                <button type="button" class="filter-btn-small dish-filter" data-dish="Rice Dishes">🍚 Rice Dishes</button>
+                                                <button type="button" class="filter-btn-small dish-filter" data-dish="Stir-Fries">🥢 Stir-Fries</button>
+                                                <button type="button" class="filter-btn-small dish-filter" data-dish="Curries">🍛 Curries</button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Cuisines -->
+                                        <div class="filter-category">
+                                            <h4 class="filter-category-title">🌍 Cuisines</h4>
+                                            <div class="filter-buttons-grid cuisines-filter-grid">
+                                                <button type="button" class="filter-btn-small cuisine-filter" data-cuisine="American">🇺🇸 American</button>
+                                                <button type="button" class="filter-btn-small cuisine-filter" data-cuisine="Italian">🇮🇹 Italian</button>
+                                                <button type="button" class="filter-btn-small cuisine-filter" data-cuisine="Chinese">🇨🇳 Chinese</button>
+                                                <button type="button" class="filter-btn-small cuisine-filter" data-cuisine="Mexican">🇲🇽 Mexican</button>
+                                                <button type="button" class="filter-btn-small cuisine-filter" data-cuisine="Indian">🇮🇳 Indian</button>
+                                                <button type="button" class="filter-btn-small cuisine-filter" data-cuisine="French">🇫🇷 French</button>
+                                                <button type="button" class="filter-btn-small cuisine-filter" data-cuisine="Japanese">🇯🇵 Japanese</button>
+                                                <button type="button" class="filter-btn-small cuisine-filter" data-cuisine="Thai">🇹🇭 Thai</button>
+                                                <button type="button" class="filter-btn-small cuisine-filter" data-cuisine="Greek">🇬🇷 Greek</button>
+                                                <button type="button" class="filter-btn-small cuisine-filter" data-cuisine="Spanish">🇪🇸 Spanish</button>
+                                                <button type="button" class="filter-btn-small cuisine-filter" data-cuisine="British">🇬🇧 British</button>
+                                                <button type="button" class="filter-btn-small cuisine-filter" data-cuisine="Turkish">🇹🇷 Turkish</button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Dietary Preferences -->
+                                        <div class="filter-category">
+                                            <h4 class="filter-category-title">🥗 Dietary Preferences</h4>
+                                            <div class="filter-buttons-grid dietary-filter-grid">
+                                                <button type="button" class="filter-btn-small dietary-filter" data-dietary="Vegetarian">🥕 Vegetarian</button>
+                                                <button type="button" class="filter-btn-small dietary-filter" data-dietary="Vegan">🌱 Vegan</button>
+                                                <button type="button" class="filter-btn-small dietary-filter" data-dietary="Pescatarian">🐟 Pescatarian</button>
+                                                <button type="button" class="filter-btn-small dietary-filter" data-dietary="Keto">🥑 Keto</button>
+                                                <button type="button" class="filter-btn-small dietary-filter" data-dietary="Low-Carb">🥩 Low-Carb</button>
+                                                <button type="button" class="filter-btn-small dietary-filter" data-dietary="High-Protein">💪 High-Protein</button>
+                                                <button type="button" class="filter-btn-small dietary-filter" data-dietary="Gluten-Free">🌾 Gluten-Free</button>
+                                                <button type="button" class="filter-btn-small dietary-filter" data-dietary="Dairy-Free">🥛 Dairy-Free</button>
+                                                <button type="button" class="filter-btn-small dietary-filter" data-dietary="Nut-Free">🥜 Nut-Free</button>
+                                                <button type="button" class="filter-btn-small dietary-filter" data-dietary="Low-Sodium">🧂 Low-Sodium</button>
+                                                <button type="button" class="filter-btn-small dietary-filter" data-dietary="Low-Sugar">🍯 Low-Sugar</button>
+                                                <button type="button" class="filter-btn-small dietary-filter" data-dietary="Mediterranean">🫒 Mediterranean</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Active Filters Display -->
+                                    <div class="active-generation-filters">
+                                        <div class="active-filters-header">
+                                            <span class="active-filters-label">Selected Criteria:</span>
+                                            <button type="button" id="clearGenerationFilters" class="clear-filters-btn">🗑️ Clear All</button>
+                                        </div>
+                                        <div id="activeGenerationFilters" class="active-filters-display">
+                                            <span class="no-filters-text">No filters selected - will generate random recipe</span>
+                                        </div>
                                     </div>
                                 </div>
                                 
