@@ -64,12 +64,25 @@ class AdminPanel {
     const customFiltersSection = document.getElementById('customFiltersSection');
     
     if (randomModeCheckbox && customFiltersSection) {
+      // Set initial state
+      customFiltersSection.style.display = randomModeCheckbox.checked ? 'none' : 'block';
+      
       randomModeCheckbox.addEventListener('change', () => {
+        console.log('🎛️ Random mode toggle changed:', randomModeCheckbox.checked);
         if (randomModeCheckbox.checked) {
+          // Random mode ON - hide custom filters
           customFiltersSection.style.display = 'none';
+          console.log('🎲 Random mode enabled - filters hidden');
         } else {
+          // Random mode OFF - show custom filters
           customFiltersSection.style.display = 'block';
+          console.log('🎯 Custom mode enabled - filters shown');
         }
+      });
+    } else {
+      console.log('⚠️ Toggle elements not found:', {
+        randomModeCheckbox: !!randomModeCheckbox,
+        customFiltersSection: !!customFiltersSection
       });
     }
 
@@ -112,11 +125,26 @@ class AdminPanel {
       });
     });
     
-    // Edit modal listeners
-    document.getElementById('closeEditModal').addEventListener('click', this.closeEditModal.bind(this));
-    document.getElementById('cancelEditBtn').addEventListener('click', this.closeEditModal.bind(this));
-    document.getElementById('editRecipeForm').addEventListener('submit', this.saveRecipeEdit.bind(this));
-    document.getElementById('addIngredientBtn').addEventListener('click', this.addIngredientField.bind(this));
+    // Edit modal listeners (only if elements exist)
+    const closeEditModal = document.getElementById('closeEditModal');
+    if (closeEditModal) {
+      closeEditModal.addEventListener('click', this.closeEditModal.bind(this));
+    }
+    
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    if (cancelEditBtn) {
+      cancelEditBtn.addEventListener('click', this.closeEditModal.bind(this));
+    }
+    
+    const editRecipeForm = document.getElementById('editRecipeForm');
+    if (editRecipeForm) {
+      editRecipeForm.addEventListener('submit', this.saveRecipeEdit.bind(this));
+    }
+    
+    const addIngredientBtn = document.getElementById('addIngredientBtn');
+    if (addIngredientBtn) {
+      addIngredientBtn.addEventListener('click', this.addIngredientField.bind(this));
+    }
     
     // Setup recipe action listeners (will be called after loadRecipes)
     this.setupRecipeActionListeners();
@@ -1067,18 +1095,28 @@ class AdminPanel {
   // Recipe Management
   async loadRecipes() {
     try {
-      const recipesContent = document.getElementById('recipesContent');
-      if (!recipesContent) return;
+      const recipesTableContainer = document.getElementById('recipesTableContainer');
+      const emptyState = document.getElementById('emptyState');
       
-      // Show loading state
-      recipesContent.innerHTML = `
-        <div class="flex items-center justify-center p-8">
-          <div class="text-center">
-            <i class="fas fa-spinner fa-spin text-2xl text-muted mb-4"></i>
-            <p class="text-muted">Loading recipes...</p>
-          </div>
-        </div>
-      `;
+      if (!recipesTableContainer && !emptyState) {
+        console.error('❌ Recipe containers not found');
+        return;
+      }
+      
+      // Show loading state in table body
+      const tableBody = document.getElementById('recipesTableBody');
+      if (tableBody) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; padding: var(--space-8);">
+              <div>
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--color-muted); margin-bottom: 1rem;"></i>
+                <p style="color: var(--color-muted);">Loading recipes...</p>
+              </div>
+            </td>
+          </tr>
+        `;
+      }
       
       const response = await fetch('/admin/recipes', {
         headers: {
@@ -1087,16 +1125,23 @@ class AdminPanel {
       });
       
       const data = await response.json();
+      console.log('📊 Full recipe response:', data);
       console.log('🔍 Recipe data structure:', data.recipes?.[0]);
+      console.log('📈 Recipe count:', data.recipes?.length || 0);
       
       // Store recipes in class properties
       this.recipes = data.recipes || [];
       this.filteredRecipes = [...this.recipes];
       
+      console.log('💾 Stored recipes count:', this.recipes.length);
+      
       if (!this.recipes || this.recipes.length === 0) {
+        console.log('📭 No recipes found, showing empty state');
         this.showEmptyState();
         return;
       }
+      
+      console.log('🎯 Proceeding to render recipes table');
       
       // Sort recipes by latest added (dateModified descending) by default
       this.filteredRecipes.sort((a, b) => {
@@ -1121,11 +1166,22 @@ class AdminPanel {
   }
 
   renderRecipesTable() {
+    console.log('🖼️ Rendering recipes table with', this.filteredRecipes.length, 'recipes');
+    
     const recipesTableContainer = document.getElementById('recipesTableContainer');
     const emptyState = document.getElementById('emptyState');
     const tableBody = document.getElementById('recipesTableBody');
     
-    if (!tableBody) return;
+    console.log('🔍 Table elements found:', {
+      recipesTableContainer: !!recipesTableContainer,
+      emptyState: !!emptyState,
+      tableBody: !!tableBody
+    });
+    
+    if (!tableBody) {
+      console.error('❌ Table body not found!');
+      return;
+    }
     
     if (recipesTableContainer) recipesTableContainer.style.display = 'block';
     if (emptyState) emptyState.style.display = 'none';
@@ -1170,8 +1226,12 @@ class AdminPanel {
       </tr>
     `).join('');
     
+    console.log('✅ Table HTML generated, setting up event listeners');
+    
     // Add event listeners for the new minimalistic action buttons
     this.setupRecipeActionListeners();
+    
+    console.log('🎉 Recipes table rendered successfully!');
   }
   
   // Setup event listeners for recipe action buttons (dynamically created)
