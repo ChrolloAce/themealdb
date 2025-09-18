@@ -15,7 +15,6 @@ class AdminPanel {
     this.adminPanel = document.getElementById('adminPanel');
     
     // Forms
-    this.loginForm = document.getElementById('loginForm');
     this.generateForm = document.getElementById('generateForm');
     this.ideasForm = document.getElementById('ideasForm');
     this.batchForm = document.getElementById('batchForm');
@@ -31,10 +30,7 @@ class AdminPanel {
   }
 
   setupEventListeners() {
-    // Login
-    this.loginForm.addEventListener('submit', this.handleLogin.bind(this));
-    
-    // Anonymous auth
+    // Anonymous auth (no PIN required)
     document.getElementById('anonymousAuthBtn').addEventListener('click', this.handleAnonymousAuth.bind(this));
     
     // Logout
@@ -117,54 +113,13 @@ class AdminPanel {
     this.setupRecipeActionListeners();
   }
 
-  // Authentication with PIN system
-  async handleLogin(e) {
-    e.preventDefault();
-    
-    const password = document.getElementById('password').value;
-    const errorDiv = document.getElementById('loginError');
-    
-    // PIN-only system - no username required
-    const finalUsername = 'admin';
-    const finalPassword = password;
-    
-    try {
-      const response = await fetch('/admin/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username: finalUsername, password: finalPassword })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        this.token = data.token;
-        this.storeToken(data.token);
-        this.showAdminPanel();
-        this.loadDashboard();
-        
-        // Update username display (check if element exists)
-        const userNameElement = document.querySelector('.user-name');
-        if (userNameElement) {
-          userNameElement.textContent = data.user.username;
-        }
-      } else {
-        errorDiv.textContent = data.message || 'Login failed';
-      }
-    } catch (error) {
-      errorDiv.textContent = 'Connection error. Please try again.';
-    }
-  }
+  // Authentication is now anonymous-only
 
   async handleAnonymousAuth() {
-    const errorDiv = document.getElementById('loginError');
-    
     try {
-      console.log('🔓 Attempting anonymous Firebase authentication...');
+      console.log('🔓 Setting up anonymous authentication...');
       
-      // Set a fake token for anonymous access (backend handles this)
+      // Set anonymous token for persistent access
       this.token = 'anonymous-firebase-auth';
       this.storeToken(this.token);
       
@@ -172,17 +127,19 @@ class AdminPanel {
       this.showAdminPanel();
       this.loadDashboard();
       
-      // Update username display (check if element exists)
+      // Update username display
       const userNameElement = document.querySelector('.user-name');
       if (userNameElement) {
         userNameElement.textContent = 'Anonymous User';
       }
       
-      console.log('✅ Anonymous authentication successful!');
+      console.log('✅ Anonymous authentication successful! Access is persistent.');
       
     } catch (error) {
       console.error('❌ Anonymous authentication failed:', error);
-      errorDiv.textContent = 'Anonymous authentication failed. Please try PIN login.';
+      // Still try to show the panel - anonymous auth should always work
+      this.showAdminPanel();
+      this.loadDashboard();
     }
   }
 
@@ -196,7 +153,9 @@ class AdminPanel {
     if (this.token) {
       this.verifyToken();
     } else {
-      this.showLoginModal();
+      // Auto-authenticate anonymously - no PIN required
+      console.log('🔓 Auto-authenticating anonymously...');
+      this.handleAnonymousAuth();
     }
   }
   
@@ -347,6 +306,21 @@ class AdminPanel {
 
   async verifyToken() {
     try {
+      // Handle anonymous tokens directly
+      if (this.token === 'anonymous-firebase-auth') {
+        console.log('✅ Anonymous token verified, showing admin panel');
+        this.showAdminPanel();
+        this.loadDashboard();
+        
+        // Update username display
+        const userNameElement = document.querySelector('.user-name');
+        if (userNameElement) {
+          userNameElement.textContent = 'Anonymous User';
+        }
+        return;
+      }
+
+      // For regular tokens, verify with server
       const response = await fetch('/admin/me', {
         headers: {
           'Authorization': `Bearer ${this.token}`
@@ -357,18 +331,25 @@ class AdminPanel {
         const data = await response.json();
         this.showAdminPanel();
         this.loadDashboard();
-        document.getElementById('adminUsername').textContent = data.user.username;
+        
+        // Update username display
+        const userNameElement = document.querySelector('.user-name');
+        if (userNameElement) {
+          userNameElement.textContent = data.user.username;
+        }
       } else {
-        // Token is invalid, remove it and show login
+        // Token is invalid, auto-authenticate anonymously
+        console.log('🔄 Token invalid, switching to anonymous auth');
         this.token = null;
         this.removeStoredToken();
-        this.showLoginModal();
+        this.handleAnonymousAuth();
       }
     } catch (error) {
-      // Network error or server issue, show login
+      // Network error, auto-authenticate anonymously
+      console.log('🔄 Network error, switching to anonymous auth');
       this.token = null;
       this.removeStoredToken();
-      this.showLoginModal();
+      this.handleAnonymousAuth();
     }
   }
 
