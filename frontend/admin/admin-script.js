@@ -991,7 +991,7 @@ class AdminPanel {
   async viewRecipeComprehensive(recipeId) {
     try {
       // Fetch recipe data
-      const response = await fetch(`/api/admin/recipes/${recipeId}`, {
+      const response = await fetch(`/admin/recipes/${recipeId}`, {
         headers: {
           'Authorization': `Bearer ${this.token}`
         }
