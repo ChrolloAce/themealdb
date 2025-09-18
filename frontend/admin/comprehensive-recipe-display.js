@@ -506,12 +506,13 @@ class ComprehensiveRecipeDisplay {
 
     // Send to backend
     try {
-      const token = localStorage.getItem('adminToken');
+      const token = localStorage.getItem('fooddb_admin_token');
       const recipeId = this.currentRecipe.id || this.currentRecipe.idMeal;
       
       console.log('Saving recipe to Firebase...');
       console.log('Recipe ID:', recipeId);
       console.log('Token exists:', !!token);
+      console.log('Token value:', token);
       console.log('Updates:', updates);
       
       if (!token) {
