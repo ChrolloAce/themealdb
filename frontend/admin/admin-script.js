@@ -897,8 +897,8 @@ class AdminPanel {
             <p class="recipe-preview">${recipe.strInstructions ? recipe.strInstructions.substring(0, 120) + '...' : 'No instructions'}</p>
           </div>
           <div class="recipe-actions">
-            <button class="btn btn-outline edit-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}">
-              ✏️ Edit
+            <button class="btn btn-primary view-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}">
+              👁️ View Full Details
             </button>
             <button class="btn btn-outline improve-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}">
               🤖 Improve
@@ -921,8 +921,16 @@ class AdminPanel {
   // Setup event listeners for recipe action buttons (dynamically created)
   setupRecipeActionListeners() {
     // Remove existing listeners to prevent duplicates
-    document.querySelectorAll('.improve-recipe-btn, .delete-recipe-btn, .edit-recipe-btn').forEach(btn => {
+    document.querySelectorAll('.improve-recipe-btn, .delete-recipe-btn, .edit-recipe-btn, .view-recipe-btn').forEach(btn => {
       btn.replaceWith(btn.cloneNode(true));
+    });
+    
+    // Add view recipe listeners
+    document.querySelectorAll('.view-recipe-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const recipeId = e.target.getAttribute('data-recipe-id');
+        await this.viewRecipeComprehensive(recipeId);
+      });
     });
     
     // Add improve recipe listeners
@@ -976,6 +984,51 @@ class AdminPanel {
       }
     } catch (error) {
       alert('Failed to generate improvements');
+    }
+  }
+
+  // View recipe with comprehensive display
+  async viewRecipeComprehensive(recipeId) {
+    try {
+      // Fetch recipe data
+      const response = await fetch(`/api/admin/recipes/${recipeId}`, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch recipe');
+      }
+      
+      const data = await response.json();
+      const recipe = data.recipe || data;
+      
+      // Create a modal or dedicated section for the comprehensive view
+      const modal = document.createElement('div');
+      modal.className = 'comprehensive-recipe-modal';
+      modal.innerHTML = `
+        <div class="modal-overlay" onclick="this.parentElement.remove()"></div>
+        <div class="modal-content-large">
+          <button class="close-modal-btn" onclick="this.closest('.comprehensive-recipe-modal').remove()">×</button>
+          <div id="comprehensiveRecipeContent"></div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Use the comprehensive display component
+      const container = document.getElementById('comprehensiveRecipeContent');
+      if (window.recipeDisplay) {
+        window.recipeDisplay.renderRecipe(recipe, container);
+      } else {
+        console.error('Comprehensive recipe display not loaded');
+        container.innerHTML = '<p>Error: Display component not loaded</p>';
+      }
+      
+    } catch (error) {
+      console.error('Failed to view recipe:', error);
+      alert('Failed to load recipe details');
     }
   }
 
