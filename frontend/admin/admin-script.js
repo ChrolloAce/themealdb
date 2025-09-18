@@ -907,30 +907,76 @@ class AdminPanel {
         return;
       }
       
-      recipesList.innerHTML = data.recipes.map(recipe => `
-        <div class="recipe-item">
-          <div class="recipe-header">
-            ${recipe.strMealThumb ? `<img src="${recipe.strMealThumb}" alt="${recipe.strMeal}" class="recipe-thumb">` : '<div class="recipe-thumb-placeholder">📸</div>'}
-            <h4>${recipe.strMeal || 'Unnamed Recipe'}</h4>
-          </div>
-          <div class="recipe-info">
-            <p>${recipe.strCategory || 'No Category'} • ${recipe.strArea || 'No Area'}</p>
-            <p class="recipe-date">${recipe.dateModified ? new Date(recipe.dateModified).toLocaleDateString() : 'No Date'}</p>
-            <p class="recipe-preview">${recipe.strInstructions ? recipe.strInstructions.substring(0, 120) + '...' : 'No instructions'}</p>
-          </div>
-          <div class="recipe-actions">
-            <button class="btn btn-primary view-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}">
-              👁️ View Full Details
-            </button>
-            <button class="btn btn-outline improve-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}">
-              🤖 Improve
-            </button>
-            <button class="btn btn-danger delete-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}">
-              🗑️ Delete
-            </button>
-          </div>
+      // Sort recipes by latest added (dateModified descending)
+      const sortedRecipes = data.recipes.sort((a, b) => {
+        const dateA = new Date(a.dateModified || 0);
+        const dateB = new Date(b.dateModified || 0);
+        return dateB - dateA; // Latest first
+      });
+
+      recipesList.innerHTML = `
+        <div class="recipes-table-container">
+          <table class="recipes-table">
+            <thead>
+              <tr>
+                <th class="col-image">Image</th>
+                <th class="col-name">Recipe Name</th>
+                <th class="col-category">Category</th>
+                <th class="col-cuisine">Cuisine</th>
+                <th class="col-date">Date Added</th>
+                <th class="col-status">Status</th>
+                <th class="col-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sortedRecipes.map(recipe => `
+                <tr class="recipe-row" data-recipe-id="${recipe.id || recipe.idMeal}">
+                  <td class="col-image">
+                    ${recipe.strMealThumb ? 
+                      `<img src="${recipe.strMealThumb}" alt="${recipe.strMeal}" class="recipe-thumb-table">` : 
+                      '<div class="recipe-thumb-placeholder-table">📸</div>'
+                    }
+                  </td>
+                  <td class="col-name">
+                    <div class="recipe-name-cell">
+                      <h4>${recipe.strMeal || 'Unnamed Recipe'}</h4>
+                      <p class="recipe-preview">${recipe.strInstructions ? recipe.strInstructions.substring(0, 80) + '...' : 'No description'}</p>
+                    </div>
+                  </td>
+                  <td class="col-category">
+                    <span class="category-badge">${recipe.strCategory || 'Uncategorized'}</span>
+                  </td>
+                  <td class="col-cuisine">
+                    <span class="cuisine-badge">${recipe.strArea || 'Unknown'}</span>
+                  </td>
+                  <td class="col-date">
+                    <div class="date-cell">
+                      <span class="date-main">${recipe.dateModified ? new Date(recipe.dateModified).toLocaleDateString() : 'Unknown'}</span>
+                      <span class="date-time">${recipe.dateModified ? new Date(recipe.dateModified).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}</span>
+                    </div>
+                  </td>
+                  <td class="col-status">
+                    <span class="status-badge status-published">Published</span>
+                  </td>
+                  <td class="col-actions">
+                    <div class="action-buttons">
+                      <button class="btn-action-table btn-primary view-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}" title="View Full Details">
+                        👁️
+                      </button>
+                      <button class="btn-action-table btn-secondary improve-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}" title="Improve with AI">
+                        🤖
+                      </button>
+                      <button class="btn-action-table btn-danger delete-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}" title="Delete Recipe">
+                        🗑️
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
         </div>
-      `).join('');
+      `;
       
       // Add event listeners for dynamically created buttons
       this.setupRecipeActionListeners();
