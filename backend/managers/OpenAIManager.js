@@ -72,13 +72,29 @@ Based on the user's request above, generate a HIGHLY DETAILED recipe with:
 
 ${existingContext ? 'IMPORTANT: Create something different from the existing recipes to add variety to our collection.' : ''}
 
-🚨 CRITICAL: 
-- NEVER use "N/A", "TBD", or any placeholder text. ALL fields must have real values.
+🚨 CRITICAL REQUIREMENTS - EVERY FIELD MUST BE FILLED:
+- NEVER use "N/A", "TBD", empty strings, or zero values. ALL fields must have realistic values.
+- strDescription: Write 2-3 appetizing sentences describing the dish
+- prepTime, cookTime, totalTime: MUST be realistic numbers (never 0)
+- servingSize: MUST specify portion size like "1 cup", "2 slices", "1 bowl"  
+- yield: MUST specify what the recipe makes like "4 servings", "12 cookies", "2 cups sauce"
+- nutrition: ALL values must be realistic numbers based on ingredients (never 0)
+- dietary: Set appropriate true/false values based on ingredients
+- mealType: MUST include at least one value like ["Breakfast"], ["Lunch"], ["Dinner"]
+- dishType: MUST specify like "Soup", "Salad", "Main Course", "Dessert"
+- mainIngredient: MUST specify the primary ingredient
+- occasion: MUST include at least one like ["Weeknight"], ["Holiday"], ["Summer BBQ"]
+- seasonality: MUST include at least one like ["Spring"], ["All Season"]
+- equipmentRequired: MUST list 5-8 specific tools with sizes
+- skillsRequired: MUST list 3-5 cooking techniques
+- keywords: MUST include 4-6 searchable terms
+- allergenFlags: MUST identify all allergens present
+- timeCategory: MUST categorize like "Under 30 mins", "30-60 mins", "1+ hours"
 - Instructions must be EDUCATIONAL and DETAILED
 - Equipment list must be COMPREHENSIVE with specific sizes/types
-- 🚨 ONLY use ingredients from this EXACT list (match names precisely): abalone, acai berry, ackee, acorn squash, active dry yeast, adzuki beans, agar agar, agave nectar, aioli, aleppo pepper, alfalfa sprouts, alfredo sauce, all-purpose flour, allspice, almond butter, almond extract, almond flour, almond milk, almond paste, almonds, anchovies, Anchovy Paste, andouille sausage, anise seeds, annatto, apple, apple butter, applesauce, apricot, apricot jam, arborio rice, Arrowroot powder, artichoke, asafoetida, asiago cheese, Asian Pear, asparagus, avocado, bacon, Baguette, baking powder, baking soda, balsamic vinegar, banana, banana blossom, barbecue sauce, barley, barley flour, basil, basil seeds, Basmati Rice, Bay Leaf, beef, beef brisket, beef broth, Beef Ribs, beef stock, beef tenderloin, beets, Belacan (shrimp paste), bell pepper, bell peppers, besan (chickpea flour), black beans, black cardamom, black fungus (cloud ear), Black Garlic, Black Pepper, Black Peppercorns, black salt (kala namak), Black Tea, black truffle, Black-Eyed Peas, Blood Sausage, blue cheese, blue cheese dressing, blueberry, bok choy, Bonito Flakes, bourbon, Brandy, Bread, bread flour, Breadcrumbs, Breakfast Sausage, Brie, Broccoli, Broccolini, Brown Mustard Seeds, brown rice, brown sugar, brownie mix, brussels sprouts, buckwheat, buckwheat flour, bulgur, burdock root, butter, butter lettuce, buttermilk, buttermilk powder, butternut squash, cabbage, Cacao Nibs, Cactus Pear (Prickly Pear), Cajun Seasoning, Calamari (Squid), camembert, candied ginger, candied orange peel, candlenut, cane vinegar, canned salmon, canned tomatoes, canned tuna, cannellini beans, Caper Berries, Capers, Caramel Sauce, caraway seeds, carne asada, carolina reaper, carrot, cashew butter, cashew milk, cashews, cassava, catfish, cauliflower, cayenne pepper, celery, celery root (celeriac), champagne vinegar, chana dal, chanterelle mushrooms, char siu sauce, cheddar cheese, cheese, cheese curds, cherry, cherry tomato, chervil, chickpeas, chili oil, chili paste, chili powder, chili sauce, Chinese five-spice, chipotle chili powder, chives, chocolate chips, chocolate hazelnut spread, chocolate syrup, cider, cilantro, cinnamon, cinnamon stick, clam juice, clams, clarified butter, clotted cream, cloves, cocoa powder, coconut, coconut aminos, coconut cream, coconut milk, coconut oil, coconut sugar, coconut vinegar, cod, coffee, cognac, collard greens, condensed milk, coriander seeds, corn, corn flakes, corn oil, corn syrup, corn tortillas, corned beef, cornmeal, cotija cheese, cottage cheese, crab, crab meat, cranberries, cream cheese, cream of coconut, cream of tartar, crème fraîche, cremini mushrooms, cucumber, cumin seeds, curly parsley, currants, curry leaves, curry paste, curry powder, daikon radish, dashi, dates, demi-glace, diced tomatoes, dijon mustard, dill, dill seeds, dried apricots, dried cranberries, dried figs, dried hibiscus, dried shrimp, dried thyme, dry mustard powder, duck, duck eggs, duck fat, duck sauce, dulce de leche, edam cheese, edamame, egg noodles, egg whites, egg yolks, eggplant, eggs, egusi seeds, elderberry, enoki mushrooms, espresso powder, evaporated milk, extra virgin olive oil, fava beans, fennel bulb, fennel seeds, fenugreek leaves, fenugreek seeds, fermented black beans, filé powder, fish maw, fish sauce, five-spice powder, flaxseeds, flour tortillas, fontina cheese, forbidden rice (black rice), freekeh, freeze-dried fruit, french dressing, fried onions, frosting, fruit cocktail (canned), garam masala, garlic, garlic chives, garlic powder, garlic scapes, gelatin, gin, ginger, ginger paste, ginger powder, gingersnaps (crushed), glucose syrup, glutinous rice (sticky rice), goat, goat cheese, gochugaru (Korean chili flakes), gochujang, golden raisins (sultanas), goose, gooseberries, gorgonzola, grainy mustard, grape jelly, grapefruit, grapes, grapeseed oil, gravy, green beans, green bell pepper, green curry paste, green grapes, green lentils, green olives, green onions, green peas, green tea, grits, ground beef, ground chicken, ground cinnamon, ground coriander, ground cumin, ground lamb, ground pork, ground turkey, Gruyere, guacamole, guava, gumbo filé, habanero pepper, halloumi, ham, hamburger buns, harissa, hazelnut spread, hazelnuts, heavy cream, hemp seeds, herbes de Provence, herring, hoisin sauce, honey, honeydew melon, horseradish, hot dog, hot sauce, hummus, iceberg lettuce, icing, instant coffee, instant yeast, Italian dressing, Italian sausage, jackfruit, jaggery, jalapeño, jam, jasmine rice, jerusalem artichoke, jicama, ketchup, kidney beans, kielbasa, kimchi, king oyster mushroom, kirsch (cherry brandy), kohlrabi, kombu, ladys finger (okra), lamb, lamb chops, lamb shank, lard, lasagna noodles, lavender, lavender buds, leeks, lemon, lemon balm, lemon curd, lemon extract, lemon juice, lemon zest, lemongrass, lentils, lettuce, ligurian olive oil, lime, lime juice, liquid smoke, long pepper, loquat, lotus root, lotus seeds, lychee, macadamia nuts, mace (spice), mackerel, malt vinegar, mandarin orange, mango, maple syrup, marinade, marinara sauce, marjoram, marsala wine, marshmallows, mascarpone, matcha powder, mayonnaise, medjool dates, medlar, meringue powder, Mexican oregano, milk, milk chocolate, millet, mint, mirin, miso paste, molasses, Monterey Jack, morel mushrooms, mortadella, muffuletta olive salad, mushroom soy sauce, mushrooms, mussel, mustard (yellow), mustard greens, mustard oil, mustard seeds, naan bread, napkin (spring roll wrapper), nasturtium, navy beans, nectarine, new potatoes, nigella seeds, noodles, nutmeg, nutritional yeast, octopus, old bay seasoning, olive oil, olives, onion, onion powder, orange, orange blossom water, orange zest, oregano, oyster mushrooms, oyster sauce, oysters, palm oil, palm sugar, pancetta, paneer, panko breadcrumbs, papaya, paprika, parmesan cheese, parsley, parsley root, parsnip, passion fruit, pastrami, pastry flour, peach, peanut butter, peanut oil, peanuts, pears, peas, pecans, pecorino romano, pepper jack cheese, peppercorns, peppermint, pepperoni, pesto, picante sauce, pickled ginger, pickled jalapeños, pickled onions, pickled radish, pickles, pie crust, pigeon peas, pine nuts, pineapple, pink peppercorns, pinto beans, pistachios, plum, plum sauce, polenta, pomegranate, pomegranate molasses, pomegranate seeds, poppy seeds, pork, pork belly, pork chops, pork shoulder, portobello mushrooms, potato, potato starch, powdered sugar, prunes, puff pastry, pumpkin, pumpkin seeds, quail eggs, quince, quinoa, radicchio, radish, raisins, ranch dressing, ras el hanout, raspberries, red bell pepper, red cabbage, red curry paste, red grapes, red lentils, red onion, red wine, red wine vinegar, relish, rhubarb, rice, rice flour, rice noodles, rice vinegar, roasted garlic, roasted red peppers, rose petals, rose water, rosemary, rum, rutabaga, saffron, sage, sake, salmon, salsa, salt, salt pork, sambal oelek, sardines, satay sauce, sauerkraut, sausage, scallops, schezwan peppercorns, sea salt, sea urchin, seaweed, seitan, self rising flour, sesame oil, sesame seeds, shallots, shaoxing wine, sherry, sherry vinegar, shiitake mushrooms, short ribs, shortening, shrimp, shrimp paste, simple syrup, sirloin steak, smoked paprika, smoked salmon, smoked salt, smoked sausage, smoked trout, smoked turkey, snap peas, soba noodles, soda bread, sorrel, sour cream, soy milk, soy sauce, spaghetti, sparkling water, spearmint, spinach, split peas, squid, star anise, star apple, starfruit, steak, stevia, stewing beef, stilton cheese, stout, strawberries, string beans, sugar, summer sausage, sun-dried tomatoes, sunflower oil, sunflower seeds, sweet chili sauce, sweet corn, sweet potato, Swiss chard, Swiss cheese, swordfish, Tabasco sauce, tahini, tamale wrappers, tamari, tamarind, tamarind paste, tandoori masala, tangerine, tapioca pearls, tapioca starch, tarragon, tea leaves, tempeh, teriyaki sauce, Thai basil, thai bird chili, thyme, tofu, tomatillo, tomato, tomato paste, tomato sauce, tripe, trout, truffle oil, tuna, turbinado sugar, turkey, turkey bacon, turmeric, turnip, udon noodles, unflavored gelatin, vanilla bean, vanilla extract, vegemite, vegetable oil, vegetable shortening, vegetable stock, venison, vermicelli, vinegar, vodka, walnut oil, walnuts, wasabi, water chestnut, watercress, watermelon, watermelon seeds, wheat bran, wheat germ, whipping cream, whiskey, white beans, white chocolate, white pepper, white peppercorns, white rice, white vinegar, whole wheat flour, wild rice, wine (cooking wine), wine vinegar, winter melon, wonton wrappers, wood ear mushroom, Worcestershire sauce, yam, yeast, yellow bell pepper, yellow curry paste, yellow lentils, yellow mustard, yellow mustard seeds, yellow onion, yellow split peas, yellow squash, yogurt, yuba (tofu skin), yucca root, yuzu, za_atar, zucchini, zucchini blossoms
+- 🚨 ONLY use ingredients from this EXACT list (match names precisely): abalone, acai berry, ackee, acorn squash, active dry yeast, adzuki beans, agar agar, agave nectar, aioli, aleppo pepper, alfalfa sprouts, alfredo sauce, all-purpose flour, allspice, almond butter, almond extract, almond flour, almond milk, almond paste, almonds, anchovies, Anchovy Paste, andouille sausage, anise seeds, annatto, apple, apple butter, applesauce, apricot, apricot jam, arborio rice, Arrowroot powder, artichoke, asafoetida, asiago cheese, Asian Pear, asparagus, avocado, bacon, Baguette, baking powder, baking soda, balsamic vinegar, banana, banana blossom, barbecue sauce, barley, barley flour, basil, basil seeds, Basmati Rice, Bay Leaf, beef, Beef Bourguignon, beef brisket, beef broth, Beef Ribs, beef stock, beef tenderloin, beets, Belacan (shrimp paste), bell pepper, bell peppers, besan (chickpea flour), black beans, black cardamom, black fungus (cloud ear), Black Garlic, Black Pepper, Black Peppercorns, black salt (kala namak), Black Tea, black truffle, Black-Eyed Peas, Blood Sausage, blue cheese, blue cheese dressing, blueberry, bok choy, Bonito Flakes, bourbon, Brandy, Bread, bread flour, Breadcrumbs, Breakfast Sausage, Brie, Broccoli, Broccolini, Brown Mustard Seeds, brown rice, brown sugar, brownie mix, brussels sprouts, buckwheat, buckwheat flour, bulgur, burdock root, butter, butter lettuce, buttermilk, buttermilk powder, butternut squash, cabbage, Cacao Nibs, Cactus Pear (Prickly Pear), Cajun Seasoning, Calamari (Squid), camembert, candied ginger, candied orange peel, candlenut, cane vinegar, canned salmon, canned tomatoes, canned tuna, cannellini beans, Caper Berries, Capers, Caramel Sauce, caraway seeds, carne asada, carolina reaper, carrot, cashew butter, cashew milk, cashews, cassava, catfish, cauliflower, cayenne pepper, celery, celery root (celeriac), champagne vinegar, chana dal, chanterelle mushrooms, char siu sauce, cheddar cheese, cheese, cheese curds, cherry, cherry tomato, chervil, chickpeas, chili oil, chili paste, chili powder, chili sauce, Chinese five-spice, chipotle chili powder, chives, chocolate chips, chocolate hazelnut spread, chocolate syrup, cider, cilantro, cinnamon, cinnamon stick, clam juice, clams, clarified butter, clotted cream, cloves, cocoa powder, coconut, coconut aminos, coconut cream, coconut milk, coconut oil, coconut sugar, coconut vinegar, cod, coffee, cognac, collard greens, condensed milk, coriander seeds, corn, corn flakes, corn oil, corn syrup, corn tortillas, corned beef, cornmeal, cotija cheese, cottage cheese, crab, crab meat, cranberries, cream cheese, cream of coconut, cream of tartar, crème fraîche, cremebrule, cremini mushrooms, cucumber, cumin seeds, curly parsley, currants, curry leaves, curry paste, curry powder, daikon radish, dashi, dates, demi-glace, diced tomatoes, dijon mustard, dill, dill seeds, dried apricots, dried cranberries, dried figs, dried hibiscus, dried shrimp, dried thyme, dry mustard powder, duck, duck eggs, duck fat, duck sauce, dulce de leche, edam cheese, edamame, egg noodles, egg whites, egg yolks, eggplant, eggs, egusi seeds, elderberry, empanadas, enoki mushrooms, espresso powder, evaporated milk, extra virgin olive oil, fava beans, fennel bulb, fennel seeds, fenugreek leaves, fenugreek seeds, fermented black beans, filé powder, fish maw, fish sauce, five-spice powder, flaxseeds, flour tortillas, fontina cheese, forbidden rice (black rice), freekeh, freeze-dried fruit, french dressing, fried onions, frosting, fruit cocktail (canned), garam masala, garlic, garlic chives, garlic powder, garlic scapes, gelatin, gin, ginger, ginger paste, ginger powder, gingersnaps (crushed), glucose syrup, glutinous rice (sticky rice), goat, goat cheese, gochugaru (Korean chili flakes), gochujang, salmon, salt, spaghetti, Spaghetti Carbonara, spinach, sugar, sushi, tiramisu
 
-Return ONLY this JSON format with NO extra text:
+Return ONLY this comprehensive JSON format with NO extra text:
 {
   "strMeal": "Creative Recipe Name",
   "strCategory": "Main category (Beef, Chicken, Seafood, Vegetarian, etc)",
@@ -119,13 +135,25 @@ ${existingContext ? 'IMPORTANT: Create something completely different from the e
 
 Make it innovative and delicious. Use unexpected flavor combinations or techniques.
 
-🚨 CRITICAL REQUIREMENTS:
-- NEVER use "N/A", "TBD", or any placeholder text. ALL fields must have real values.
-- Instructions MUST be an array of detailed steps (7-10 steps minimum)
-- Include comprehensive nutritional information with realistic values
-- Provide detailed categorization and dietary information
-- Include equipment, skills, and allergen information
-- Generate realistic prep/cook times and serving information
+🚨 CRITICAL REQUIREMENTS - EVERY FIELD MUST BE FILLED:
+- NEVER use "N/A", "TBD", empty strings, or zero values. ALL fields must have realistic values.
+- strDescription: Write 2-3 appetizing sentences describing the dish
+- prepTime, cookTime, totalTime: MUST be realistic numbers (never 0)
+- servingSize: MUST specify portion size like "1 cup", "2 slices", "1 bowl"
+- yield: MUST specify what the recipe makes like "4 servings", "12 cookies", "2 cups sauce"
+- nutrition: ALL values must be realistic numbers based on ingredients (never 0)
+- dietary: Set appropriate true/false values based on ingredients
+- mealType: MUST include at least one value like ["Breakfast"], ["Lunch"], ["Dinner"]
+- dishType: MUST specify like "Soup", "Salad", "Main Course", "Dessert"
+- mainIngredient: MUST specify the primary ingredient
+- occasion: MUST include at least one like ["Weeknight"], ["Holiday"], ["Summer BBQ"]
+- seasonality: MUST include at least one like ["Spring"], ["All Season"]
+- equipmentRequired: MUST list 5-8 specific tools with sizes
+- skillsRequired: MUST list 3-5 cooking techniques
+- keywords: MUST include 4-6 searchable terms
+- allergenFlags: MUST identify all allergens present
+- timeCategory: MUST categorize like "Under 30 mins", "30-60 mins", "1+ hours"
+- Instructions MUST be an array of 7-10 detailed educational steps
 
 Return ONLY this JSON format with NO extra text:
 {
@@ -153,38 +181,38 @@ Return ONLY this JSON format with NO extra text:
   "difficulty": "Medium",
   "yield": "4 servings",
   "nutrition": {
-    "caloriesPerServing": 350,
-    "protein": 25,
-    "carbs": 35,
-    "fat": 12,
-    "fiber": 6,
-    "sugar": 8,
-    "sodium": 680,
-    "cholesterol": 45,
-    "saturatedFat": 4,
-    "vitaminA": 15,
-    "vitaminC": 25,
-    "iron": 12,
-    "calcium": 8
+    "caloriesPerServing": 420,
+    "protein": 28,
+    "carbs": 38,
+    "fat": 15,
+    "fiber": 7,
+    "sugar": 6,
+    "sodium": 750,
+    "cholesterol": 55,
+    "saturatedFat": 5,
+    "vitaminA": 18,
+    "vitaminC": 30,
+    "iron": 15,
+    "calcium": 12
   },
   "dietary": {
-    "vegetarian": false,
+    "vegetarian": true,
     "vegan": false,
-    "glutenFree": true,
+    "glutenFree": false,
     "dairyFree": false,
     "keto": false,
-    "paleo": false
+    "paleo": true
   },
-  "mealType": ["Dinner"],
+  "mealType": ["Dinner", "Lunch"],
   "dishType": "Main Course",
-  "mainIngredient": "Primary ingredient name",
-  "occasion": ["Weeknight", "Family Dinner"],
-  "seasonality": ["All Season"],
-  "equipmentRequired": ["Skillet", "Knife", "Cutting Board", "Measuring Cups", "Mixing Bowl"],
-  "skillsRequired": ["Chopping", "Sautéing", "Seasoning"],
-  "keywords": ["keyword1", "keyword2", "keyword3"],
-  "allergenFlags": ["dairy", "gluten"],
-  "timeCategory": "Under 1 hour",
+  "mainIngredient": "chicken",
+  "occasion": ["Weeknight", "Family Dinner", "Date Night"],
+  "seasonality": ["Fall", "Winter"],
+  "equipmentRequired": ["Large skillet (12-inch)", "Chef's knife (8-inch)", "Cutting board", "Measuring cups", "Mixing bowl (large)", "Wooden spoon", "Tongs"],
+  "skillsRequired": ["Chopping", "Sautéing", "Seasoning", "Pan-frying", "Timing"],
+  "keywords": ["comfort food", "hearty", "flavorful", "easy weeknight", "family-friendly", "one-pan"],
+  "allergenFlags": ["dairy", "gluten", "eggs"],
+  "timeCategory": "30-60 mins",
   "ingredientsDetailed": [
     {"name": "First ingredient", "quantity": "2", "unit": "tbsp", "optional": false, "required": true},
     {"name": "Second ingredient", "quantity": "1", "unit": "lb", "optional": false, "required": true},
@@ -199,7 +227,16 @@ Return ONLY this JSON format with NO extra text:
   "strIngredient4": "Fourth ingredient", "strMeasure4": "1 tsp",
   "strIngredient5": "Fifth ingredient", "strMeasure5": "1/2 tsp",
   "strIngredient6": "Sixth ingredient", "strMeasure6": "1 can"
-}`;
+}
+
+🚨 FINAL CHECK: Before responding, verify EVERY field has realistic values:
+- NO zeros, empty strings, or N/A values
+- ALL nutrition values are realistic numbers
+- ALL arrays have at least one item
+- ALL times are realistic (prep: 10-45 mins, cook: 15-120 mins)
+- strDescription is 2-3 complete sentences
+- servingSize specifies portion (like "1 cup", "2 slices")
+- yield specifies output (like "4 servings", "12 cookies")`;
       }
 
       console.log('📝 Using comprehensive prompt for complete recipe data...');
