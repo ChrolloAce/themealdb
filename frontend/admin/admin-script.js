@@ -775,7 +775,8 @@ class AdminPanel {
     };
 
     this.generateResult.innerHTML = `
-      <div class="recipe-display-modern">
+      <div class="generation-results">
+        <div class="generated-recipe-card">
         <!-- Recipe Header -->
         <div class="recipe-header-modern">
           <h1 class="recipe-title-modern">${recipe.strMeal}</h1>
@@ -851,13 +852,18 @@ class AdminPanel {
             }).join('')}
           </div>
         </div>
+        </div>
       </div>
     `;
     
     // Add save button if not preview
     if (!isPreview) {
       this.generateResult.innerHTML += `
-        <button id="saveRecipeBtn" class="btn btn-success">💾 Save Recipe to Database</button>
+        <div class="generated-recipe-actions" style="margin-top: var(--space-4);">
+          <button id="saveRecipeBtn" class="btn-generated btn-primary">
+            <i class="fas fa-save"></i> Save Recipe to Database
+          </button>
+        </div>
       `;
       document.getElementById('saveRecipeBtn').addEventListener('click', () => this.saveGeneratedRecipe(recipe));
     }
@@ -1305,6 +1311,8 @@ class AdminPanel {
   // View recipe with comprehensive display
   async viewRecipeComprehensive(recipeId) {
     try {
+      console.log('👁️ Opening comprehensive view for recipe ID:', recipeId);
+      
       // Fetch recipe data
       const response = await fetch(`/admin/recipes/${recipeId}`, {
         headers: {
@@ -1312,8 +1320,10 @@ class AdminPanel {
         }
       });
       
+      console.log('📡 Response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error('Failed to fetch recipe');
+        throw new Error(`Failed to fetch recipe: ${response.status}`);
       }
       
       const data = await response.json();
@@ -1433,8 +1443,8 @@ class AdminPanel {
   // Utility methods
   showLoading(container, message) {
     container.innerHTML = `
-      <div class="loading">
-        <div class="spinner"></div>
+      <div class="loading-spinner">
+        <i class="fas fa-spinner fa-spin"></i>
         <span>${message}</span>
       </div>
     `;

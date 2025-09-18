@@ -1576,6 +1576,107 @@ body {
   margin-bottom: var(--space-4);
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-fast);
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.generated-recipe-content {
+  display: grid;
+  gap: var(--space-6);
+  margin-top: var(--space-4);
+}
+
+.ingredients-section,
+.instructions-section {
+  background: var(--color-input-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+.ingredients-section h4,
+.instructions-section h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ingredients-section h4::before {
+  content: "🥄";
+}
+
+.instructions-section h4::before {
+  content: "📝";
+}
+
+.ingredients-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ingredient-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-divider);
+}
+
+.ingredient-bullet {
+  color: var(--color-primary);
+  font-weight: bold;
+  margin-top: 2px;
+}
+
+.ingredient-text {
+  flex: 1;
+  font-size: 14px;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.instructions-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.instruction-step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-divider);
+}
+
+.step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--color-primary);
+  color: white;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.step-text {
+  flex: 1;
+  font-size: 14px;
+  color: var(--color-text);
+  line-height: 1.5;
 }
 
 .generated-recipe-card:hover {
