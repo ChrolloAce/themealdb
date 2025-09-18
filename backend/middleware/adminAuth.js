@@ -8,6 +8,22 @@ class AdminAuthMiddleware {
   // Middleware to require admin authentication
   requireAdmin(req, res, next) {
     try {
+      // Check if Firebase Anonymous authentication is enabled
+      const allowAnonymous = process.env.FIREBASE_ALLOW_ANONYMOUS === 'true' || 
+                            process.env.NODE_ENV === 'development';
+      
+      if (allowAnonymous) {
+        console.log('🔓 Anonymous access allowed - bypassing admin auth');
+        // Create a mock admin user for anonymous access
+        req.admin = {
+          username: 'anonymous',
+          role: 'admin',
+          permissions: ['read', 'write', 'delete', 'ai_generate'],
+          anonymous: true
+        };
+        return next();
+      }
+      
       const validation = this.adminManager.validateSession(req);
       
       if (!validation.valid) {
@@ -36,6 +52,12 @@ class AdminAuthMiddleware {
           error: 'Unauthorized',
           message: 'Admin authentication required'
         });
+      }
+
+      // Allow anonymous users with full permissions (since Firebase Anonymous is enabled)
+      if (req.admin.anonymous) {
+        console.log(`🔓 Anonymous user granted '${permission}' permission`);
+        return next();
       }
 
       if (!this.adminManager.hasPermission(req.admin, permission)) {

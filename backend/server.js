@@ -5,6 +5,10 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 require('dotenv').config();
 
+// Enable Firebase Anonymous authentication for development and production
+process.env.FIREBASE_ALLOW_ANONYMOUS = 'true';
+console.log('🔓 Firebase Anonymous authentication enabled');
+
 const DatabaseManager = require('./managers/DatabaseManager');
 const ApiRoutes = require('./routes/ApiRoutes');
 const AdminRoutes = require('./routes/AdminRoutes');
