@@ -2,12 +2,17 @@ class AdminPanel {
   constructor() {
     this.token = this.getStoredToken();
     this.currentSection = 'dashboard';
+    this.currentSort = { column: null, direction: 'asc' };
+    this.recipes = [];
+    this.filteredRecipes = [];
     
     this.initializeElements();
     this.setupEventListeners();
     this.checkAuthentication();
     this.setupNumberAdjustButtons();
     this.setupStepperButtons();
+    this.setupFilterButtons();
+    this.setupSortingHandlers();
   }
 
   initializeElements() {
@@ -1084,119 +1089,100 @@ class AdminPanel {
       const data = await response.json();
       console.log('🔍 Recipe data structure:', data.recipes?.[0]);
       
-      if (!data.recipes || data.recipes.length === 0) {
-        recipesContent.innerHTML = `
-          <div class="text-center p-8">
-            <div class="mb-6">
-              <i class="fas fa-utensils" style="font-size: 4rem; color: var(--color-muted); margin-bottom: 1rem;"></i>
-              <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--color-text); margin-bottom: 0.5rem;">No recipes found</h3>
-              <p style="color: var(--color-muted); margin-bottom: 1.5rem;">Start by generating some recipes with AI!</p>
-              <button class="btn btn-primary" id="btn-go-to-generate">
-                <i class="fas fa-magic"></i>
-                Generate Recipes
-              </button>
-            </div>
-          </div>
-        `;
-        // Add event listener for the generate button
-        const goToGenerateBtn = document.getElementById('btn-go-to-generate');
-        if (goToGenerateBtn) {
-          goToGenerateBtn.addEventListener('click', () => this.switchSection('generate'));
-        }
+      // Store recipes in class properties
+      this.recipes = data.recipes || [];
+      this.filteredRecipes = [...this.recipes];
+      
+      if (!this.recipes || this.recipes.length === 0) {
+        this.showEmptyState();
         return;
       }
       
-      // Sort recipes by latest added (dateModified descending)
-      const sortedRecipes = data.recipes.sort((a, b) => {
+      // Sort recipes by latest added (dateModified descending) by default
+      this.filteredRecipes.sort((a, b) => {
         const dateA = new Date(a.dateModified || 0);
         const dateB = new Date(b.dateModified || 0);
         return dateB - dateA; // Latest first
       });
 
-      recipesContent.innerHTML = `
-        <div class="recipes-table-container">
-          <table class="recipes-table">
-            <thead>
-              <tr>
-                <th class="col-image">Image</th>
-                <th class="col-name">Recipe Name</th>
-                <th class="col-category">Category</th>
-                <th class="col-cuisine">Cuisine</th>
-                <th class="col-date">Date Added</th>
-                <th class="col-status">Status</th>
-                <th class="col-actions">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${sortedRecipes.map(recipe => `
-                <tr class="recipe-row" data-recipe-id="${recipe.id || recipe.idMeal}">
-                  <td class="col-image">
-                    ${recipe.strMealThumb ? 
-                      `<img src="${recipe.strMealThumb}" alt="${recipe.strMeal}" class="recipe-thumb-table">` : 
-                      '<div class="recipe-thumb-placeholder-table">📸</div>'
-                    }
-                  </td>
-                  <td class="col-name">
-                    <div class="recipe-name-cell">
-                      <h4>${recipe.strMeal || 'Unnamed Recipe'}</h4>
-                      <p class="recipe-preview">${recipe.strInstructions ? recipe.strInstructions.substring(0, 80) + '...' : 'No description'}</p>
-                    </div>
-                  </td>
-                  <td class="col-category">
-                    <span class="category-badge">${recipe.strCategory || 'Uncategorized'}</span>
-                  </td>
-                  <td class="col-cuisine">
-                    <span class="cuisine-badge">${recipe.strArea || 'Unknown'}</span>
-                  </td>
-                  <td class="col-date">
-                    <div class="date-cell">
-                      <span class="date-main">${recipe.dateModified ? new Date(recipe.dateModified).toLocaleDateString() : 'Unknown'}</span>
-                      <span class="date-time">${recipe.dateModified ? new Date(recipe.dateModified).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}</span>
-                    </div>
-                  </td>
-                  <td class="col-status">
-                    <span class="status-badge status-published">Published</span>
-                  </td>
-                  <td class="col-actions">
-                    <div class="action-buttons">
-                      <button class="btn-action-table btn-primary view-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}" title="View Full Details">
-                        <span class="btn-icon">👁️</span>
-                        <span class="btn-text">View</span>
-                      </button>
-                      <button class="btn-action-table btn-secondary improve-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}" title="Improve with AI">
-                        <span class="btn-icon">🤖</span>
-                        <span class="btn-text">Edit</span>
-                      </button>
-                      <button class="btn-action-table btn-danger delete-recipe-btn" data-recipe-id="${recipe.id || recipe.idMeal}" title="Delete Recipe">
-                        <span class="btn-icon">🗑️</span>
-                        <span class="btn-text">Delete</span>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-      `;
-      
-      // Add event listeners for dynamically created buttons
-      this.setupRecipeActionListeners();
-      this.setupPreviewEventListeners();
+      this.renderRecipesTable();
     } catch (error) {
       console.error('Failed to load recipes:', error);
+      this.showEmptyState();
     }
+  }
+
+  showEmptyState() {
+    const recipesTableContainer = document.getElementById('recipesTableContainer');
+    const emptyState = document.getElementById('emptyState');
+    
+    if (recipesTableContainer) recipesTableContainer.style.display = 'none';
+    if (emptyState) emptyState.style.display = 'block';
+  }
+
+  renderRecipesTable() {
+    const recipesTableContainer = document.getElementById('recipesTableContainer');
+    const emptyState = document.getElementById('emptyState');
+    const tableBody = document.getElementById('recipesTableBody');
+    
+    if (!tableBody) return;
+    
+    if (recipesTableContainer) recipesTableContainer.style.display = 'block';
+    if (emptyState) emptyState.style.display = 'none';
+    
+    // Render table rows with minimalistic action buttons
+    tableBody.innerHTML = this.filteredRecipes.map(recipe => `
+      <tr class="recipe-row" data-recipe-id="${recipe.id || recipe.idMeal}">
+        <td class="col-image">
+          ${recipe.strMealThumb ? 
+            `<img src="${recipe.strMealThumb}" alt="${recipe.strMeal}" class="recipe-thumb-table">` : 
+            '<div class="recipe-thumb-placeholder-table">📸</div>'
+          }
+        </td>
+        <td class="col-name">
+          <div class="recipe-name-table">${recipe.strMeal || 'Unnamed Recipe'}</div>
+        </td>
+        <td class="col-category">
+          <span class="badge-table category-badge-table">${recipe.strCategory || 'Uncategorized'}</span>
+        </td>
+        <td class="col-cuisine">
+          <span class="badge-table cuisine-badge-table">${recipe.strArea || 'Unknown'}</span>
+        </td>
+        <td class="col-date">
+          <div class="date-table">${recipe.dateModified ? new Date(recipe.dateModified).toLocaleDateString() : 'Unknown'}</div>
+        </td>
+        <td class="col-status">
+          <span class="status-badge-table status-active">Published</span>
+        </td>
+        <td class="col-actions">
+          <div class="action-buttons-table">
+            <button class="btn-action-icon btn-view" data-tooltip="View Recipe" data-recipe-id="${recipe.id || recipe.idMeal}">
+              <i class="fas fa-eye"></i>
+            </button>
+            <button class="btn-action-icon btn-edit" data-tooltip="Edit Recipe" data-recipe-id="${recipe.id || recipe.idMeal}">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-action-icon btn-delete" data-tooltip="Delete Recipe" data-recipe-id="${recipe.id || recipe.idMeal}">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+    
+    // Add event listeners for the new minimalistic action buttons
+    this.setupRecipeActionListeners();
   }
   
   // Setup event listeners for recipe action buttons (dynamically created)
   setupRecipeActionListeners() {
-    // Remove existing listeners to prevent duplicates
-    document.querySelectorAll('.improve-recipe-btn, .delete-recipe-btn, .edit-recipe-btn, .view-recipe-btn').forEach(btn => {
+    // Remove existing listeners to prevent duplicates by re-attaching
+    document.querySelectorAll('.btn-action-icon').forEach(btn => {
       btn.replaceWith(btn.cloneNode(true));
     });
     
     // Add view recipe listeners
-    document.querySelectorAll('.view-recipe-btn').forEach(btn => {
+    document.querySelectorAll('.btn-view').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         const recipeId = e.currentTarget.getAttribute('data-recipe-id');
         console.log('🔍 View recipe clicked, ID:', recipeId);
@@ -1204,27 +1190,25 @@ class AdminPanel {
       });
     });
     
-    // Add improve recipe listeners
-    document.querySelectorAll('.improve-recipe-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const recipeId = e.currentTarget.getAttribute('data-recipe-id');
-        this.improveRecipe(recipeId);
-      });
-    });
-    
     // Add edit recipe listeners
-    document.querySelectorAll('.edit-recipe-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+    document.querySelectorAll('.btn-edit').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
         const recipeId = e.currentTarget.getAttribute('data-recipe-id');
-        this.editRecipe(recipeId);
+        console.log('✏️ Edit recipe clicked, ID:', recipeId);
+        await this.viewRecipeComprehensive(recipeId); // Opens comprehensive view in edit mode
       });
     });
     
     // Add delete recipe listeners  
-    document.querySelectorAll('.delete-recipe-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
         const recipeId = e.currentTarget.getAttribute('data-recipe-id');
-        this.deleteRecipe(recipeId);
+        console.log('🗑️ Delete recipe clicked, ID:', recipeId);
+        
+        // Show confirmation dialog
+        if (confirm('Are you sure you want to delete this recipe? This action cannot be undone.')) {
+          await this.deleteRecipe(recipeId);
+        }
       });
     });
   }
@@ -1442,6 +1426,91 @@ class AdminPanel {
         }
       });
     });
+  }
+
+  setupFilterButtons() {
+    // Setup generation filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const button = e.currentTarget;
+        button.classList.toggle('active');
+        
+        // Update filter selections (you can extend this for actual filtering)
+        console.log('Filter toggled:', button.textContent, button.classList.contains('active'));
+      });
+    });
+  }
+
+  setupSortingHandlers() {
+    document.querySelectorAll('.sortable').forEach(header => {
+      header.addEventListener('click', (e) => {
+        const column = e.currentTarget.dataset.sort;
+        this.sortTable(column);
+      });
+    });
+  }
+
+  sortTable(column) {
+    // Remove existing sort classes
+    document.querySelectorAll('.sortable').forEach(header => {
+      header.classList.remove('sort-asc', 'sort-desc');
+    });
+
+    // Determine sort direction
+    let direction = 'asc';
+    if (this.currentSort.column === column && this.currentSort.direction === 'asc') {
+      direction = 'desc';
+    }
+
+    this.currentSort = { column, direction };
+
+    // Add sort class to current header
+    const currentHeader = document.querySelector(`[data-sort="${column}"]`);
+    if (currentHeader) {
+      currentHeader.classList.add(`sort-${direction}`);
+    }
+
+    // Sort the recipes array
+    this.filteredRecipes.sort((a, b) => {
+      let aVal = '';
+      let bVal = '';
+
+      switch (column) {
+        case 'name':
+          aVal = (a.strMeal || '').toLowerCase();
+          bVal = (b.strMeal || '').toLowerCase();
+          break;
+        case 'category':
+          aVal = (a.strCategory || '').toLowerCase();
+          bVal = (b.strCategory || '').toLowerCase();
+          break;
+        case 'cuisine':
+          aVal = (a.strArea || '').toLowerCase();
+          bVal = (b.strArea || '').toLowerCase();
+          break;
+        case 'date':
+          aVal = new Date(a.dateModified || 0);
+          bVal = new Date(b.dateModified || 0);
+          break;
+        case 'status':
+          aVal = 'published'; // All recipes are published for now
+          bVal = 'published';
+          break;
+        default:
+          return 0;
+      }
+
+      if (column === 'date') {
+        return direction === 'asc' ? aVal - bVal : bVal - aVal;
+      } else {
+        if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+        if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+        return 0;
+      }
+    });
+
+    // Re-render the table
+    this.renderRecipesTable();
   }
 
   // Edit Recipe functionality

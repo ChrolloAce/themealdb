@@ -43,16 +43,16 @@
                     <li class="nav-item">
                         <a href="#" class="nav-link active" data-section="dashboard">
                             <span class="nav-icon">
-                                <i class="fas fa-chart-line"></i>
+                    <i class="fas fa-chart-line"></i>
                             </span>
                             <span class="nav-text">Dashboard</span>
                             <div class="nav-tooltip">Dashboard</div>
-                        </a>
+                </a>
                     </li>
                     <li class="nav-item">
                         <a href="#" class="nav-link" data-section="generate">
                             <span class="nav-icon">
-                                <i class="fas fa-magic"></i>
+                    <i class="fas fa-magic"></i>
                             </span>
                             <span class="nav-text">AI Generate</span>
                             <div class="nav-tooltip">AI Generate</div>
@@ -73,7 +73,7 @@
             <div class="rail-footer">
                 <a href="#" class="logout-link" id="logoutBtn">
                     <span class="nav-icon">
-                        <i class="fas fa-sign-out-alt"></i>
+                    <i class="fas fa-sign-out-alt"></i>
                     </span>
                     <span class="nav-text">Logout</span>
                 </a>
@@ -89,7 +89,7 @@
                     <nav class="breadcrumb" id="breadcrumb" style="display: none;">
                         <div class="breadcrumb-item">
                             <a href="#" class="breadcrumb-link">Recipes</a>
-                        </div>
+                </div>
                         <span class="breadcrumb-separator">
                             <i class="fas fa-chevron-right"></i>
                         </span>
@@ -114,7 +114,7 @@
                         <div class="notification-badge"></div>
                     </button>
                     
-                    <div class="user-info">
+                        <div class="user-info">
                         <div class="user-avatar">SA</div>
                         <div class="user-details">
                             <div class="user-name">System Administrator</div>
@@ -133,7 +133,7 @@
                         <div class="metric-card">
                             <div class="metric-header">
                                 <div class="metric-icon-wrapper recipes">
-                                    <i class="fas fa-utensils"></i>
+                                <i class="fas fa-utensils"></i>
                                 </div>
                             </div>
                             <div class="metric-content">
@@ -149,7 +149,7 @@
                         <div class="metric-card">
                             <div class="metric-header">
                                 <div class="metric-icon-wrapper categories">
-                                    <i class="fas fa-tags"></i>
+                                <i class="fas fa-tags"></i>
                                 </div>
                             </div>
                             <div class="metric-content">
@@ -180,7 +180,7 @@
                         <div class="metric-card">
                             <div class="metric-header">
                                 <div class="metric-icon-wrapper recent">
-                                    <i class="fas fa-clock"></i>
+                                <i class="fas fa-clock"></i>
                                 </div>
                             </div>
                             <div class="metric-content">
@@ -193,7 +193,7 @@
                             </div>
                         </div>
                     </div>
-
+                    
                     <!-- Activity Section -->
                     <div class="activity-section">
                         <div class="chart-card">
@@ -308,10 +308,10 @@
                 <!-- AI Generate Section -->
                 <section id="generate" class="admin-section">
                     <div class="card" style="max-width: 800px; margin: 0 auto;">
-                        <div class="card-header">
+                            <div class="card-header">
                             <h2 class="card-title">AI Recipe Generator</h2>
                             <p class="card-subtitle">Generate creative recipes using artificial intelligence</p>
-                        </div>
+                            </div>
                         
                         <form id="generateForm">
                             <div class="form-group">
@@ -323,7 +323,51 @@
                                 </div>
                                 <p class="form-helper">Generate completely random recipes with creative combinations</p>
                             </div>
-                            
+
+                            <!-- Custom Filters Section (hidden by default when random mode is on) -->
+                            <div id="customFiltersSection" class="custom-filters-section" style="display: none;">
+                                <h3 class="filter-section-title">Customize Your Recipe</h3>
+                                <p class="filter-section-subtitle">Select preferences to guide AI generation</p>
+                                
+                                <div class="filter-grid">
+                                    <div class="filter-group">
+                                        <label class="filter-label">Categories</label>
+                                        <div class="filter-buttons" id="categoryFilters">
+                                            <button type="button" class="filter-btn" data-category="Breakfast">🌅 Breakfast</button>
+                                            <button type="button" class="filter-btn" data-category="Lunch">🌞 Lunch</button>
+                                            <button type="button" class="filter-btn" data-category="Dinner">🌙 Dinner</button>
+                                            <button type="button" class="filter-btn" data-category="Dessert">🍰 Dessert</button>
+                                            <button type="button" class="filter-btn" data-category="Snack">🥨 Snack</button>
+                                            <button type="button" class="filter-btn" data-category="Brunch">🥐 Brunch</button>
+                                    </div>
+                                </div>
+                                
+                                    <div class="filter-group">
+                                        <label class="filter-label">Dietary</label>
+                                        <div class="filter-buttons" id="dietaryFilters">
+                                            <button type="button" class="filter-btn" data-dietary="Vegetarian">🥗 Vegetarian</button>
+                                            <button type="button" class="filter-btn" data-dietary="Vegan">🌱 Vegan</button>
+                                            <button type="button" class="filter-btn" data-dietary="Keto">🥑 Keto</button>
+                                            <button type="button" class="filter-btn" data-dietary="Gluten-Free">🌾 Gluten-Free</button>
+                                            <button type="button" class="filter-btn" data-dietary="High-Protein">💪 High-Protein</button>
+                                            <button type="button" class="filter-btn" data-dietary="Low-Carb">🥩 Low-Carb</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="filter-group">
+                                        <label class="filter-label">Cuisines</label>
+                                        <div class="filter-buttons" id="cuisineFilters">
+                                            <button type="button" class="filter-btn" data-cuisine="Italian">🍝 Italian</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Mexican">🌮 Mexican</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Asian">🍜 Asian</button>
+                                            <button type="button" class="filter-btn" data-cuisine="American">🍔 American</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Mediterranean">🫒 Mediterranean</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Indian">🍛 Indian</button>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                             <div class="grid" style="grid-template-columns: 1fr 1fr; gap: var(--space-6);">
                                 <div class="form-group">
                                     <label class="form-label">Number of Recipes</label>
@@ -347,7 +391,7 @@
                                         <input type="number" id="imageCount" class="stepper-value" value="1" min="1" max="3">
                                         <button type="button" class="stepper-btn" data-action="increase" data-target="imageCount">
                                             <i class="fas fa-plus"></i>
-                                        </button>
+                                    </button>
                                     </div>
                                 </div>
                             </div>
@@ -360,9 +404,9 @@
                                         <i class="fas fa-camera"></i>
                                         Generate Images
                                     </span>
-                                </div>
-                            </div>
-                            
+                        </div>
+                    </div>
+                
                             <button type="submit" class="btn btn-primary btn-full btn-lg">
                                 <i class="fas fa-magic"></i>
                                 Generate Recipe
@@ -381,9 +425,96 @@
                             <p class="card-subtitle">Manage your recipe collection</p>
                         </div>
                         
-                        <div id="recipesContent">
-                            <p>Loading recipes...</p>
+                        <!-- Toolbar -->
+                        <div class="toolbar">
+                            <div class="search-filter-group">
+                                <div class="search-input-wrapper">
+                                    <i class="fas fa-search search-icon"></i>
+                                    <input type="text" id="recipeSearch" placeholder="Search recipes..." class="search-input">
+                                </div>
+                                <div class="filter-dropdowns">
+                                    <select id="categoryFilter" class="filter-select">
+                                        <option value="">All Categories</option>
+                                    </select>
+                                    <select id="cuisineFilter" class="filter-select">
+                                        <option value="">All Cuisines</option>
+                            </select>
+                                    <input type="date" id="dateFilter" class="filter-date">
                         </div>
+                    </div>
+                            <div class="toolbar-actions">
+                                <button id="newRecipeBtn" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> New Recipe
+                                </button>
+                                <button id="importCsvBtn" class="btn btn-ghost">
+                                    <i class="fas fa-file-import"></i> Import CSV
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Active Filters Display -->
+                        <div id="activeFiltersDisplay" class="active-filters-display" style="display: none;"></div>
+                        
+                        <!-- Recipes Table Container -->
+                        <div id="recipesTableContainer" class="recipes-table-container">
+                            <table class="recipes-table" id="recipesTable">
+                                <thead>
+                                    <tr>
+                                        <th class="col-image">Image</th>
+                                        <th class="col-name sortable" data-sort="name">
+                                            Recipe Name 
+                                            <i class="fas fa-sort sort-icon"></i>
+                                        </th>
+                                        <th class="col-category sortable" data-sort="category">
+                                            Category
+                                            <i class="fas fa-sort sort-icon"></i>
+                                        </th>
+                                        <th class="col-cuisine sortable" data-sort="cuisine">
+                                            Cuisine
+                                            <i class="fas fa-sort sort-icon"></i>
+                                        </th>
+                                        <th class="col-date sortable" data-sort="date">
+                                            Date Added
+                                            <i class="fas fa-sort sort-icon"></i>
+                                        </th>
+                                        <th class="col-status sortable" data-sort="status">
+                                            Status
+                                            <i class="fas fa-sort sort-icon"></i>
+                                        </th>
+                                        <th class="col-actions">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recipesTableBody">
+                                    <!-- Recipes will be populated here -->
+                                </tbody>
+                            </table>
+                    </div>
+                    
+                        <!-- Empty State -->
+                        <div id="emptyState" class="empty-state" style="display: none;">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-utensils"></i>
+                </div>
+                            <h3 class="empty-state-title">No recipes found</h3>
+                            <p class="empty-state-text">Start by generating some recipes with AI!</p>
+                            <button class="btn btn-primary" onclick="adminPanel.switchSection('generate')">
+                                <i class="fas fa-magic"></i> Generate First Recipe
+                            </button>
+            </div>
+                        
+                        <!-- Pagination Controls -->
+                        <div id="paginationControls" class="pagination-controls" style="display: none;">
+                            <span class="pagination-info">1-20 of 324</span>
+                            <div class="pagination-buttons">
+                                <button class="btn btn-pagination disabled">«</button>
+                                <button class="btn btn-pagination disabled">‹</button>
+                                <button class="btn btn-pagination active">1</button>
+                                <button class="btn btn-pagination">2</button>
+                                <button class="btn btn-pagination">3</button>
+                                <button class="btn btn-pagination">›</button>
+                                <button class="btn btn-pagination">»</button>
+                    </div>
+                </div>
                     </div>
                 </section>
             </main>

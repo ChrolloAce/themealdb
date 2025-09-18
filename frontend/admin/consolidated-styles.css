@@ -967,6 +967,206 @@ body {
 }
 
 /* ============================================
+   🎛️ CUSTOM FILTERS SECTION
+   ============================================ */
+.custom-filters-section {
+  background: linear-gradient(135deg, var(--color-surface), var(--color-input-bg));
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-card);
+  padding: var(--space-6);
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.filter-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-1);
+}
+
+.filter-section-subtitle {
+  font-size: 14px;
+  color: var(--color-muted);
+  margin-bottom: var(--space-4);
+}
+
+.filter-grid {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.filter-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-50, #EFF6FF);
+  transform: translateY(-1px);
+}
+
+.filter-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-btn.active:hover {
+  background: #2563EB;
+  box-shadow: var(--shadow-md);
+}
+
+/* ============================================
+   🔧 TOOLBAR STYLING
+   ============================================ */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-input-bg);
+  border-bottom: 1px solid var(--color-divider);
+  flex-wrap: wrap;
+}
+
+.search-filter-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1;
+  min-width: 0;
+}
+
+.search-input-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 300px;
+}
+
+.search-icon {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-muted);
+  font-size: 14px;
+}
+
+.search-input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-10);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-input);
+  background: var(--color-surface);
+  font-size: 14px;
+  transition: all var(--transition-fast);
+}
+
+.search-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+.filter-dropdowns {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.filter-select,
+.filter-date {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-input);
+  background: var(--color-surface);
+  font-size: 14px;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filter-select:focus,
+.filter-date:focus {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.active-filters-display {
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-warning-50, #FFFBEB);
+  border-bottom: 1px solid var(--color-warning-200, #FED7AA);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.active-filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-primary);
+  color: white;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.active-filter-remove {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  margin-left: var(--space-1);
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* ============================================
    📊 RECIPES TABLE STYLING
    ============================================ */
 .recipes-table-container {
@@ -1108,71 +1308,218 @@ body {
   color: var(--color-muted);
 }
 
-/* Action buttons */
+/* Sortable columns */
+.sortable {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+.sortable:hover {
+  background: var(--color-input-bg);
+}
+
+.sort-icon {
+  margin-left: var(--space-2);
+  font-size: 12px;
+  color: var(--color-muted);
+  transition: all var(--transition-fast);
+}
+
+.sortable.sort-asc .sort-icon::before {
+  content: "\f0de"; /* fa-sort-up */
+  color: var(--color-primary);
+}
+
+.sortable.sort-desc .sort-icon::before {
+  content: "\f0dd"; /* fa-sort-down */
+  color: var(--color-primary);
+}
+
+/* Minimalistic Action buttons */
 .action-buttons-table {
   display: flex;
-  gap: var(--space-2);
+  gap: var(--space-1);
   justify-content: flex-start;
   align-items: center;
   flex-wrap: nowrap;
 }
 
-.btn-action-table {
-  flex: 0 0 auto;
-  min-width: 50px;
-  height: 36px;
+.btn-action-icon {
+  width: 32px;
+  height: 32px;
   border: none;
   border-radius: var(--radius-lg);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-1);
-  padding: var(--space-2) var(--space-3);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 14px;
   transition: all var(--transition-fast);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  color: var(--color-muted);
 }
 
-.btn-action-table:hover {
-  transform: translateY(-1px);
+.btn-action-icon:hover {
+  transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+  border-color: transparent;
 }
 
-.btn-action-table.btn-primary {
-  background: linear-gradient(135deg, var(--color-primary), #2563EB);
+.btn-action-icon.btn-view {
+  color: var(--color-primary);
+}
+
+.btn-action-icon.btn-view:hover {
+  background: var(--color-primary);
   color: white;
-  border: 1px solid #2563EB;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.btn-action-table.btn-primary:hover {
-  background: linear-gradient(135deg, #2563EB, #1D4ED8);
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+.btn-action-icon.btn-edit {
+  color: var(--color-success);
 }
 
-.btn-action-table.btn-secondary {
-  background: linear-gradient(135deg, var(--color-success), #16A34A);
+.btn-action-icon.btn-edit:hover {
+  background: var(--color-success);
   color: white;
-  border: 1px solid #16A34A;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
 }
 
-.btn-action-table.btn-secondary:hover {
-  background: linear-gradient(135deg, #16A34A, #15803D);
-  box-shadow: 0 4px 16px rgba(34, 197, 94, 0.4);
+.btn-action-icon.btn-delete {
+  color: var(--color-danger);
 }
 
-.btn-action-table.btn-danger {
-  background: linear-gradient(135deg, var(--color-danger), #DC2626);
+.btn-action-icon.btn-delete:hover {
+  background: var(--color-danger);
   color: white;
-  border: 1px solid #DC2626;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
-.btn-action-table.btn-danger:hover {
-  background: linear-gradient(135deg, #DC2626, #B91C1C);
-  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+/* Tooltip styling */
+.btn-action-icon::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-fast);
+  pointer-events: none;
+  z-index: 1000;
+  margin-bottom: var(--space-1);
+}
+
+.btn-action-icon::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-fast);
+  pointer-events: none;
+  z-index: 1000;
+  margin-bottom: -3px;
+}
+
+.btn-action-icon:hover::after,
+.btn-action-icon:hover::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: var(--space-12) var(--space-6);
+  color: var(--color-muted);
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  color: var(--color-muted);
+  margin-bottom: var(--space-4);
+}
+
+.empty-state-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
+}
+
+.empty-state-text {
+  font-size: 1rem;
+  color: var(--color-muted);
+  margin-bottom: var(--space-6);
+}
+
+/* Pagination */
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-divider);
+  background: var(--color-input-bg);
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: var(--color-muted);
+}
+
+.pagination-buttons {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.btn-pagination {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.btn-pagination:hover:not(.disabled) {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.btn-pagination.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.btn-pagination.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-icon-table {
