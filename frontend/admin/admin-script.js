@@ -209,8 +209,7 @@ class AdminPanel {
     const titles = {
       'dashboard': 'Dashboard',
       'ai-generate': 'AI Recipe Generator',
-      'ai-ideas': 'Recipe Ideas',
-      'manage-recipes': 'Manage Recipes'
+      'manage-recipes': 'All Recipes'
     };
     
     const pageTitle = document.querySelector('.page-title');

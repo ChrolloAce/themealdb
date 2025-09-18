@@ -615,30 +615,3 @@ https://themealdb-inky.vercel.app/
 
 Test your API key immediately:
 https://themealdb-inky.vercel.app/api/v1/random.php?key=1
-
-## NEW: Ingredient Image API
-
-### Get All Ingredients
-GET /api/json/v1/1/ingredients
-Returns a list of all available ingredients with image URLs.
-
-Example Response:
-{
-  "ingredients": [
-    {
-      "name": "tomato",
-      "displayName": "Tomato", 
-      "imageUrl": "/api/json/v1/1/ingredients/tomato/image"
-    }
-  ],
-  "count": 500+
-}
-
-### Get Ingredient Image
-GET /api/json/v1/1/ingredients/{name}/image
-Serves the actual ingredient image file.
-
-Example:
-https://themealdb-inky.vercel.app/api/json/v1/1/ingredients/tomato/image
-
-🎯 All AI-generated recipes now use ONLY ingredients that have corresponding images!

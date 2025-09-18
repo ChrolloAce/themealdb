@@ -83,8 +83,8 @@ class FoodDBServer {
       next();
     });
     
-    // Rate limiting - Apply only to API routes, not frontend
-    this.app.use('/api', rateLimitMiddleware);
+    // Rate limiting
+    this.app.use(rateLimitMiddleware);
     
     // Body parsing
     this.app.use(express.json({ limit: '10mb' }));

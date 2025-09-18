@@ -79,10 +79,6 @@ class ApiRoutes {
       rateLimitManager.requirePremium,
       ErrorHandler.asyncHandler(this.setPrimaryImage.bind(this))
     );
-    
-    // Ingredient endpoints
-    v1Router.get('/ingredients', ErrorHandler.asyncHandler(this.getIngredients.bind(this)));
-    v1Router.get('/ingredients/:name/image', ErrorHandler.asyncHandler(this.getIngredientImage.bind(this)));
 
     // Mount v1 routes
     this.router.use('/json/v1/:key', (req, res, next) => {
@@ -487,66 +483,6 @@ class ApiRoutes {
     } catch (error) {
       console.error('Error setting primary image:', error);
       res.status(500).json({ error: 'Failed to set primary image' });
-    }
-  }
-
-  // Get all available ingredients
-  async getIngredients(req, res) {
-    try {
-      const fs = require('fs');
-      const path = require('path');
-      
-      const ingredientsDir = path.join(__dirname, '../../in/ingredients');
-      const files = fs.readdirSync(ingredientsDir);
-      
-      const ingredients = files
-        .filter(file => file.endsWith('.png'))
-        .map(file => {
-          const name = file.replace('.png', '');
-          return {
-            name: name,
-            displayName: name.charAt(0).toUpperCase() + name.slice(1),
-            imageUrl: `/api/json/v1/1/ingredients/${encodeURIComponent(name)}/image`
-          };
-        })
-        .sort((a, b) => a.displayName.localeCompare(b.displayName));
-
-      res.json({
-        ingredients: ingredients,
-        count: ingredients.length
-      });
-    } catch (error) {
-      console.error('Error getting ingredients:', error);
-      res.status(500).json({ error: 'Failed to get ingredients list' });
-    }
-  }
-
-  // Get ingredient image
-  async getIngredientImage(req, res) {
-    try {
-      const fs = require('fs');
-      const path = require('path');
-      
-      const ingredientName = req.params.name;
-      const imagePath = path.join(__dirname, '../../in/ingredients', `${ingredientName}.png`);
-      
-      // Check if image exists
-      if (!fs.existsSync(imagePath)) {
-        return res.status(404).json({ 
-          error: 'Ingredient image not found',
-          availableEndpoint: '/api/json/v1/1/ingredients'
-        });
-      }
-
-      // Set appropriate headers
-      res.setHeader('Content-Type', 'image/png');
-      res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
-      
-      // Send the image file
-      res.sendFile(imagePath);
-    } catch (error) {
-      console.error('Error serving ingredient image:', error);
-      res.status(500).json({ error: 'Failed to serve ingredient image' });
     }
   }
 

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/admin-assets/dashboard-styles.css">
     <link rel="stylesheet" href="/admin-assets/recipe-fix-styles.css">
     <link rel="stylesheet" href="/admin-assets/modern-recipe-ui.css">
+    <link rel="stylesheet" href="/admin-assets/comprehensive-recipe-display.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -49,10 +50,6 @@
                 <a href="#" class="nav-item" data-section="ai-generate">
                     <i class="fas fa-magic"></i>
                     <span>AI Generate</span>
-                </a>
-                <a href="#" class="nav-item" data-section="ai-ideas">
-                    <i class="fas fa-lightbulb"></i>
-                    <span>Recipe Ideas</span>
                 </a>
                 <a href="#" class="nav-item" data-section="manage-recipes">
                     <i class="fas fa-book"></i>
@@ -207,45 +204,6 @@
                     <div id="generateResult" class="result-section"></div>
                 </section>
 
-                <!-- AI Ideas Section -->
-                <section id="ai-ideas" class="admin-section">
-                <h2>💡 AI Recipe Ideas Generator</h2>
-                <form id="ideasForm" class="ideas-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Number of Ideas</label>
-                            <input type="number" id="ideasCount" value="5" min="1" max="20">
-                        </div>
-                        <div class="form-group">
-                            <label>Cuisine Focus</label>
-                            <select id="ideasCuisine">
-                                <option value="any">Any Cuisine</option>
-                                <option value="Italian">Italian</option>
-                                <option value="Asian">Asian</option>
-                                <option value="Mexican">Mexican</option>
-                                <option value="Mediterranean">Mediterranean</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="trendingFocus"> Focus on Trending Recipes
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="seasonalFocus"> Include Seasonal Ingredients
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary">Generate Ideas</button>
-                </form>
-                
-                <div id="ideasResult" class="ideas-grid"></div>
-            </section>
 
 
 
@@ -404,5 +362,6 @@
         }
       });
     </script>
+    <script src="/admin-assets/comprehensive-recipe-display.js"></script>
 </body>
 </html>
