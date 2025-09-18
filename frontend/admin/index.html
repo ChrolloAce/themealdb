@@ -4,368 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FoodDB Admin Dashboard</title>
-    <link rel="stylesheet" href="./modern-admin-styles.css">
-    <link rel="stylesheet" href="./comprehensive-recipe-display.css">
-    <link rel="stylesheet" href="./recipes-table-styles.css">
-    <style>
-        /* Emergency fallback styles to ensure dashboard is usable */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: #f9fafb; 
-            color: #1f2937; 
-            line-height: 1.6;
-        }
-        .modal { 
-            display: none; 
-            position: fixed; 
-            inset: 0; 
-            background: rgba(0,0,0,0.6); 
-            z-index: 1000; 
-            align-items: center; 
-            justify-content: center; 
-        }
-        .modal.active { display: flex; }
-        .modal-content { 
-            background: white; 
-            padding: 2rem; 
-            border-radius: 12px; 
-            max-width: 420px; 
-            width: 90%; 
-            text-align: center; 
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-        }
-        .admin-dashboard { display: none; min-height: 100vh; }
-        .admin-dashboard.active { display: flex; flex-direction: column; }
-        .admin-header { 
-            background: white; 
-            padding: 1rem 2rem; 
-            border-bottom: 1px solid #e5e7eb; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .admin-header h1 { 
-            font-size: 1.5rem; 
-            font-weight: 800; 
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .admin-nav { 
-            background: white; 
-            padding: 1rem 2rem; 
-            border-bottom: 1px solid #e5e7eb; 
-            display: flex; 
-            gap: 0.5rem; 
-        }
-        .nav-btn { 
-            background: transparent; 
-            border: 2px solid #e5e7eb; 
-            color: #6b7280; 
-            padding: 0.75rem 1.5rem; 
-            border-radius: 0.75rem; 
-            font-weight: 600; 
-            cursor: pointer !important; 
-            transition: all 0.15s; 
-            display: flex; 
-            align-items: center; 
-            gap: 0.5rem;
-            user-select: none;
-            outline: none;
-            position: relative;
-            z-index: 1;
-            pointer-events: auto !important;
-        }
-        .nav-btn:hover { 
-            border-color: #3b82f6; 
-            color: #2563eb; 
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(59,130,246,0.15);
-        }
-        .nav-btn:active {
-            transform: translateY(0) scale(0.98);
-        }
-        .nav-btn:focus {
-            outline: 2px solid #3b82f6;
-            outline-offset: 2px;
-        }
-        .nav-btn.active { 
-            background: #3b82f6; 
-            border-color: #3b82f6; 
-            color: white; 
-            box-shadow: 0 4px 12px rgba(59,130,246,0.3);
-        }
-        .nav-btn.active:hover {
-            background: #2563eb;
-            border-color: #2563eb;
-        }
-        .admin-main { flex: 1; padding: 2rem; }
-        .admin-section { display: none; }
-        .admin-section.active { display: block; }
-        .section-title { 
-            font-size: 1.875rem; 
-            font-weight: 800; 
-            color: #111827; 
-            margin-bottom: 0.5rem; 
-            display: flex; 
-            align-items: center; 
-            gap: 0.75rem;
-        }
-        .section-description { 
-            font-size: 1.125rem; 
-            color: #6b7280; 
-            margin-bottom: 2rem; 
-        }
-        .card { 
-            background: white; 
-            border-radius: 1rem; 
-            padding: 2rem; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
-            border: 1px solid #e5e7eb; 
-            margin-bottom: 1.5rem;
-        }
-        .card-title { 
-            font-size: 1.25rem; 
-            font-weight: 700; 
-            color: #111827; 
-            margin-bottom: 1.5rem; 
-            display: flex; 
-            align-items: center; 
-            gap: 0.5rem;
-        }
-        .stats-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-            gap: 1.5rem; 
-            margin-bottom: 2rem; 
-        }
-        .stat-card { 
-            background: white; 
-            padding: 1.5rem; 
-            border-radius: 1rem; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
-            border: 1px solid #e5e7eb; 
-            position: relative;
-        }
-        .stat-card::before { 
-            content: ''; 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 4px; 
-            background: linear-gradient(135deg, #3b82f6, #2563eb); 
-        }
-        .stat-icon { 
-            width: 48px; 
-            height: 48px; 
-            border-radius: 0.75rem; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            margin-bottom: 1rem; 
-            font-size: 1.25rem; 
-            color: white; 
-        }
-        .stat-value { 
-            font-size: 1.875rem; 
-            font-weight: 800; 
-            color: #111827; 
-            margin-bottom: 0.25rem; 
-        }
-        .stat-label { 
-            font-size: 0.875rem; 
-            color: #6b7280; 
-            font-weight: 500; 
-        }
-        .btn { 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 0.5rem; 
-            padding: 0.75rem 1.5rem; 
-            border-radius: 0.75rem; 
-            font-weight: 600; 
-            font-size: 0.875rem; 
-            cursor: pointer; 
-            transition: all 0.15s; 
-            border: 2px solid transparent; 
-            text-decoration: none;
-            user-select: none;
-            outline: none;
-            position: relative;
-            z-index: 1;
-        }
-        .btn:focus {
-            outline: 2px solid #3b82f6;
-            outline-offset: 2px;
-        }
-        .btn:active {
-            transform: translateY(0) scale(0.98);
-        }
-        .btn-primary { 
-            background: linear-gradient(135deg, #3b82f6, #2563eb); 
-            color: white; 
-            border-color: #2563eb; 
-        }
-        .btn-primary:hover { 
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            transform: translateY(-2px); 
-            box-shadow: 0 8px 25px rgba(59,130,246,0.4); 
-        }
-        .btn-primary:active {
-            background: linear-gradient(135deg, #1d4ed8, #1e40af);
-            transform: translateY(0) scale(0.98);
-        }
-        .btn-secondary { 
-            background: #f3f4f6; 
-            color: #374151; 
-            border-color: #d1d5db; 
-        }
-        .btn-secondary:hover { 
-            background: #e5e7eb; 
-            border-color: #9ca3af;
-            transform: translateY(-1px); 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .btn-secondary:active {
-            background: #d1d5db;
-            transform: translateY(0) scale(0.98);
-        }
-        button, input[type="button"], input[type="submit"] {
-            cursor: pointer !important;
-            pointer-events: auto !important;
-        }
-        .form-group { margin-bottom: 1.5rem; }
-        .form-label { 
-            display: block; 
-            font-weight: 600; 
-            color: #374151; 
-            margin-bottom: 0.5rem; 
-            font-size: 0.875rem; 
-        }
-        .form-input { 
-            width: 100%; 
-            padding: 0.75rem 1rem; 
-            border: 2px solid #d1d5db; 
-            border-radius: 0.75rem; 
-            font-size: 1rem; 
-            color: #1f2937; 
-            background: white; 
-            transition: all 0.15s; 
-        }
-        .form-input:focus { 
-            outline: none; 
-            border-color: #3b82f6; 
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.1); 
-        }
-        .flex { display: flex; }
-        .items-center { align-items: center; }
-        .gap-2 { gap: 0.5rem; }
-        .gap-4 { gap: 1rem; }
-        .mb-6 { margin-bottom: 1.5rem; }
-        .w-full { width: 100%; }
-        .btn-lg { padding: 1rem 2rem; font-size: 1.125rem; }
-        .user-info { 
-            display: flex; 
-            align-items: center; 
-            gap: 0.75rem; 
-            padding: 0.5rem 1rem; 
-            background: #f9fafb; 
-            border-radius: 0.75rem; 
-            border: 1px solid #e5e7eb; 
-        }
-        .user-avatar { 
-            width: 32px; 
-            height: 32px; 
-            border-radius: 50%; 
-            background: linear-gradient(135deg, #3b82f6, #2563eb); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            color: white; 
-            font-weight: 600; 
-            font-size: 0.875rem; 
-        }
-        .user-name { 
-            font-weight: 600; 
-            color: #1f2937; 
-            font-size: 0.875rem; 
-        }
-        .logout-btn { 
-            background: #ef4444; 
-            color: white; 
-            border: 2px solid #ef4444; 
-            padding: 0.5rem 1rem; 
-            border-radius: 0.5rem; 
-            font-weight: 600; 
-            font-size: 0.875rem; 
-            cursor: pointer !important; 
-            transition: all 0.15s; 
-            display: flex; 
-            align-items: center; 
-            gap: 0.5rem; 
-            user-select: none;
-            outline: none;
-            position: relative;
-            z-index: 1;
-            pointer-events: auto !important;
-        }
-        .logout-btn:hover { 
-            background: #dc2626; 
-            border-color: #dc2626;
-            transform: translateY(-1px); 
-            box-shadow: 0 4px 12px rgba(239,68,68,0.3);
-        }
-        .logout-btn:active {
-            background: #b91c1c;
-            transform: translateY(0) scale(0.98);
-        }
-        .logout-btn:focus {
-            outline: 2px solid #ef4444;
-            outline-offset: 2px;
-        }
-        .header-right { display: flex; align-items: center; gap: 1rem; }
-        .subtitle { font-size: 0.875rem; color: #6b7280; font-weight: 500; }
-        
-        /* Ensure all interactive elements are clickable */
-        button, input[type="button"], input[type="submit"], .btn, .nav-btn {
-            cursor: pointer !important;
-            pointer-events: auto !important;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        /* Fix any potential z-index issues */
-        .modal { z-index: 9999 !important; }
-        .admin-header { z-index: 100 !important; }
-        .admin-nav { z-index: 90 !important; }
-        
-        /* Ensure buttons respond to touch on mobile */
-        @media (max-width: 768px) {
-            .btn, .nav-btn, .logout-btn {
-                min-height: 44px;
-                min-width: 44px;
-            }
-        }
-        
-        /* Debug styles to make buttons more visible */
-        .btn:not(.btn-primary):not(.btn-secondary) {
-            background: #3b82f6 !important;
-            color: white !important;
-            border: 2px solid #2563eb !important;
-        }
-        
-        /* Ensure form buttons work */
-        form button, form input[type="submit"] {
-            cursor: pointer !important;
-            pointer-events: auto !important;
-            position: relative !important;
-            z-index: 10 !important;
-        }
-    </style>
+    <link rel="stylesheet" href="/admin-assets/theme.css">
+    <link rel="stylesheet" href="/admin-assets/admin-styles.css">
+    <link rel="stylesheet" href="/admin-assets/dark-professional-styles.css">
+    <link rel="stylesheet" href="/admin-assets/comprehensive-recipe-styles.css">
+    <link rel="stylesheet" href="/admin-assets/dashboard-styles.css">
+    <link rel="stylesheet" href="/admin-assets/recipe-fix-styles.css">
+    <link rel="stylesheet" href="/admin-assets/modern-recipe-ui.css">
+    <link rel="stylesheet" href="/admin-assets/comprehensive-recipe-display.css">
+    <link rel="stylesheet" href="/admin-assets/recipes-table-styles.css">
+    <link rel="stylesheet" href="/admin-assets/layout-fixes.css">
+    <link rel="stylesheet" href="/admin-assets/recipe-table-overrides.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -389,132 +38,120 @@
 
     <!-- Admin Dashboard -->
     <div id="adminPanel" class="admin-dashboard">
-        <!-- Header -->
-        <header class="admin-header">
-            <div class="header-left">
-                <h1>🍽️ FoodDB Admin</h1>
-                <div class="subtitle">Recipe Management Dashboard</div>
-            </div>
-            <div class="header-right">
-                <div class="user-info">
-                    <div class="user-avatar">A</div>
-                    <span class="user-name">Admin</span>
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-utensils"></i>
+                    <span>FoodDB</span>
                 </div>
-                <button id="logoutBtn" class="logout-btn">
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-section="ai-generate">
+                    <i class="fas fa-magic"></i>
+                    <span>AI Generate</span>
+                </a>
+                <a href="#" class="nav-item" data-section="manage-recipes">
+                    <i class="fas fa-book"></i>
+                    <span>All Recipes</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="#" id="logoutBtn" class="nav-item logout">
                     <i class="fas fa-sign-out-alt"></i>
-                    Logout
-                </button>
+                    <span>Logout</span>
+                </a>
             </div>
-        </header>
+        </aside>
 
-        <!-- Navigation -->
-        <nav class="admin-nav">
-            <button class="nav-btn active" data-section="dashboard">
-                <i class="fas fa-chart-line"></i>
-                Dashboard
-            </button>
-            <button class="nav-btn" data-section="ai-generate">
-                <i class="fas fa-magic"></i>
-                AI Generate
-            </button>
-            <button class="nav-btn" data-section="manage-recipes">
-                <i class="fas fa-book"></i>
-                All Recipes
-            </button>
-        </nav>
-
-        <!-- Main Content -->
-        <main class="admin-main">
-            <!-- Dashboard Section -->
-            <section id="dashboard" class="admin-section active">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-chart-line"></i>
-                        Dashboard Overview
-                    </h2>
-                    <p class="section-description">Monitor your recipe database performance and key metrics</p>
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <h1 class="page-title">Dashboard</h1>
                 </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: var(--gradient-primary);">
-                            <i class="fas fa-utensils"></i>
+                <div class="topbar-right">
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
                         </div>
-                        <div class="stat-value" id="totalRecipes">0</div>
-                        <div class="stat-label">Total Recipes</div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: var(--gradient-success);">
-                            <i class="fas fa-tags"></i>
+                        <div class="user-info">
+                            <span class="user-name">Admin</span>
+                            <span class="user-role">System Administrator</span>
                         </div>
-                        <div class="stat-value" id="totalCategories">0</div>
-                        <div class="stat-label">Categories</div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: var(--gradient-warning);">
-                            <i class="fas fa-globe"></i>
-                        </div>
-                        <div class="stat-value" id="totalAreas">0</div>
-                        <div class="stat-label">Cuisines</div>
-                            </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon" style="background: var(--gradient-danger);">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-value" id="recentRecipes">0</div>
-                        <div class="stat-label">Recent Recipes</div>
-                            </div>
-                        </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fas fa-rocket"></i>
-                            Quick Actions
-                        </h3>
-                            </div>
-                    <div class="flex gap-4">
-                        <button class="btn btn-primary" onclick="adminPanel.showSection('ai-generate')">
-                            <i class="fas fa-magic"></i>
-                            Generate Recipe
-                        </button>
-                        <button class="btn btn-secondary" onclick="adminPanel.showSection('manage-recipes')">
-                            <i class="fas fa-book"></i>
-                            View All Recipes
-                        </button>
                     </div>
                 </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="admin-section active">
+                    <div class="stats-overview">
+                        <div class="stat-card primary">
+                            <div class="stat-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Total Recipes</h3>
+                                <div class="stat-number" id="totalRecipes">0</div>
+                                <span class="stat-label">Active recipes in database</span>
+                            </div>
+                        </div>
+                        <div class="stat-card success">
+                            <div class="stat-icon">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Categories</h3>
+                                <div class="stat-number" id="totalCategories">0</div>
+                                <span class="stat-label">Recipe categories</span>
+                            </div>
+                        </div>
+                        <div class="stat-card info">
+                            <div class="stat-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Cuisines</h3>
+                                <div class="stat-number" id="totalAreas">0</div>
+                                <span class="stat-label">Different regions</span>
+                            </div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Recent</h3>
+                                <div class="stat-number" id="recentRecipes">0</div>
+                                <span class="stat-label">Added this week</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+
                 </section>
 
                 <!-- AI Generate Section -->
                 <section id="ai-generate" class="admin-section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-magic"></i>
-                        AI Recipe Generator
-                    </h2>
-                    <p class="section-description">Generate unique, detailed recipes using artificial intelligence</p>
-                </div>
-
-                <div class="card">
+                    <div class="generator-container">
+                        <div class="generator-card card">
                             <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fas fa-robot"></i>
-                            Recipe Generation Settings
-                        </h3>
+                                <h3><i class="fas fa-magic"></i> AI Recipe Generator</h3>
                             </div>
-                    <form id="generateForm">
-                        <div class="form-group">
-                            <label class="form-label flex items-center gap-2">
+                            <form id="generateForm" class="generate-form-modern">
+                                <div class="generation-mode-switch">
+                                    <label class="switch">
                                         <input type="checkbox" id="randomMode" checked>
-                                <span>Random Generation Mode</span>
+                                        <span class="slider"></span>
                                     </label>
-                            <p style="color: var(--gray-500); font-size: var(--text-sm); margin-top: var(--space-1);">
-                                Toggle off to use specific filters for targeted recipe generation
-                            </p>
+                                    <span class="switch-label">Random Generation</span>
                                 </div>
                                 
                                 <!-- Custom Generation Filters -->
@@ -629,70 +266,41 @@
                                 </div>
                                 
                                 <!-- Generation Options -->
-                        <div class="form-group">
-                            <label class="form-label flex items-center gap-2">
-                                <input type="checkbox" id="generateImage" checked>
-                                <span><i class="fas fa-image"></i> Generate Images</span>
-                            </label>
+                                <div class="generation-options">
+                                    <label class="option-item">
+                                        <input type="checkbox" id="generateImage" checked>
+                                        <span class="option-label"><i class="fas fa-image"></i> Generate Images</span>
+                                    </label>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-generate">
+                                        <i class="fas fa-sparkles"></i>
+                                        <span>Generate Recipe</span>
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                        
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-primary btn-lg w-full">
-                                <i class="fas fa-sparkles"></i>
-                                Generate Recipe
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Generation Results -->
-                <div id="generateResult" class="card" style="display: none;">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fas fa-sparkles"></i>
-                            Generated Recipe
-                        </h3>
                     </div>
-                    <div id="generateContent"></div>
-                </div>
-            </section>
+                
+                    <div id="generateResult" class="result-section"></div>
+                </section>
 
 
 
 
             <!-- Manage Recipes Section -->
             <section id="manage-recipes" class="admin-section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-book"></i>
-                        Manage Recipes
-                    </h2>
-                    <p class="section-description">View, edit, and manage all recipes in your database</p>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fas fa-table"></i>
-                            Recipe Database
-                        </h3>
-                        <button class="btn btn-primary" onclick="adminPanel.showSection('ai-generate')">
-                            <i class="fas fa-plus"></i>
-                            Add Recipe
-                        </button>
-                    </div>
-                    <div class="flex gap-4 mb-6">
-                        <input type="text" id="recipeSearch" placeholder="Search recipes..." class="form-input flex-1">
-                        <button id="refreshRecipes" class="btn btn-secondary">
-                            <i class="fas fa-refresh"></i>
-                            Refresh
-                        </button>
+                <h2>📝 Manage Recipes</h2>
+                <div class="recipes-controls">
+                    <input type="text" id="recipeSearch" placeholder="Search recipes...">
+                    <button id="refreshRecipes" class="btn btn-outline">Refresh</button>
                 </div>
                 
                 <div id="recipesList" class="recipes-list"></div>
-                </div>
             </section>
-        </main>
+            </div><!-- End dashboard-content -->
+        </div><!-- End main-content -->
     </div><!-- End admin-dashboard -->
 
     <!-- Recipe Edit Modal -->
@@ -837,52 +445,5 @@
       });
     </script>
     <script src="/admin-assets/comprehensive-recipe-display.js"></script>
-    <script src="admin-script.js"></script>
-    
-    <!-- Emergency button fix script -->
-    <script>
-        console.log('🚀 Emergency button script loaded');
-        
-        // Wait for DOM to be fully loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🔍 DOM loaded, setting up emergency button handlers');
-            
-            // Add click handlers to nav buttons
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                console.log('🔍 Found nav button:', btn, 'data-section:', btn.dataset.section);
-                
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('🖱️ Emergency nav button clicked:', this.dataset.section);
-                    
-                    // Remove active class from all nav buttons
-                    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                    // Add active class to clicked button
-                    this.classList.add('active');
-                    
-                    // Hide all sections
-                    document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-                    // Show target section
-                    const targetSection = document.getElementById(this.dataset.section);
-                    if (targetSection) {
-                        targetSection.classList.add('active');
-                        console.log('✅ Emergency section switch successful');
-                    } else {
-                        console.error('❌ Emergency section switch failed - no section found:', this.dataset.section);
-                    }
-                });
-            });
-            
-            // Test if adminPanel global exists
-            setTimeout(() => {
-                if (window.adminPanel) {
-                    console.log('✅ AdminPanel instance found');
-                } else {
-                    console.error('❌ AdminPanel instance not found - this might be the issue');
-                }
-            }, 1000);
-      });
-    </script>
 </body>
 </html>

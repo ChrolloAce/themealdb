@@ -36,17 +36,13 @@ class AdminPanel {
     // Logout
     document.getElementById('logoutBtn').addEventListener('click', this.handleLogout.bind(this));
     
-    // Navigation - handle both .nav-item and .nav-btn classes
-    document.querySelectorAll('.nav-item, .nav-btn').forEach(link => {
+    // Navigation
+    document.querySelectorAll('.nav-item').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
-        console.log('🔍 Nav button clicked:', e.currentTarget);
         const section = e.currentTarget.dataset.section;
-        console.log('🔍 Section to switch to:', section);
         if (section) {
           this.switchSection(section);
-        } else {
-          console.error('❌ No data-section attribute found on nav button');
         }
       });
     });
@@ -369,16 +365,11 @@ class AdminPanel {
   }
 
   switchSection(sectionName) {
-    console.log('🔄 Switching to section:', sectionName);
-    
-    // Update navigation - handle both .nav-item and .nav-btn classes
-    document.querySelectorAll('.nav-item, .nav-btn').forEach(item => item.classList.remove('active'));
-    const activeNav = document.querySelector(`.nav-item[data-section="${sectionName}"], .nav-btn[data-section="${sectionName}"]`);
+    // Update navigation
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    const activeNav = document.querySelector(`.nav-item[data-section="${sectionName}"]`);
     if (activeNav) {
       activeNav.classList.add('active');
-      console.log('✅ Nav button activated:', activeNav);
-    } else {
-      console.error('❌ Could not find nav button for section:', sectionName);
     }
     
     // Update sections
@@ -386,9 +377,6 @@ class AdminPanel {
     const targetSection = document.getElementById(sectionName);
     if (targetSection) {
       targetSection.classList.add('active');
-      console.log('✅ Section activated:', targetSection);
-    } else {
-      console.error('❌ Could not find section element:', sectionName);
     }
     
     // Update page title

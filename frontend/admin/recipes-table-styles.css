@@ -185,21 +185,22 @@
 
 .btn-action-table {
   min-width: 60px;
-  height: 36px;
+  height: 40px; /* Increased from 36px */
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-lg, 8px);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 6px 10px;
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  gap: 8px; /* Increased from 6px */
+  padding: 8px 12px; /* Increased padding */
+  font-size: var(--font-size-sm, 14px);
+  font-weight: var(--font-weight-semibold, 600);
+  transition: all var(--transition-fast, 0.15s ease);
   position: relative;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-sm, 0 2px 6px rgba(0, 0, 0, 0.15));
   text-transform: none;
+  white-space: nowrap;
 }
 
 .btn-action-table .btn-icon {

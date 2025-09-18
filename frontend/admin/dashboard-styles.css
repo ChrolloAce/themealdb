@@ -120,9 +120,12 @@ body {
 /* Main Content */
 .main-content {
     flex: 1;
+    width: 100%;
+    max-width: none !important;
     margin-left: 260px;
     background: #0a0f1b;
     min-height: 100vh;
+    padding: 2rem;
 }
 
 /* Top Bar */
@@ -616,10 +619,16 @@ input:checked + .slider:before {
 /* Fix Admin Section Styling */
 .admin-section {
     display: none;
+    width: 100%;
+    max-width: none !important;
+    margin: 0;
+    padding: 0;
 }
 
 .admin-section.active {
     display: block;
+    width: 100%;
+    max-width: none !important;
 }
 
 /* Login Modal Styles */

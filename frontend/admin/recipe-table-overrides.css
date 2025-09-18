@@ -1,0 +1,247 @@
+/* ============================================
+   🎯 RECIPE TABLE VISIBILITY OVERRIDES
+   ============================================ */
+
+/* Force full width for all recipe-related containers */
+#allRecipes,
+#allRecipes .admin-section,
+#allRecipes .recipes-table-container,
+#allRecipes .recipes-table {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+/* Ensure action buttons are always visible */
+.recipes-table .col-actions {
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
+}
+
+.action-buttons {
+  display: flex !important;
+  gap: 8px !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  width: 100% !important;
+}
+
+.btn-action-table {
+  flex: 0 0 auto !important;
+  min-width: 65px !important;
+  height: 42px !important;
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  transition: all 0.2s ease !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+}
+
+.btn-action-table:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Enhanced button colors for better visibility */
+.btn-action-table.btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+  color: white !important;
+  border: 1px solid #2563eb !important;
+}
+
+.btn-action-table.btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  border-color: #1d4ed8 !important;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4) !important;
+}
+
+.btn-action-table.btn-secondary {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  color: white !important;
+  border: 1px solid #059669 !important;
+}
+
+.btn-action-table.btn-secondary:hover {
+  background: linear-gradient(135deg, #059669, #047857) !important;
+  border-color: #047857 !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4) !important;
+}
+
+.btn-action-table.btn-danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  color: white !important;
+  border: 1px solid #dc2626 !important;
+}
+
+.btn-action-table.btn-danger:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+  border-color: #b91c1c !important;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* Icon and text styling */
+.btn-action-table .btn-icon {
+  font-size: 14px !important;
+  line-height: 1 !important;
+  margin-right: 4px !important;
+}
+
+.btn-action-table .btn-text {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+}
+
+/* Table header improvements */
+.recipes-table th {
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0) !important;
+  color: #374151 !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  padding: 16px 20px !important;
+  border-bottom: 2px solid #d1d5db !important;
+}
+
+/* Table row hover effects */
+.recipes-table tbody tr {
+  transition: all 0.15s ease !important;
+}
+
+.recipes-table tbody tr:hover {
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Ensure table cells have proper padding */
+.recipes-table td {
+  padding: 16px 20px !important;
+  vertical-align: middle !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+/* Recipe thumbnail improvements */
+.recipe-thumbnail {
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 8px !important;
+  object-fit: cover !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+.recipe-thumbnail:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Recipe name styling */
+.recipe-name {
+  font-weight: 600 !important;
+  color: #111827 !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+}
+
+/* Badge improvements */
+.category-badge,
+.cuisine-badge {
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+.category-badge {
+  background: #dbeafe !important;
+  color: #1d4ed8 !important;
+  border: 1px solid #93c5fd !important;
+}
+
+.cuisine-badge {
+  background: #d1fae5 !important;
+  color: #065f46 !important;
+  border: 1px solid #6ee7b7 !important;
+}
+
+/* Status badge */
+.status-badge {
+  padding: 4px 8px !important;
+  border-radius: 12px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+}
+
+.status-badge.status-active {
+  background: #d1fae5 !important;
+  color: #065f46 !important;
+  border: 1px solid #6ee7b7 !important;
+}
+
+/* Date formatting */
+.date-cell {
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace !important;
+  font-size: 12px !important;
+  color: #6b7280 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1400px) {
+  .recipes-table .col-actions {
+    width: 240px !important;
+    min-width: 240px !important;
+  }
+  
+  .btn-action-table {
+    min-width: 55px !important;
+    padding: 6px 10px !important;
+  }
+  
+  .btn-action-table .btn-text {
+    font-size: 11px !important;
+  }
+}
+
+@media (max-width: 1200px) {
+  .recipes-table .col-actions {
+    width: 200px !important;
+    min-width: 200px !important;
+  }
+  
+  .btn-action-table {
+    min-width: 45px !important;
+    padding: 6px 8px !important;
+  }
+  
+  .btn-action-table .btn-text {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .recipes-table .col-actions {
+    width: 160px !important;
+    min-width: 160px !important;
+  }
+  
+  .btn-action-table {
+    min-width: 36px !important;
+    height: 36px !important;
+    padding: 4px !important;
+  }
+  
+  .action-buttons {
+    gap: 4px !important;
+  }
+}
