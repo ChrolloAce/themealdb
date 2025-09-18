@@ -642,13 +642,15 @@
   top: 20px;
   right: 20px;
   padding: 15px 20px;
-  border-radius: 8px;
+  background: #333;
   color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   font-weight: 500;
   opacity: 0;
   transform: translateX(100%);
-  transition: all 0.3s;
-  z-index: 10000;
+  transition: all 0.3s ease;
+  z-index: 10002;
 }
 
 .notification.show {
@@ -662,6 +664,10 @@
 
 .notification-error {
   background: #f44336;
+}
+
+.notification-warning {
+  background: #ff9800;
 }
 
 .notification-info {
