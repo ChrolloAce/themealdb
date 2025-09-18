@@ -15,7 +15,7 @@ class AdminPanel {
     this.loginModal = document.getElementById('loginModal');
     this.adminPanel = document.getElementById('adminPanel');
     
-    // Forms
+    // Forms (with null checks)
     this.generateForm = document.getElementById('generateForm');
     this.ideasForm = document.getElementById('ideasForm');
     this.batchForm = document.getElementById('batchForm');
@@ -49,8 +49,10 @@ class AdminPanel {
       });
     });
     
-    // Forms
-    this.generateForm.addEventListener('submit', this.handleGenerateRecipe.bind(this));
+    // Forms (with null checks)
+    if (this.generateForm) {
+      this.generateForm.addEventListener('submit', this.handleGenerateRecipe.bind(this));
+    }
     
     // Handle random mode toggle
     const randomModeCheckbox = document.getElementById('randomMode');
@@ -401,9 +403,24 @@ class AdminPanel {
       case 'dashboard':
         this.loadDashboard();
         break;
-      case 'manage-recipes':
+      case 'allRecipes':
         this.loadRecipes();
         break;
+      case 'generate':
+        // AI Generate section - no special loading needed
+        break;
+    }
+  }
+
+  updatePageTitle(sectionName) {
+    const titleElement = document.getElementById('pageTitle');
+    if (titleElement) {
+      const titles = {
+        'dashboard': 'Dashboard',
+        'generate': 'AI Recipe Generator',
+        'allRecipes': 'All Recipes'
+      };
+      titleElement.textContent = titles[sectionName] || 'Dashboard';
     }
   }
 
@@ -1045,6 +1062,19 @@ class AdminPanel {
   // Recipe Management
   async loadRecipes() {
     try {
+      const recipesContent = document.getElementById('recipesContent');
+      if (!recipesContent) return;
+      
+      // Show loading state
+      recipesContent.innerHTML = `
+        <div class="flex items-center justify-center p-8">
+          <div class="text-center">
+            <i class="fas fa-spinner fa-spin text-2xl text-muted mb-4"></i>
+            <p class="text-muted">Loading recipes...</p>
+          </div>
+        </div>
+      `;
+      
       const response = await fetch('/admin/recipes', {
         headers: {
           'Authorization': `Bearer ${this.token}`
@@ -1054,22 +1084,24 @@ class AdminPanel {
       const data = await response.json();
       console.log('🔍 Recipe data structure:', data.recipes?.[0]);
       
-      const recipesList = document.getElementById('recipesList');
-      
       if (!data.recipes || data.recipes.length === 0) {
-        recipesList.innerHTML = `
-          <div class="empty-state">
-            <h3>No recipes found</h3>
-            <p>Start by generating some recipes with AI!</p>
-            <button class="btn btn-primary" id="btn-go-to-generate">
-              🤖 Generate Recipes
-            </button>
+        recipesContent.innerHTML = `
+          <div class="text-center p-8">
+            <div class="mb-6">
+              <i class="fas fa-utensils" style="font-size: 4rem; color: var(--color-muted); margin-bottom: 1rem;"></i>
+              <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--color-text); margin-bottom: 0.5rem;">No recipes found</h3>
+              <p style="color: var(--color-muted); margin-bottom: 1.5rem;">Start by generating some recipes with AI!</p>
+              <button class="btn btn-primary" id="btn-go-to-generate">
+                <i class="fas fa-magic"></i>
+                Generate Recipes
+              </button>
+            </div>
           </div>
         `;
         // Add event listener for the generate button
         const goToGenerateBtn = document.getElementById('btn-go-to-generate');
         if (goToGenerateBtn) {
-          goToGenerateBtn.addEventListener('click', () => this.switchSection('ai-generate'));
+          goToGenerateBtn.addEventListener('click', () => this.switchSection('generate'));
         }
         return;
       }
@@ -1081,7 +1113,7 @@ class AdminPanel {
         return dateB - dateA; // Latest first
       });
 
-      recipesList.innerHTML = `
+      recipesContent.innerHTML = `
         <div class="recipes-table-container">
           <table class="recipes-table">
             <thead>
