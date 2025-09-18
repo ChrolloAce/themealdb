@@ -1054,27 +1054,58 @@ class AdminPanel {
       // Use the comprehensive display component
       const container = document.getElementById('comprehensiveRecipeContent');
       
-      // Wait for component to load if needed
-      if (window.recipeDisplay) {
-        window.recipeDisplay.renderRecipe(recipe, container);
-      } else if (window.ComprehensiveRecipeDisplay) {
-        // Initialize if class exists but instance doesn't
-        window.recipeDisplay = new window.ComprehensiveRecipeDisplay();
-        window.recipeDisplay.renderRecipe(recipe, container);
-      } else {
-        // Fallback - try to load after a short delay
-        setTimeout(() => {
-          if (window.recipeDisplay) {
+      // Debug logging
+      console.log('Attempting to load comprehensive display...');
+      console.log('window.recipeDisplay exists:', !!window.recipeDisplay);
+      console.log('window.ComprehensiveRecipeDisplay exists:', !!window.ComprehensiveRecipeDisplay);
+      
+      // Function to render recipe
+      const renderRecipe = () => {
+        try {
+          if (window.recipeDisplay && typeof window.recipeDisplay.renderRecipe === 'function') {
+            console.log('Using existing recipeDisplay instance');
             window.recipeDisplay.renderRecipe(recipe, container);
-          } else {
-            console.error('Comprehensive recipe display not loaded');
-            container.innerHTML = `
-              <div class="error-message">
-                <h3>Display Error</h3>
-                <p>The comprehensive recipe display component failed to load.</p>
-                <p>Recipe data:</p>
-                <pre>${JSON.stringify(recipe, null, 2)}</pre>
-              </div>`;
+            return true;
+          } else if (window.ComprehensiveRecipeDisplay) {
+            console.log('Creating new recipeDisplay instance');
+            window.recipeDisplay = new window.ComprehensiveRecipeDisplay();
+            window.recipeDisplay.renderRecipe(recipe, container);
+            return true;
+          }
+          return false;
+        } catch (error) {
+          console.error('Error rendering recipe:', error);
+          return false;
+        }
+      };
+      
+      // Try to render immediately
+      if (!renderRecipe()) {
+        console.log('Component not ready, waiting...');
+        // Fallback - try to load after delays
+        setTimeout(() => {
+          if (!renderRecipe()) {
+            setTimeout(() => {
+              if (!renderRecipe()) {
+                console.error('Comprehensive recipe display failed to load after multiple attempts');
+                container.innerHTML = `
+                  <div class="error-message" style="padding: 20px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px;">
+                    <h3 style="color: #dc3545; margin-bottom: 15px;">🚨 Component Loading Error</h3>
+                    <p><strong>The comprehensive recipe display component failed to load.</strong></p>
+                    <p>Debug info:</p>
+                    <ul style="margin: 10px 0;">
+                      <li>window.recipeDisplay: ${!!window.recipeDisplay}</li>
+                      <li>window.ComprehensiveRecipeDisplay: ${!!window.ComprehensiveRecipeDisplay}</li>
+                      <li>Script loaded: ${document.querySelector('script[src*="comprehensive-recipe-display.js"]') ? 'Yes' : 'No'}</li>
+                    </ul>
+                    <details style="margin-top: 15px;">
+                      <summary style="cursor: pointer; font-weight: bold;">View Recipe Data</summary>
+                      <pre style="background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 4px; max-height: 300px; overflow: auto; font-size: 12px;">${JSON.stringify(recipe, null, 2)}</pre>
+                    </details>
+                    <button onclick="location.reload()" style="margin-top: 15px; padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">🔄 Refresh Page</button>
+                  </div>`;
+              }
+            }, 1000);
           }
         }, 500);
       }

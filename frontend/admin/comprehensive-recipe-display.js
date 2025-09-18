@@ -872,5 +872,11 @@ class ComprehensiveRecipeDisplay {
   }
 }
 
-// Initialize globally
+// Export class globally and initialize
+window.ComprehensiveRecipeDisplay = ComprehensiveRecipeDisplay;
 window.recipeDisplay = new ComprehensiveRecipeDisplay();
+
+// Debug logging
+console.log('Comprehensive Recipe Display loaded successfully');
+console.log('window.recipeDisplay:', window.recipeDisplay);
+console.log('window.ComprehensiveRecipeDisplay:', window.ComprehensiveRecipeDisplay);
