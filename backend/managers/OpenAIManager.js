@@ -78,7 +78,8 @@ ${existingContext ? 'IMPORTANT: Create something different from the existing rec
 - servingSize: specify portion like "1 cup", "2 slices"
 - yield: specify output like "4 servings", "12 cookies"
 - nutrition: realistic numbers based on ingredients
-- dietary: appropriate true/false based on ingredients
+- dietary: appropriate true/false based on ingredients (vegetarian, vegan, pescatarian, glutenFree, dairyFree, keto, paleo, halal, noRedMeat, noPork, noShellfish, omnivore)
+- dishType: specify like "Appetizer", "Soup", "Salad", "Main Course", "Side Dish", "Dessert", "Beverage", "Snack"
 - Arrays: all must have at least 1-2 items
 - Instructions: detailed educational steps
 - 🚨 ONLY use ingredients from this EXACT list (match names precisely): abalone, acai berry, ackee, acorn squash, active dry yeast, adzuki beans, agar agar, agave nectar, aioli, aleppo pepper, alfalfa sprouts, alfredo sauce, all-purpose flour, allspice, almond butter, almond extract, almond flour, almond milk, almond paste, almonds, anchovies, Anchovy Paste, andouille sausage, anise seeds, annatto, apple, apple butter, applesauce, apricot, apricot jam, arborio rice, Arrowroot powder, artichoke, asafoetida, asiago cheese, Asian Pear, asparagus, avocado, bacon, Baguette, baking powder, baking soda, balsamic vinegar, banana, banana blossom, barbecue sauce, barley, barley flour, basil, basil seeds, Basmati Rice, Bay Leaf, beef, Beef Bourguignon, beef brisket, beef broth, Beef Ribs, beef stock, beef tenderloin, beets, Belacan (shrimp paste), bell pepper, bell peppers, besan (chickpea flour), black beans, black cardamom, black fungus (cloud ear), Black Garlic, Black Pepper, Black Peppercorns, black salt (kala namak), Black Tea, black truffle, Black-Eyed Peas, Blood Sausage, blue cheese, blue cheese dressing, blueberry, bok choy, Bonito Flakes, bourbon, Brandy, Bread, bread flour, Breadcrumbs, Breakfast Sausage, Brie, Broccoli, Broccolini, Brown Mustard Seeds, brown rice, brown sugar, brownie mix, brussels sprouts, buckwheat, buckwheat flour, bulgur, burdock root, butter, butter lettuce, buttermilk, buttermilk powder, butternut squash, cabbage, Cacao Nibs, Cactus Pear (Prickly Pear), Cajun Seasoning, Calamari (Squid), camembert, candied ginger, candied orange peel, candlenut, cane vinegar, canned salmon, canned tomatoes, canned tuna, cannellini beans, Caper Berries, Capers, Caramel Sauce, caraway seeds, carne asada, carolina reaper, carrot, cashew butter, cashew milk, cashews, cassava, catfish, cauliflower, cayenne pepper, celery, celery root (celeriac), champagne vinegar, chana dal, chanterelle mushrooms, char siu sauce, cheddar cheese, cheese, cheese curds, cherry, cherry tomato, chervil, chickpeas, chili oil, chili paste, chili powder, chili sauce, Chinese five-spice, chipotle chili powder, chives, chocolate chips, chocolate hazelnut spread, chocolate syrup, cider, cilantro, cinnamon, cinnamon stick, clam juice, clams, clarified butter, clotted cream, cloves, cocoa powder, coconut, coconut aminos, coconut cream, coconut milk, coconut oil, coconut sugar, coconut vinegar, cod, coffee, cognac, collard greens, condensed milk, coriander seeds, corn, corn flakes, corn oil, corn syrup, corn tortillas, corned beef, cornmeal, cotija cheese, cottage cheese, crab, crab meat, cranberries, cream cheese, cream of coconut, cream of tartar, crème fraîche, cremebrule, cremini mushrooms, cucumber, cumin seeds, curly parsley, currants, curry leaves, curry paste, curry powder, daikon radish, dashi, dates, demi-glace, diced tomatoes, dijon mustard, dill, dill seeds, dried apricots, dried cranberries, dried figs, dried hibiscus, dried shrimp, dried thyme, dry mustard powder, duck, duck eggs, duck fat, duck sauce, dulce de leche, edam cheese, edamame, egg noodles, egg whites, egg yolks, eggplant, eggs, egusi seeds, elderberry, empanadas, enoki mushrooms, espresso powder, evaporated milk, extra virgin olive oil, fava beans, fennel bulb, fennel seeds, fenugreek leaves, fenugreek seeds, fermented black beans, filé powder, fish maw, fish sauce, five-spice powder, flaxseeds, flour tortillas, fontina cheese, forbidden rice (black rice), freekeh, freeze-dried fruit, french dressing, fried onions, frosting, fruit cocktail (canned), garam masala, garlic, garlic chives, garlic powder, garlic scapes, gelatin, gin, ginger, ginger paste, ginger powder, gingersnaps (crushed), glucose syrup, glutinous rice (sticky rice), goat, goat cheese, gochugaru (Korean chili flakes), gochujang, salmon, salt, spaghetti, Spaghetti Carbonara, spinach, sugar, sushi, tiramisu
@@ -130,7 +131,8 @@ Make it innovative and delicious. Use unexpected flavor combinations or techniqu
 - servingSize: specify portion like "1 cup", "2 slices"
 - yield: specify output like "4 servings", "12 cookies"
 - nutrition: realistic numbers based on ingredients
-- dietary: appropriate true/false based on ingredients
+- dietary: appropriate true/false based on ingredients (vegetarian, vegan, pescatarian, glutenFree, dairyFree, keto, paleo, halal, noRedMeat, noPork, noShellfish, omnivore)
+- dishType: specify like "Appetizer", "Soup", "Salad", "Main Course", "Side Dish", "Dessert", "Beverage", "Snack"
 - Arrays: all must have at least 1-2 items
 - Instructions: 7-10 detailed educational steps
 
@@ -177,10 +179,16 @@ Return ONLY this JSON format with NO extra text:
   "dietary": {
     "vegetarian": true,
     "vegan": false,
+    "pescatarian": false,
     "glutenFree": false,
     "dairyFree": false,
     "keto": false,
-    "paleo": true
+    "paleo": true,
+    "halal": true,
+    "noRedMeat": false,
+    "noPork": true,
+    "noShellfish": true,
+    "omnivore": false
   },
   "mealType": ["Dinner", "Lunch"],
   "dishType": "Main Course",
@@ -344,6 +352,7 @@ Return ONLY this JSON format with NO extra text:
         // Final attempt: create a minimal valid recipe JSON
         console.log('🚨 FALLBACK TRIGGERED: Creating generic recipe due to JSON parsing failure');
         console.log('🚨 This means the AI generated malformed JSON - check logs above');
+        
         return this.createFallbackRecipe(content);
       }
     }
@@ -393,16 +402,17 @@ Return ONLY this JSON format with NO extra text:
       strMeal: recipeName,
       strCategory: category,
       strArea: area,
+      strDescription: "🚨 FALLBACK RECIPE - AI JSON parsing failed. This indicates a problem with the AI response format.",
       strInstructions: "Step 1: Prepare ingredients. Step 2: Cook according to recipe. Step 3: Serve hot.",
       strMealThumb: "",
-      strTags: "quick,easy,delicious",
-      strEquipment: "Basic kitchen tools",
+      strTags: "FALLBACK,JSON_PARSING_FAILED",
+      strEquipment: "🚨 FALLBACK: Basic kitchen tools",
       strPrepTime: "15 minutes",
       strCookTime: "30 minutes",
       strTotalTime: "45 minutes",
       strServings: "4",
-      strIngredient1: "Main ingredient", strMeasure1: "1 lb",
-      strIngredient2: "Seasoning", strMeasure2: "To taste",
+      strIngredient1: "🚨 FALLBACK: Main ingredient", strMeasure1: "1 lb",
+      strIngredient2: "🚨 FALLBACK: Seasoning", strMeasure2: "To taste",
       strIngredient3: "", strMeasure3: "",
       strIngredient4: "", strMeasure4: "",
       strIngredient5: "", strMeasure5: "",
