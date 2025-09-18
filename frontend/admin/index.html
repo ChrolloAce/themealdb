@@ -837,5 +837,52 @@
       });
     </script>
     <script src="/admin-assets/comprehensive-recipe-display.js"></script>
+    <script src="admin-script.js"></script>
+    
+    <!-- Emergency button fix script -->
+    <script>
+        console.log('🚀 Emergency button script loaded');
+        
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔍 DOM loaded, setting up emergency button handlers');
+            
+            // Add click handlers to nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                console.log('🔍 Found nav button:', btn, 'data-section:', btn.dataset.section);
+                
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🖱️ Emergency nav button clicked:', this.dataset.section);
+                    
+                    // Remove active class from all nav buttons
+                    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Hide all sections
+                    document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+                    // Show target section
+                    const targetSection = document.getElementById(this.dataset.section);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                        console.log('✅ Emergency section switch successful');
+                    } else {
+                        console.error('❌ Emergency section switch failed - no section found:', this.dataset.section);
+                    }
+                });
+            });
+            
+            // Test if adminPanel global exists
+            setTimeout(() => {
+                if (window.adminPanel) {
+                    console.log('✅ AdminPanel instance found');
+                } else {
+                    console.error('❌ AdminPanel instance not found - this might be the issue');
+                }
+            }, 1000);
+      });
+    </script>
 </body>
 </html>
