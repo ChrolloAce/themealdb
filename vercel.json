@@ -38,10 +38,6 @@
           "value": "Content-Type, Authorization, X-Requested-With, User-Agent"
         },
         {
-          "key": "X-Vercel-Bypass-Challenge",
-          "value": "1"
-        },
-        {
           "key": "X-API-Route",
           "value": "true"
         },

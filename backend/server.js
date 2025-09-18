@@ -71,7 +71,7 @@ class FoodDBServer {
       res.setHeader('X-API-Route', 'true');
       res.setHeader('X-Content-Type-Options', 'nosniff');
       res.setHeader('Cache-Control', 'public, max-age=300');
-      res.setHeader('X-Vercel-Bypass-Challenge', '1');
+      // res.setHeader('X-Vercel-Bypass-Challenge', '1'); // Removed - was causing deployment failures
       res.setHeader('X-Robots-Tag', 'noindex');
       res.setHeader('Vary', 'User-Agent, Accept');
       
