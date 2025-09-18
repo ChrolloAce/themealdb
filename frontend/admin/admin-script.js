@@ -144,7 +144,12 @@ class AdminPanel {
         this.storeToken(data.token);
         this.showAdminPanel();
         this.loadDashboard();
-        document.getElementById('adminUsername').textContent = data.user.username;
+        
+        // Update username display (check if element exists)
+        const userNameElement = document.querySelector('.user-name');
+        if (userNameElement) {
+          userNameElement.textContent = data.user.username;
+        }
       } else {
         errorDiv.textContent = data.message || 'Login failed';
       }
@@ -166,7 +171,12 @@ class AdminPanel {
       // Show admin panel immediately
       this.showAdminPanel();
       this.loadDashboard();
-      document.getElementById('adminUsername').textContent = 'Anonymous User';
+      
+      // Update username display (check if element exists)
+      const userNameElement = document.querySelector('.user-name');
+      if (userNameElement) {
+        userNameElement.textContent = 'Anonymous User';
+      }
       
       console.log('✅ Anonymous authentication successful!');
       
@@ -1058,6 +1068,7 @@ class AdminPanel {
       });
       
       const data = await response.json();
+      console.log('🔍 Recipe data structure:', data.recipes?.[0]);
       
       const recipesList = document.getElementById('recipesList');
       
@@ -1171,7 +1182,8 @@ class AdminPanel {
     // Add view recipe listeners
     document.querySelectorAll('.view-recipe-btn').forEach(btn => {
       btn.addEventListener('click', async (e) => {
-        const recipeId = e.target.getAttribute('data-recipe-id');
+        const recipeId = e.currentTarget.getAttribute('data-recipe-id');
+        console.log('🔍 View recipe clicked, ID:', recipeId);
         await this.viewRecipeComprehensive(recipeId);
       });
     });
@@ -1179,7 +1191,7 @@ class AdminPanel {
     // Add improve recipe listeners
     document.querySelectorAll('.improve-recipe-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        const recipeId = e.target.getAttribute('data-recipe-id');
+        const recipeId = e.currentTarget.getAttribute('data-recipe-id');
         this.improveRecipe(recipeId);
       });
     });
@@ -1187,7 +1199,7 @@ class AdminPanel {
     // Add edit recipe listeners
     document.querySelectorAll('.edit-recipe-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        const recipeId = e.target.getAttribute('data-recipe-id');
+        const recipeId = e.currentTarget.getAttribute('data-recipe-id');
         this.editRecipe(recipeId);
       });
     });
@@ -1195,7 +1207,7 @@ class AdminPanel {
     // Add delete recipe listeners  
     document.querySelectorAll('.delete-recipe-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        const recipeId = e.target.getAttribute('data-recipe-id');
+        const recipeId = e.currentTarget.getAttribute('data-recipe-id');
         this.deleteRecipe(recipeId);
       });
     });
