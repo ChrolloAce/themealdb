@@ -117,39 +117,6 @@ class PostgresDatabaseManager {
         strSource VARCHAR(500),
         strImageSource VARCHAR(500),
         strCreativeCommonsConfirmed VARCHAR(10),
-        
-        -- Multiple Images Support
-        images TEXT, -- JSON array of image objects
-        imageCount INTEGER DEFAULT 0,
-        additionalImages TEXT, -- JSON array of URLs (legacy compatibility)
-        imageUrls TEXT, -- JSON array of URLs (legacy compatibility)
-        
-        -- Comprehensive Recipe Data
-        instructions TEXT, -- JSON array of steps
-        nutrition TEXT, -- JSON object with nutritional info
-        dietary TEXT, -- JSON object with dietary flags
-        mealType TEXT, -- JSON array
-        dishType VARCHAR(100),
-        mainIngredient VARCHAR(255),
-        occasion TEXT, -- JSON array
-        seasonality TEXT, -- JSON array
-        equipmentRequired TEXT, -- JSON array
-        skillsRequired TEXT, -- JSON array
-        keywords TEXT, -- JSON array
-        alternateTitles TEXT, -- JSON array
-        commonMisspellings TEXT, -- JSON array
-        allergenFlags TEXT, -- JSON array
-        timeCategory VARCHAR(100),
-        ingredientsDetailed TEXT, -- JSON array
-        prepTime INTEGER DEFAULT 0,
-        cookTime INTEGER DEFAULT 0,
-        totalTime INTEGER DEFAULT 0,
-        numberOfServings INTEGER DEFAULT 4,
-        servingSize VARCHAR(100),
-        difficulty VARCHAR(50) DEFAULT 'Medium',
-        yield VARCHAR(100),
-        strDescription TEXT,
-        
         dateModified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `;

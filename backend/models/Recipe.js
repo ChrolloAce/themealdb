@@ -88,6 +88,9 @@ class Recipe {
     this.commonMisspellings = data.commonMisspellings || [];
     this.allergenFlags = data.allergenFlags || [];
     this.timeCategory = data.timeCategory || '';
+    
+    // Database compatibility flag
+    this.supportsNewFields = data.supportsNewFields !== false; // Default to true unless explicitly false
 
     // Multiple Images Support - Unlimited Array
     this.images = [];
@@ -265,29 +268,8 @@ class Recipe {
       difficulty: this.difficulty,
       yield: this.yield,
 
-      // Store complex data as JSON strings for database
-      instructions: JSON.stringify(this.instructions),
-      nutrition: JSON.stringify(this.nutrition),
-      dietary: JSON.stringify(this.dietary),
-      mealType: JSON.stringify(this.mealType),
-      dishType: this.dishType,
-      mainIngredient: this.mainIngredient,
-      occasion: JSON.stringify(this.occasion),
-      seasonality: JSON.stringify(this.seasonality),
-      equipmentRequired: JSON.stringify(this.equipmentRequired),
-      skillsRequired: JSON.stringify(this.skillsRequired),
-      keywords: JSON.stringify(this.keywords),
-      alternateTitles: JSON.stringify(this.alternateTitles),
-      commonMisspellings: JSON.stringify(this.commonMisspellings),
-      allergenFlags: JSON.stringify(this.allergenFlags),
-      timeCategory: this.timeCategory,
-      ingredientsDetailed: JSON.stringify(this.ingredientsDetailed),
-
-      // Multiple Images Support - Store as JSON
-      images: JSON.stringify(this.images),
-      imageCount: this.imageCount,
-      additionalImages: JSON.stringify(this.images.map(img => img.url)), // Legacy compatibility
-      imageUrls: JSON.stringify(this.images.map(img => img.url)) // Legacy compatibility
+      // Store comprehensive data in strTags for backward compatibility
+      strTags: this.generateCompatibleTags()
     };
 
     // Add ingredients and measures for backward compatibility
@@ -474,6 +456,46 @@ class Recipe {
     }
 
     return detected;
+  }
+  
+  // Generate backward-compatible tags that include comprehensive data
+  generateCompatibleTags() {
+    const tags = [];
+    
+    // Add original tags
+    if (this.strTags) {
+      tags.push(...this.strTags.split(',').map(tag => tag.trim()).filter(tag => tag));
+    }
+    
+    // Add dietary info as tags
+    if (this.dietary) {
+      Object.entries(this.dietary).forEach(([key, value]) => {
+        if (value) tags.push(key);
+      });
+    }
+    
+    // Add meal types
+    if (Array.isArray(this.mealType)) {
+      tags.push(...this.mealType);
+    }
+    
+    // Add difficulty
+    if (this.difficulty) {
+      tags.push(this.difficulty.toLowerCase());
+    }
+    
+    // Add time category
+    if (this.timeCategory) {
+      tags.push(this.timeCategory.toLowerCase().replace(/\s+/g, '-'));
+    }
+    
+    // Add allergen flags
+    if (Array.isArray(this.allergenFlags)) {
+      tags.push(...this.allergenFlags.map(allergen => `contains-${allergen}`));
+    }
+    
+    // Remove duplicates and return
+    return [...new Set(tags)].join(',');
   }
 
   // Multiple Images Management Methods
