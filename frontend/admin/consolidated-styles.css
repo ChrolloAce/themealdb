@@ -2705,6 +2705,570 @@ body {
 }
 
 /* ============================================
+   📝 COMPREHENSIVE RECIPE DISPLAY STYLING FIX
+   ============================================ */
+
+/* Main container */
+.comprehensive-recipe-container {
+  background: white !important;
+  border-radius: 20px !important;
+  padding: 40px !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.1) !important;
+  border: 3px solid #e5e5e5 !important;
+  font-family: system-ui, -apple-system, sans-serif !important;
+  color: #333 !important;
+  line-height: 1.6 !important;
+}
+
+/* Header with actions */
+.recipe-header-actions {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+  color: white !important;
+  padding: 30px !important;
+  border-radius: 15px !important;
+  margin-bottom: 30px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  box-shadow: 0 10px 25px rgba(99,102,241,0.3) !important;
+}
+
+.recipe-title {
+  font-size: 2.5rem !important;
+  font-weight: bold !important;
+  margin: 0 !important;
+  color: white !important;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+}
+
+.quick-actions {
+  display: flex !important;
+  gap: 10px !important;
+}
+
+.btn-action {
+  background: rgba(255,255,255,0.2) !important;
+  color: white !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+  padding: 10px 15px !important;
+  border-radius: 10px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.btn-action:hover {
+  background: rgba(255,255,255,0.3) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Images section */
+.recipe-images-section {
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #10B981 !important;
+  box-shadow: 0 5px 15px rgba(16,185,129,0.1) !important;
+}
+
+.main-image img {
+  width: 100% !important;
+  max-width: 500px !important;
+  height: 300px !important;
+  object-fit: cover !important;
+  border-radius: 15px !important;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+  border: 3px solid #e5e5e5 !important;
+  display: block !important;
+  margin: 0 auto !important;
+}
+
+.additional-images {
+  display: flex !important;
+  gap: 15px !important;
+  justify-content: center !important;
+  margin-top: 20px !important;
+}
+
+.thumb-image {
+  width: 80px !important;
+  height: 80px !important;
+  object-fit: cover !important;
+  border-radius: 10px !important;
+  border: 2px solid #e5e5e5 !important;
+  cursor: pointer !important;
+  transition: transform 0.2s ease !important;
+}
+
+.thumb-image:hover {
+  transform: scale(1.1) !important;
+}
+
+/* Info grid */
+.info-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+  gap: 20px !important;
+  margin-bottom: 30px !important;
+}
+
+.info-card {
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  border: 3px solid #3b82f6 !important;
+  box-shadow: 0 5px 15px rgba(59,130,246,0.1) !important;
+}
+
+.info-card h3 {
+  background: #3b82f6 !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.editable-field {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 12px !important;
+  margin: 8px 0 !important;
+  background: #f8f9fa !important;
+  border-radius: 10px !important;
+  border-left: 4px solid #3b82f6 !important;
+}
+
+.editable-field label {
+  font-weight: 600 !important;
+  color: #333 !important;
+}
+
+.editable-field .value {
+  color: #666 !important;
+  font-weight: 500 !important;
+}
+
+/* Description section */
+.description-section {
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #8b5cf6 !important;
+  box-shadow: 0 5px 15px rgba(139,92,246,0.1) !important;
+}
+
+.description-section h3 {
+  background: #8b5cf6 !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.description-section p {
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+  color: #333 !important;
+  margin: 0 !important;
+  padding: 15px !important;
+  background: #f8f9fa !important;
+  border-radius: 10px !important;
+  border-left: 4px solid #8b5cf6 !important;
+}
+
+/* Ingredients section */
+.ingredients-section {
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #10B981 !important;
+  box-shadow: 0 5px 15px rgba(16,185,129,0.1) !important;
+}
+
+.ingredients-section h3 {
+  background: #10B981 !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.ingredients-list {
+  margin-bottom: 20px !important;
+}
+
+.ingredient-item {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 15px !important;
+  margin: 10px 0 !important;
+  background: #f0fdf4 !important;
+  border-radius: 10px !important;
+  border-left: 4px solid #10B981 !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+}
+
+.ingredient-name {
+  font-weight: 600 !important;
+  color: #333 !important;
+  font-size: 16px !important;
+}
+
+.ingredient-amount {
+  color: #10B981 !important;
+  font-weight: bold !important;
+  background: white !important;
+  padding: 5px 10px !important;
+  border-radius: 20px !important;
+  border: 2px solid #10B981 !important;
+}
+
+/* Instructions section */
+.instructions-section {
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #F59E0B !important;
+  box-shadow: 0 5px 15px rgba(245,158,11,0.1) !important;
+}
+
+.instructions-section h3 {
+  background: #F59E0B !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.instructions-text {
+  font-size: 16px !important;
+  line-height: 1.8 !important;
+  color: #333 !important;
+  padding: 20px !important;
+  background: #fef3c7 !important;
+  border-radius: 10px !important;
+  border-left: 4px solid #F59E0B !important;
+  margin: 0 !important;
+}
+
+/* Nutrition section */
+.nutrition-section {
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #ef4444 !important;
+  box-shadow: 0 5px 15px rgba(239,68,68,0.1) !important;
+}
+
+.nutrition-section h3 {
+  background: #ef4444 !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.btn-calculate {
+  background: #ef4444 !important;
+  color: white !important;
+  border: none !important;
+  padding: 12px 20px !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  margin-bottom: 20px !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-calculate:hover {
+  background: #dc2626 !important;
+  transform: translateY(-2px) !important;
+}
+
+.nutrition-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  gap: 15px !important;
+}
+
+.nutrition-item {
+  background: #fef2f2 !important;
+  border-radius: 10px !important;
+  padding: 15px !important;
+  border-left: 4px solid #ef4444 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 15px !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+}
+
+.nutrient-icon {
+  font-size: 2rem !important;
+}
+
+.nutrient-info {
+  flex: 1 !important;
+}
+
+.nutrient-info label {
+  font-weight: 600 !important;
+  color: #333 !important;
+  display: block !important;
+  margin-bottom: 5px !important;
+}
+
+.nutrient-info .value {
+  font-size: 18px !important;
+  font-weight: bold !important;
+  color: #ef4444 !important;
+}
+
+.nutrient-info .unit {
+  color: #666 !important;
+  font-size: 14px !important;
+  margin-left: 5px !important;
+}
+
+/* Dietary section */
+.dietary-section {
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #06b6d4 !important;
+  box-shadow: 0 5px 15px rgba(6,182,212,0.1) !important;
+}
+
+.dietary-section h3 {
+  background: #06b6d4 !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.dietary-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  gap: 15px !important;
+}
+
+.dietary-item {
+  background: #f0fdfa !important;
+  border-radius: 10px !important;
+  padding: 15px !important;
+  border-left: 4px solid #06b6d4 !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+}
+
+.dietary-item label {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  cursor: pointer !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+}
+
+.dietary-icon {
+  font-size: 1.5rem !important;
+}
+
+/* Equipment section */
+.equipment-section {
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #84cc16 !important;
+  box-shadow: 0 5px 15px rgba(132,204,22,0.1) !important;
+}
+
+.equipment-section h3 {
+  background: #84cc16 !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.equipment-list p {
+  font-size: 16px !important;
+  color: #666 !important;
+  font-style: italic !important;
+  padding: 20px !important;
+  background: #f7fee7 !important;
+  border-radius: 10px !important;
+  border-left: 4px solid #84cc16 !important;
+  margin: 0 !important;
+}
+
+/* Tags section */
+.tags-section {
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #f97316 !important;
+  box-shadow: 0 5px 15px rgba(249,115,22,0.1) !important;
+}
+
+.tags-section h3 {
+  background: #f97316 !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.tags-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+  gap: 20px !important;
+}
+
+.tag-group {
+  background: #fff7ed !important;
+  border-radius: 10px !important;
+  padding: 15px !important;
+  border-left: 4px solid #f97316 !important;
+}
+
+.tag-group label {
+  font-weight: 600 !important;
+  color: #333 !important;
+  display: block !important;
+  margin-bottom: 10px !important;
+}
+
+/* Metadata section */
+.metadata-section {
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #64748b !important;
+  box-shadow: 0 5px 15px rgba(100,116,139,0.1) !important;
+}
+
+.metadata-section h3 {
+  background: #64748b !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.metadata-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  gap: 15px !important;
+}
+
+.meta-item {
+  background: #f8fafc !important;
+  border-radius: 10px !important;
+  padding: 15px !important;
+  border-left: 4px solid #64748b !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+}
+
+.meta-item label {
+  font-weight: 600 !important;
+  color: #333 !important;
+  display: block !important;
+  margin-bottom: 5px !important;
+}
+
+.meta-item code {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+  padding: 5px 10px !important;
+  border-radius: 5px !important;
+  font-family: 'Monaco', 'Menlo', monospace !important;
+}
+
+.meta-item span {
+  color: #666 !important;
+  font-weight: 500 !important;
+}
+
+/* Add buttons */
+.btn-add {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+  color: white !important;
+  border: none !important;
+  padding: 12px 20px !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-top: 15px !important;
+}
+
+.btn-add:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(99,102,241,0.4) !important;
+}
+
+/* ============================================
    🔄 LOGIN MODAL
    ============================================ */
 .modal {
