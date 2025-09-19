@@ -811,156 +811,119 @@ class AdminPanel {
     };
 
     this.generateResult.innerHTML = `
-      <div style="background: #ffffff !important; border-radius: 20px !important; padding: 40px !important; box-shadow: 0 25px 70px rgba(0,0,0,0.2) !important; border: 4px solid #10B981 !important; margin: 40px 0 !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important; max-width: 100% !important; color: #1a202c !important;">
+      <div style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 4px solid #10B981; margin: 30px auto; font-family: system-ui, -apple-system, sans-serif; color: #333; line-height: 1.6;">
         
-        <!-- SUCCESS HEADER -->
-        <div style="background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important; color: white !important; padding: 50px !important; border-radius: 20px !important; margin-bottom: 40px !important; box-shadow: 0 15px 40px rgba(16,185,129,0.4) !important; text-align: center !important;">
-          <div style="font-size: 5rem !important; margin-bottom: 20px !important;">🎉</div>
-          <h2 style="font-size: 3rem !important; font-weight: 900 !important; margin: 0 !important; text-shadow: 0 6px 12px rgba(0,0,0,0.4) !important; letter-spacing: -1px !important; color: white !important;">RECIPE GENERATED!</h2>
-          <p style="margin: 20px 0 0 0 !important; font-size: 1.4rem !important; opacity: 0.95 !important; font-weight: 600 !important; color: white !important;">${isPreview ? '🔍 PREVIEW MODE' : '✨ YOUR AI RECIPE IS READY'}</p>
+        <!-- BIG SUCCESS HEADER -->
+        <div style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 40px; border-radius: 15px; margin-bottom: 30px; text-align: center; box-shadow: 0 10px 30px rgba(16,185,129,0.3);">
+          <div style="font-size: 80px; margin-bottom: 15px;">🎉</div>
+          <h1 style="font-size: 48px; font-weight: bold; margin: 0; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">RECIPE READY!</h1>
+          <p style="font-size: 20px; margin: 15px 0 0 0; color: white; opacity: 0.9;">${isPreview ? 'Preview Mode Active' : 'AI Generated Successfully'}</p>
         </div>
         
-        <div style="background: #f8fafc; border-radius: 16px; padding: 32px; border: 2px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-          
-          <!-- RECIPE TITLE & IMAGE -->
-          <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 3px solid #e2e8f0;">
-            <h1 style="font-size: 3rem; font-weight: 800; color: #1a202c; margin: 0 0 24px 0; display: flex; align-items: center; justify-content: center; gap: 16px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-              🍽️ ${recipe.strMeal}
-            </h1>
-            ${imageUrl ? `
-              <div style="display: inline-block; border-radius: 16px; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.15); border: 4px solid #e2e8f0; transition: transform 0.3s ease;">
-                <img src="${imageUrl}" alt="${recipe.strMeal}" style="width: 100%; max-width: 500px; height: 300px; object-fit: cover; display: block;">
-            </div>
-            ` : `
-              <div style="width: 100%; max-width: 500px; height: 300px; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 5rem; border: 3px dashed #cbd5e1; margin: 0 auto; box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);">🍽️</div>
-            `}
-          </div>
-          
-          <!-- STATS BAR WITH ENHANCED STYLING -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 32px;">
-            <div style="text-align: center; padding: 20px; background: #ffffff; border-radius: 12px; border: 2px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s ease; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-              <div style="font-size: 2.5rem; margin-bottom: 8px;">⏱️</div>
-              <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Prep Time</div>
-              <div style="font-size: 18px; font-weight: 800; color: #1a202c;">${recipe.prepTime || '15 min'}</div>
-            </div>
-            <div style="text-align: center; padding: 20px; background: #ffffff; border-radius: 12px; border: 2px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s ease; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-              <div style="font-size: 2.5rem; margin-bottom: 8px;">🔥</div>
-              <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Cook Time</div>
-              <div style="font-size: 18px; font-weight: 800; color: #1a202c;">${recipe.cookTime || '30 min'}</div>
-          </div>
-            <div style="text-align: center; padding: 20px; background: #ffffff; border-radius: 12px; border: 2px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s ease; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-              <div style="font-size: 2.5rem; margin-bottom: 8px;">⏰</div>
-              <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Total Time</div>
-              <div style="font-size: 18px; font-weight: 800; color: #1a202c;">${recipe.totalTime || '45 min'}</div>
-            </div>
-            <div style="text-align: center; padding: 20px; background: #ffffff; border-radius: 12px; border: 2px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s ease; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-              <div style="font-size: 2.5rem; margin-bottom: 8px;">🍽️</div>
-              <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Servings</div>
-              <div style="font-size: 18px; font-weight: 800; color: #1a202c;">${recipe.servings || '4'}</div>
-          </div>
-            <div style="text-align: center; padding: 20px; background: #ffffff; border-radius: 12px; border: 2px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s ease; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-              <div style="font-size: 2.5rem; margin-bottom: 8px;">📊</div>
-              <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Difficulty</div>
-              <div style="font-size: 18px; font-weight: 800; color: #1a202c;">${recipe.difficulty || 'Medium'}</div>
-            </div>
-            <div style="text-align: center; padding: 20px; background: #ffffff; border-radius: 12px; border: 2px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s ease; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-              <div style="font-size: 2.5rem; margin-bottom: 8px;">🥘</div>
-              <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Yield</div>
-              <div style="font-size: 18px; font-weight: 800; color: #1a202c;">${recipe.yield || 'Serves 4'}</div>
-          </div>
-            </div>
-          
-          <!-- RECIPE BADGES -->
-          <div style="display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: center; margin-bottom: var(--space-6);">
-            <span style="padding: var(--space-2) var(--space-4); background: var(--color-primary); color: white; border-radius: var(--radius-full); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: var(--space-1);">
-              🏷️ ${recipe.strCategory || 'Uncategorized'}
-            </span>
-            <span style="padding: var(--space-2) var(--space-4); background: var(--color-info, #3B82F6); color: white; border-radius: var(--radius-full); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: var(--space-1);">
-              🌍 ${recipe.strArea || 'International'}
-            </span>
-            ${qualityBadge ? `<span style="padding: var(--space-2) var(--space-4); background: var(--color-success, #10B981); color: white; border-radius: var(--radius-full); font-size: 14px; font-weight: 600;">${qualityBadge}</span>` : ''}
+        <!-- RECIPE TITLE -->
+        <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #e5e5e5;">
+          <h2 style="font-size: 36px; font-weight: bold; color: #1a1a1a; margin: 0 0 20px 0;">🍽️ ${recipe.strMeal}</h2>
+          ${imageUrl ? `
+            <img src="${imageUrl}" alt="${recipe.strMeal}" style="max-width: 400px; width: 100%; height: 250px; object-fit: cover; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); border: 3px solid #e5e5e5;">
+          ` : `
+            <div style="width: 400px; height: 250px; background: linear-gradient(135deg, #f0f0f0, #e5e5e5); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 80px; color: #999; border: 3px dashed #ccc; margin: 0 auto;">🍽️</div>
+          `}
         </div>
         
+        <!-- INGREDIENTS SECTION -->
+        <div style="background: white; border-radius: 15px; padding: 25px; margin-bottom: 25px; border: 3px solid #10B981; box-shadow: 0 5px 15px rgba(16,185,129,0.1);">
+          <div style="background: #10B981; color: white; padding: 15px; border-radius: 10px; margin: -25px -25px 20px -25px;">
+            <h3 style="margin: 0; font-size: 24px; font-weight: bold;">🥄 INGREDIENTS (${ingredients.length} items)</h3>
+            </div>
+          ${ingredients.map((ing, index) => `
+            <div style="display: flex; align-items: center; padding: 15px; margin: 10px 0; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #10B981; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+              <div style="background: #10B981; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; font-size: 14px;">${index + 1}</div>
+              <div style="font-size: 16px; font-weight: 500; color: #333;">${ing}</div>
+          </div>
+          `).join('')}
+            </div>
+        
+        <!-- INSTRUCTIONS SECTION -->
+        <div style="background: white; border-radius: 15px; padding: 25px; margin-bottom: 25px; border: 3px solid #F59E0B; box-shadow: 0 5px 15px rgba(245,158,11,0.1);">
+          <div style="background: #F59E0B; color: white; padding: 15px; border-radius: 10px; margin: -25px -25px 20px -25px;">
+            <h3 style="margin: 0; font-size: 24px; font-weight: bold;">📝 INSTRUCTIONS (${steps.length > 0 ? steps.length : 1} steps)</h3>
+          </div>
+          ${steps.length > 0 ? 
+            steps.map((step, index) => `
+              <div style="display: flex; align-items: flex-start; padding: 20px; margin: 15px 0; background: #fef3c7; border-radius: 10px; border-left: 4px solid #F59E0B; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                <div style="background: #F59E0B; color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; font-size: 16px; flex-shrink: 0;">${index + 1}</div>
+                <div style="font-size: 16px; line-height: 1.6; color: #333; padding-top: 5px;">${step}</div>
+            </div>
+            `).join('') :
+            `<div style="padding: 30px; text-align: center; background: #fef3c7; border-radius: 10px; border: 2px dashed #F59E0B;">
+              <p style="font-size: 16px; color: #333; margin: 0; line-height: 1.6;">${recipe.strInstructions || 'No instructions provided.'}</p>
+            </div>`
+          }
+        </div>
+        
+        <!-- RECIPE BADGES -->
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 30px;">
+          <span style="padding: 8px 16px; background: #6366f1; color: white; border-radius: 25px; font-size: 14px; font-weight: 600;">
+            🏷️ ${recipe.strCategory || 'Uncategorized'}
+          </span>
+          <span style="padding: 8px 16px; background: #3b82f6; color: white; border-radius: 25px; font-size: 14px; font-weight: 600;">
+            🌍 ${recipe.strArea || 'International'}
+          </span>
+          ${qualityBadge ? `<span style="padding: 8px 16px; background: #10B981; color: white; border-radius: 25px; font-size: 14px; font-weight: 600;">${qualityBadge}</span>` : ''}
+        </div>
+        
+        <!-- STATS BAR -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin-bottom: 30px;">
+          <div style="text-align: center; padding: 20px; background: white; border-radius: 12px; border: 2px solid #e5e5e5; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+            <div style="font-size: 2.5em; margin-bottom: 8px;">⏱️</div>
+            <div style="font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Prep</div>
+            <div style="font-size: 16px; font-weight: bold; color: #333;">${recipe.prepTime || '15 min'}</div>
+          </div>
+          <div style="text-align: center; padding: 20px; background: white; border-radius: 12px; border: 2px solid #e5e5e5; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+            <div style="font-size: 2.5em; margin-bottom: 8px;">🔥</div>
+            <div style="font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Cook</div>
+            <div style="font-size: 16px; font-weight: bold; color: #333;">${recipe.cookTime || '30 min'}</div>
+          </div>
+          <div style="text-align: center; padding: 20px; background: white; border-radius: 12px; border: 2px solid #e5e5e5; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+            <div style="font-size: 2.5em; margin-bottom: 8px;">🍽️</div>
+            <div style="font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Serves</div>
+            <div style="font-size: 16px; font-weight: bold; color: #333;">${recipe.servings || '4'}</div>
+          </div>
+          <div style="text-align: center; padding: 20px; background: white; border-radius: 12px; border: 2px solid #e5e5e5; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+            <div style="font-size: 2.5em; margin-bottom: 8px;">📊</div>
+            <div style="font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Level</div>
+            <div style="font-size: 16px; font-weight: bold; color: #333;">${recipe.difficulty || 'Medium'}</div>
+          </div>
+        </div>
+        
+        ${recipe.strDescription ? `
           <!-- DESCRIPTION -->
-          ${recipe.strDescription ? `
-            <div style="background: var(--color-surface); padding: var(--space-5); border-radius: var(--radius-card); margin-bottom: var(--space-6); border-left: 4px solid var(--color-info, #3B82F6); box-shadow: var(--shadow-sm);">
-              <h3 style="margin: 0 0 var(--space-3) 0; color: var(--color-text); display: flex; align-items: center; gap: var(--space-2); font-size: 1.25rem; font-weight: 600;">📖 Description</h3>
-              <p style="color: var(--color-muted); line-height: 1.6; margin: 0; font-size: 1rem;">${recipe.strDescription}</p>
-          </div>
-          ` : ''}
-          
-          <!-- INGREDIENTS SECTION -->
-          <div style="background: var(--color-surface); padding: var(--space-5); border-radius: var(--radius-card); margin-bottom: var(--space-6); border: 2px solid var(--color-success, #10B981); box-shadow: var(--shadow-sm); position: relative; overflow: hidden;">
-            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--color-success, #10B981) 0%, var(--color-success-600, #059669) 100%);"></div>
-            <h3 style="margin: 0 0 var(--space-4) 0; color: var(--color-text); display: flex; align-items: center; gap: var(--space-2); font-size: 1.5rem; font-weight: 600;">
-              🥄 Ingredients (${ingredients.length} items)
-            </h3>
-            <div style="display: grid; gap: var(--space-3);">
-              ${ingredients.map((ing, index) => {
-              const [amount, ...nameParts] = ing.split(' ');
-              const name = nameParts.join(' ');
-              return `
-                  <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); background: var(--color-input-bg); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
-                    <span style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: var(--color-success, #10B981); color: white; border-radius: 50%; font-size: 14px; font-weight: 600; flex-shrink: 0;">${index + 1}</span>
-                    <div style="flex: 1;">
-                      <div style="color: var(--color-text); font-weight: 500; font-size: 1rem;">${name || ing}</div>
-                      ${amount && name ? `<div style="color: var(--color-muted); font-size: 0.9rem; margin-top: 2px;">${amount}</div>` : ''}
-                  </div>
-                </div>
-              `;
-            }).join('')}
+          <div style="background: white; border-radius: 15px; padding: 25px; margin-bottom: 25px; border: 3px solid #3b82f6; box-shadow: 0 5px 15px rgba(59,130,246,0.1);">
+            <div style="background: #3b82f6; color: white; padding: 15px; border-radius: 10px; margin: -25px -25px 20px -25px;">
+              <h3 style="margin: 0; font-size: 20px; font-weight: bold;">📖 DESCRIPTION</h3>
             </div>
+            <p style="font-size: 16px; line-height: 1.6; color: #333; margin: 0;">${recipe.strDescription}</p>
           </div>
-          
-          <!-- INSTRUCTIONS SECTION -->
-          <div style="background: var(--color-surface); padding: var(--space-5); border-radius: var(--radius-card); margin-bottom: var(--space-6); border: 2px solid var(--color-warning, #F59E0B); box-shadow: var(--shadow-sm); position: relative; overflow: hidden;">
-            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--color-warning, #F59E0B) 0%, var(--color-warning-600, #D97706) 100%);"></div>
-            <h3 style="margin: 0 0 var(--space-4) 0; color: var(--color-text); display: flex; align-items: center; gap: var(--space-2); font-size: 1.5rem; font-weight: 600;">
-              📝 Instructions (${steps.length > 0 ? steps.length : 1} steps)
-            </h3>
-            <div style="display: grid; gap: var(--space-4);">
-              ${steps.length > 0 ? 
-                steps.map((step, index) => `
-                  <div style="display: flex; gap: var(--space-4); padding: var(--space-4); background: var(--color-input-bg); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
-                    <span style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: var(--color-warning, #F59E0B); color: white; border-radius: 50%; font-size: 16px; font-weight: 700; flex-shrink: 0; box-shadow: var(--shadow-md);">${index + 1}</span>
-                    <span style="flex: 1; line-height: 1.6; color: var(--color-text); font-size: 1rem; padding-top: 8px;">${step}</span>
-                  </div>
-                `).join('') :
-                `<div style="padding: var(--space-6); text-align: center; background: var(--color-input-bg); border-radius: var(--radius-lg); border: 2px dashed var(--color-divider);">
-                  <p style="color: var(--color-muted); font-size: 1rem; margin: 0; line-height: 1.6;">${recipe.strInstructions || 'No instructions provided.'}</p>
-                </div>`
-              }
-            </div>
-          </div>
-        </div>
+        ` : ''}
       </div>
     `;
     
     // Add action buttons if not preview
     if (!isPreview) {
-      const actionsHtml = `
-        <div style="display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--color-divider);">
-          <button id="saveRecipeBtn" style="padding: var(--space-3) var(--space-5); background: var(--color-primary); color: white; border: none; border-radius: var(--radius-lg); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: var(--space-2); transition: all 0.2s ease; box-shadow: var(--shadow-sm);">
-            💾 Save Recipe to Database
+      this.generateResult.innerHTML += `
+        <!-- ACTION BUTTONS -->
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 30px; padding-top: 25px; border-top: 3px solid #e5e5e5;">
+          <button id="saveRecipeBtn" style="padding: 15px 25px; background: #6366f1; color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 4px 10px rgba(99,102,241,0.3); transition: all 0.2s ease;">
+            💾 Save to Database
           </button>
-          <button onclick="navigator.clipboard.writeText(JSON.stringify(${JSON.stringify(recipe).replace(/"/g, '&quot;')}, null, 2))" style="padding: var(--space-3) var(--space-5); background: var(--color-info, #3B82F6); color: white; border: none; border-radius: var(--radius-lg); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: var(--space-2); transition: all 0.2s ease; box-shadow: var(--shadow-sm);">
-            📋 Copy Recipe Data
+          <button onclick="navigator.clipboard.writeText(JSON.stringify(${JSON.stringify(recipe).replace(/"/g, '&quot;')}, null, 2)); alert('Recipe data copied to clipboard!');" style="padding: 15px 25px; background: #3b82f6; color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 4px 10px rgba(59,130,246,0.3); transition: all 0.2s ease;">
+            📋 Copy Data
           </button>
-          <button onclick="adminPanel.generateRecipe()" style="padding: var(--space-3) var(--space-5); background: var(--color-success, #10B981); color: white; border: none; border-radius: var(--radius-lg); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: var(--space-2); transition: all 0.2s ease; box-shadow: var(--shadow-sm);">
+          <button onclick="adminPanel.generateRecipe()" style="padding: 15px 25px; background: #10B981; color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 4px 10px rgba(16,185,129,0.3); transition: all 0.2s ease;">
             🎲 Generate Another
           </button>
         </div>
       `;
-      
-      // Find the last closing div and insert before it
-      const lastClosingDiv = this.generateResult.innerHTML.lastIndexOf('</div>');
-      if (lastClosingDiv !== -1) {
-        const beforeClosing = this.generateResult.innerHTML.substring(0, lastClosingDiv);
-        const afterClosing = this.generateResult.innerHTML.substring(lastClosingDiv);
-        this.generateResult.innerHTML = beforeClosing + actionsHtml + afterClosing;
-      } else {
-        this.generateResult.innerHTML += actionsHtml;
-      }
       
       document.getElementById('saveRecipeBtn').addEventListener('click', () => this.saveGeneratedRecipe(recipe));
     }
