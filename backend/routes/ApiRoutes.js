@@ -126,9 +126,32 @@ class ApiRoutes {
     res.json(result);
   }
 
-  // Get random meal
+  // Get truly random meal from complete database
   async getRandomMeal(req, res) {
-    const result = await this.recipeManager.getRandom();
+    // Enhanced random selection with optional filters
+    const { 
+      c: category,
+      a: area,
+      m: mealType,
+      d: dishType,
+      diet: dietary
+    } = req.query;
+    
+    let result;
+    if (category || area || mealType || dishType || dietary) {
+      // Random with filters
+      result = await this.recipeManager.getRandomWithFilters({
+        category,
+        area,
+        mealType,
+        dishType,
+        dietary
+      });
+    } else {
+      // Truly random from complete database
+      result = await this.recipeManager.getTrulyRandom();
+    }
+    
     res.json(result);
   }
 
@@ -152,9 +175,16 @@ class ApiRoutes {
     res.json(result);
   }
 
-  // Get listings (categories, areas, ingredients)
+  // Get listings (categories, areas, ingredients, meal types, dish types, dietary options)
   async getListings(req, res) {
-    const { c: categories, a: areas, i: ingredients } = req.query;
+    const { 
+      c: categories, 
+      a: areas, 
+      i: ingredients,
+      m: mealTypes,
+      d: dishTypes,
+      diet: dietary
+    } = req.query;
     
     if (categories === 'list') {
       const result = await this.categoryManager.listCategories();
@@ -165,24 +195,58 @@ class ApiRoutes {
     } else if (ingredients === 'list') {
       const result = await this.categoryManager.listIngredients();
       res.json(result);
+    } else if (mealTypes === 'list') {
+      // NEW: List all meal types (breakfast, brunch, lunch, dinner, snack, dessert)
+      const result = await this.categoryManager.listMealTypes();
+      res.json(result);
+    } else if (dishTypes === 'list') {
+      // NEW: List all dish types (appetizer, main course, side dish, dessert, etc.)
+      const result = await this.categoryManager.listDishTypes();
+      res.json(result);
+    } else if (dietary === 'list') {
+      // NEW: List all dietary preferences (vegetarian, vegan, keto, paleo, etc.)
+      const result = await this.categoryManager.listDietaryOptions();
+      res.json(result);
     } else {
-      throw ErrorHandler.createError('Please specify c=list, a=list, or i=list', 400);
+      throw ErrorHandler.createError('Please specify c=list, a=list, i=list, m=list, d=list, or diet=list', 400);
     }
   }
 
-  // Filter meals
+  // Filter meals with comprehensive search options
   async filterMeals(req, res) {
-    const { i: ingredient, c: category, a: area } = req.query;
+    const { 
+      i: ingredient, 
+      c: category, 
+      a: area,
+      m: mealType,
+      d: dishType,
+      diet: dietary,
+      contains: containsIngredients
+    } = req.query;
     
-    if (!ingredient && !category && !area) {
-      throw ErrorHandler.createError('Please provide filter parameter: i (ingredient), c (category), or a (area)', 400);
+    // Check if at least one filter parameter is provided
+    if (!ingredient && !category && !area && !mealType && !dishType && !dietary && !containsIngredients) {
+      throw ErrorHandler.createError('Please provide at least one filter parameter: i (ingredient), c (category), a (area), m (meal type), d (dish type), diet (dietary), or contains (ingredients)', 400);
     }
 
     let result;
-    if (ingredient) {
-    // Multiple ingredient filtering is now free for all users
-    // (Premium requirement removed)
-      
+    
+    // Handle multiple filters combined
+    if ([ingredient, category, area, mealType, dishType, dietary, containsIngredients].filter(Boolean).length > 1) {
+      // Multiple filters combined
+      result = await this.recipeManager.filterByCombined({
+        ingredient,
+        category,
+        area,
+        mealType,
+        dishType,
+        dietary,
+        containsIngredients
+      });
+    }
+    // Single filter handlers
+    else if (ingredient) {
+      // Multiple ingredient filtering
       if (ingredient.includes(',')) {
         result = await this.recipeManager.filterByMultipleIngredients(ingredient);
       } else {
@@ -192,6 +256,18 @@ class ApiRoutes {
       result = await this.recipeManager.filterByCategory(category);
     } else if (area) {
       result = await this.recipeManager.filterByArea(area);
+    } else if (mealType) {
+      // NEW: Filter by meal type (breakfast, brunch, lunch, dinner, snack, dessert)
+      result = await this.recipeManager.filterByMealType(mealType);
+    } else if (dishType) {
+      // NEW: Filter by dish type (appetizer, main course, side dish, dessert, etc.)
+      result = await this.recipeManager.filterByDishType(dishType);
+    } else if (dietary) {
+      // NEW: Filter by dietary preferences (vegetarian, vegan, keto, paleo, etc.)
+      result = await this.recipeManager.filterByDietary(dietary);
+    } else if (containsIngredients) {
+      // NEW: Filter recipes that contain specific ingredients
+      result = await this.recipeManager.filterByContainsIngredients(containsIngredients);
     }
 
     res.json(result);

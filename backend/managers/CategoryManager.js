@@ -279,6 +279,146 @@ class CategoryManager {
       throw new Error(`Get recipe count by area failed: ${error.message}`);
     }
   }
+
+  // =======================
+  // NEW COMPREHENSIVE LISTING METHODS
+  // =======================
+
+  // List all meal types (breakfast, brunch, lunch, dinner, snack, dessert)
+  async listMealTypes() {
+    try {
+      // Check if we're using Firebase
+      if (this.db.getAllRecipes) {
+        const recipes = await this.db.getAllRecipes();
+        const mealTypesSet = new Set();
+        
+        recipes.forEach(recipe => {
+          const mealTypes = recipe.mealType || [];
+          mealTypes.forEach(type => {
+            if (type && type.trim()) {
+              mealTypesSet.add(type.trim());
+            }
+          });
+        });
+        
+        const sortedMealTypes = Array.from(mealTypesSet).sort();
+        return { 
+          meals: sortedMealTypes.map(mealType => ({ strMealType: mealType }))
+        };
+      }
+      
+      // Fallback: return standard meal types
+      const standardMealTypes = [
+        'Breakfast',
+        'Brunch', 
+        'Lunch',
+        'Dinner',
+        'Snack',
+        'Dessert'
+      ];
+      
+      return { 
+        meals: standardMealTypes.map(mealType => ({ strMealType: mealType }))
+      };
+    } catch (error) {
+      throw new Error(`List meal types failed: ${error.message}`);
+    }
+  }
+
+  // List all dish types (appetizer, main course, side dish, dessert, etc.)
+  async listDishTypes() {
+    try {
+      // Check if we're using Firebase
+      if (this.db.getAllRecipes) {
+        const recipes = await this.db.getAllRecipes();
+        const dishTypesSet = new Set();
+        
+        recipes.forEach(recipe => {
+          const dishType = recipe.dishType;
+          if (dishType && dishType.trim()) {
+            dishTypesSet.add(dishType.trim());
+          }
+        });
+        
+        const sortedDishTypes = Array.from(dishTypesSet).sort();
+        return { 
+          meals: sortedDishTypes.map(dishType => ({ strDishType: dishType }))
+        };
+      }
+      
+      // Fallback: return standard dish types
+      const standardDishTypes = [
+        'Appetizer',
+        'Soup',
+        'Salad',
+        'Main Course',
+        'Side Dish',
+        'Dessert',
+        'Beverage',
+        'Snack'
+      ];
+      
+      return { 
+        meals: standardDishTypes.map(dishType => ({ strDishType: dishType }))
+      };
+    } catch (error) {
+      throw new Error(`List dish types failed: ${error.message}`);
+    }
+  }
+
+  // List all dietary preferences (vegetarian, vegan, keto, paleo, etc.)
+  async listDietaryOptions() {
+    try {
+      // Check if we're using Firebase
+      if (this.db.getAllRecipes) {
+        const recipes = await this.db.getAllRecipes();
+        const dietaryOptionsSet = new Set();
+        
+        recipes.forEach(recipe => {
+          const dietary = recipe.dietary || {};
+          Object.entries(dietary).forEach(([key, value]) => {
+            if (value === true) {
+              // Convert camelCase to readable format
+              const readableKey = key
+                .replace(/([A-Z])/g, ' $1') // Add space before capital letters
+                .replace(/^./, str => str.toUpperCase()) // Capitalize first letter
+                .replace(/No /g, 'No ') // Fix spacing for "No" prefixes
+                .trim();
+              
+              dietaryOptionsSet.add(readableKey);
+            }
+          });
+        });
+        
+        const sortedDietaryOptions = Array.from(dietaryOptionsSet).sort();
+        return { 
+          meals: sortedDietaryOptions.map(dietary => ({ strDietary: dietary }))
+        };
+      }
+      
+      // Fallback: return standard dietary options
+      const standardDietaryOptions = [
+        'Vegetarian',
+        'Vegan',
+        'Pescatarian',
+        'Gluten Free',
+        'Dairy Free',
+        'Keto',
+        'Paleo',
+        'Halal',
+        'No Red Meat',
+        'No Pork',
+        'No Shellfish',
+        'Omnivore'
+      ];
+      
+      return { 
+        meals: standardDietaryOptions.map(dietary => ({ strDietary: dietary }))
+      };
+    } catch (error) {
+      throw new Error(`List dietary options failed: ${error.message}`);
+    }
+  }
 }
 
 module.exports = CategoryManager;

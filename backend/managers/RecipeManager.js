@@ -384,6 +384,333 @@ class RecipeManager {
       throw new Error(`Delete recipe failed: ${error.message}`);
     }
   }
+
+  // =======================
+  // NEW COMPREHENSIVE SEARCH METHODS
+  // =======================
+
+  // Filter by meal type (breakfast, brunch, lunch, dinner, snack, dessert)
+  async filterByMealType(mealType, limit = 100) {
+    try {
+      // Check if we're using Firebase
+      if (this.db.getAllRecipes) {
+        const recipes = await this.db.getAllRecipes();
+        const filtered = recipes.filter(recipe => {
+          const mealTypes = recipe.mealType || [];
+          return mealTypes.some(type => type.toLowerCase() === mealType.toLowerCase());
+        }).slice(0, limit);
+        
+        return { 
+          meals: filtered.map(recipe => ({
+            idMeal: recipe.idMeal,
+            strMeal: recipe.strMeal,
+            strMealThumb: recipe.strMealThumb
+          }))
+        };
+      }
+      
+      // Fallback for SQL (if mealType column exists)
+      const query = `
+        SELECT idMeal, strMeal, strMealThumb 
+        FROM recipes 
+        WHERE mealType LIKE ? 
+        ORDER BY strMeal 
+        LIMIT ?
+      `;
+      const rows = await this.db.all(query, [`%${mealType}%`, limit]);
+      return { meals: rows };
+    } catch (error) {
+      throw new Error(`Filter by meal type failed: ${error.message}`);
+    }
+  }
+
+  // Filter by dish type (appetizer, main course, side dish, dessert, etc.)
+  async filterByDishType(dishType, limit = 100) {
+    try {
+      // Check if we're using Firebase
+      if (this.db.getAllRecipes) {
+        const recipes = await this.db.getAllRecipes();
+        const filtered = recipes.filter(recipe => {
+          const recipesDishType = recipe.dishType || '';
+          return recipesDishType.toLowerCase().includes(dishType.toLowerCase());
+        }).slice(0, limit);
+        
+        return { 
+          meals: filtered.map(recipe => ({
+            idMeal: recipe.idMeal,
+            strMeal: recipe.strMeal,
+            strMealThumb: recipe.strMealThumb
+          }))
+        };
+      }
+      
+      // Fallback for SQL
+      const query = `
+        SELECT idMeal, strMeal, strMealThumb 
+        FROM recipes 
+        WHERE dishType LIKE ? 
+        ORDER BY strMeal 
+        LIMIT ?
+      `;
+      const rows = await this.db.all(query, [`%${dishType}%`, limit]);
+      return { meals: rows };
+    } catch (error) {
+      throw new Error(`Filter by dish type failed: ${error.message}`);
+    }
+  }
+
+  // Filter by dietary preferences (vegetarian, vegan, keto, paleo, etc.)
+  async filterByDietary(dietary, limit = 100) {
+    try {
+      // Check if we're using Firebase
+      if (this.db.getAllRecipes) {
+        const recipes = await this.db.getAllRecipes();
+        const filtered = recipes.filter(recipe => {
+          const dietaryInfo = recipe.dietary || {};
+          // Handle different dietary filter formats
+          switch(dietary.toLowerCase()) {
+            case 'vegetarian':
+              return dietaryInfo.vegetarian === true;
+            case 'vegan':
+              return dietaryInfo.vegan === true;
+            case 'pescatarian':
+              return dietaryInfo.pescatarian === true;
+            case 'gluten-free':
+            case 'glutenfree':
+              return dietaryInfo.glutenFree === true;
+            case 'dairy-free':
+            case 'dairyfree':
+              return dietaryInfo.dairyFree === true;
+            case 'keto':
+              return dietaryInfo.keto === true;
+            case 'paleo':
+              return dietaryInfo.paleo === true;
+            case 'halal':
+              return dietaryInfo.halal === true;
+            case 'no-red-meat':
+            case 'noredmeat':
+              return dietaryInfo.noRedMeat === true;
+            case 'no-pork':
+            case 'nopork':
+              return dietaryInfo.noPork === true;
+            case 'no-shellfish':
+            case 'noshellfish':
+              return dietaryInfo.noShellfish === true;
+            case 'omnivore':
+              return dietaryInfo.omnivore === true;
+            default:
+              return false;
+          }
+        }).slice(0, limit);
+        
+        return { 
+          meals: filtered.map(recipe => ({
+            idMeal: recipe.idMeal,
+            strMeal: recipe.strMeal,
+            strMealThumb: recipe.strMealThumb
+          }))
+        };
+      }
+      
+      // Fallback for SQL (would need dietary columns)
+      throw new Error('Dietary filtering requires Firebase database');
+    } catch (error) {
+      throw new Error(`Filter by dietary failed: ${error.message}`);
+    }
+  }
+
+  // Filter by ingredients that the recipe contains
+  async filterByContainsIngredients(ingredientList, limit = 100) {
+    try {
+      const ingredients = ingredientList.split(',').map(ing => ing.trim().toLowerCase());
+      
+      // Check if we're using Firebase
+      if (this.db.getAllRecipes) {
+        const recipes = await this.db.getAllRecipes();
+        const filtered = recipes.filter(recipe => {
+          // Check all ingredient fields
+          for (let i = 1; i <= 20; i++) {
+            const ingredient = recipe[`strIngredient${i}`];
+            if (ingredient) {
+              const hasMatchingIngredient = ingredients.some(searchIng => 
+                ingredient.toLowerCase().includes(searchIng)
+              );
+              if (hasMatchingIngredient) return true;
+            }
+          }
+          return false;
+        }).slice(0, limit);
+        
+        return { 
+          meals: filtered.map(recipe => ({
+            idMeal: recipe.idMeal,
+            strMeal: recipe.strMeal,
+            strMealThumb: recipe.strMealThumb
+          }))
+        };
+      }
+      
+      // Fallback to existing method
+      return this.filterByMultipleIngredients(ingredientList, limit);
+    } catch (error) {
+      throw new Error(`Filter by contains ingredients failed: ${error.message}`);
+    }
+  }
+
+  // Combined filtering (multiple filters at once)
+  async filterByCombined(filters, limit = 100) {
+    try {
+      // Check if we're using Firebase
+      if (this.db.getAllRecipes) {
+        const recipes = await this.db.getAllRecipes();
+        
+        let filtered = recipes;
+        
+        // Apply each filter sequentially
+        if (filters.category) {
+          filtered = filtered.filter(recipe => 
+            recipe.strCategory?.toLowerCase() === filters.category.toLowerCase()
+          );
+        }
+        
+        if (filters.area) {
+          filtered = filtered.filter(recipe => 
+            recipe.strArea?.toLowerCase() === filters.area.toLowerCase()
+          );
+        }
+        
+        if (filters.mealType) {
+          filtered = filtered.filter(recipe => {
+            const mealTypes = recipe.mealType || [];
+            return mealTypes.some(type => type.toLowerCase() === filters.mealType.toLowerCase());
+          });
+        }
+        
+        if (filters.dishType) {
+          filtered = filtered.filter(recipe => 
+            recipe.dishType?.toLowerCase().includes(filters.dishType.toLowerCase())
+          );
+        }
+        
+        if (filters.dietary) {
+          filtered = filtered.filter(recipe => {
+            const dietaryInfo = recipe.dietary || {};
+            switch(filters.dietary.toLowerCase()) {
+              case 'vegetarian':
+                return dietaryInfo.vegetarian === true;
+              case 'vegan':
+                return dietaryInfo.vegan === true;
+              case 'keto':
+                return dietaryInfo.keto === true;
+              case 'paleo':
+                return dietaryInfo.paleo === true;
+              default:
+                return false;
+            }
+          });
+        }
+        
+        if (filters.ingredient) {
+          filtered = filtered.filter(recipe => {
+            for (let i = 1; i <= 20; i++) {
+              const ingredient = recipe[`strIngredient${i}`];
+              if (ingredient?.toLowerCase().includes(filters.ingredient.toLowerCase())) {
+                return true;
+              }
+            }
+            return false;
+          });
+        }
+        
+        if (filters.containsIngredients) {
+          const ingredients = filters.containsIngredients.split(',').map(ing => ing.trim().toLowerCase());
+          filtered = filtered.filter(recipe => {
+            for (let i = 1; i <= 20; i++) {
+              const ingredient = recipe[`strIngredient${i}`];
+              if (ingredient) {
+                const hasMatchingIngredient = ingredients.some(searchIng => 
+                  ingredient.toLowerCase().includes(searchIng)
+                );
+                if (hasMatchingIngredient) return true;
+              }
+            }
+            return false;
+          });
+        }
+        
+        return { 
+          meals: filtered.slice(0, limit).map(recipe => ({
+            idMeal: recipe.idMeal,
+            strMeal: recipe.strMeal,
+            strMealThumb: recipe.strMealThumb
+          }))
+        };
+      }
+      
+      throw new Error('Combined filtering requires Firebase database');
+    } catch (error) {
+      throw new Error(`Combined filtering failed: ${error.message}`);
+    }
+  }
+
+  // Get truly random recipe from complete database
+  async getTrulyRandom() {
+    try {
+      // Check if we're using Firebase
+      if (this.db.getAllRecipes) {
+        // Get ALL recipes for maximum randomness
+        const recipes = await this.db.getAllRecipes();
+        if (!recipes || recipes.length === 0) {
+          return { meals: null };
+        }
+        
+        // Advanced randomization algorithm
+        const timestamp = Date.now();
+        const randomSeed = Math.sin(timestamp) * 10000;
+        const index1 = Math.floor(Math.abs(randomSeed % recipes.length));
+        const index2 = Math.floor(Math.random() * recipes.length);
+        const finalIndex = Math.floor((index1 + index2) / 2) % recipes.length;
+        
+        const randomRecipe = recipes[finalIndex];
+        
+        console.log(`🎯 TRULY RANDOM: Selected recipe ${finalIndex + 1} of ${recipes.length}: ${randomRecipe.strMeal}`);
+        return { meals: [new Recipe(randomRecipe).toApiFormat()] };
+      }
+      
+      // Fallback to SQL
+      const query = 'SELECT * FROM recipes ORDER BY RANDOM() LIMIT 1';
+      const row = await this.db.get(query);
+      
+      if (!row) {
+        return { meals: null };
+      }
+      
+      return { meals: [new Recipe(row).toApiFormat()] };
+    } catch (error) {
+      throw new Error(`Get truly random recipe failed: ${error.message}`);
+    }
+  }
+
+  // Get random recipe with filters applied
+  async getRandomWithFilters(filters) {
+    try {
+      // First filter recipes, then pick random from results
+      const filteredResults = await this.filterByCombined(filters, 1000); // Get more for better randomness
+      
+      if (!filteredResults.meals || filteredResults.meals.length === 0) {
+        return { meals: null };
+      }
+      
+      // Pick random from filtered results
+      const randomIndex = Math.floor(Math.random() * filteredResults.meals.length);
+      const randomMeal = filteredResults.meals[randomIndex];
+      
+      // Get full recipe details
+      return await this.getById(randomMeal.idMeal);
+    } catch (error) {
+      throw new Error(`Get random with filters failed: ${error.message}`);
+    }
+  }
 }
 
 module.exports = RecipeManager;
