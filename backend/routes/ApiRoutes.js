@@ -17,173 +17,136 @@ class ApiRoutes {
   }
 
   setupRoutes() {
-    // V1 API Routes
-    const v1Router = express.Router();
+    // 🆓 COMPLETELY FREE API - NO AUTHENTICATION REQUIRED ANYWHERE! 🆓
+    console.log('🆓 Setting up COMPLETELY FREE API with no authentication requirements');
     
-    // Apply API key validation to v1 routes only
-    v1Router.use(rateLimitManager.validateApiKey);
+    const apiRouter = express.Router();
+    
+    // ===== CORE RECIPE ENDPOINTS (FREE) =====
     
     // Search and lookup endpoints
-    v1Router.get('/search.php', ErrorHandler.asyncHandler(this.searchMeals.bind(this)));
-    v1Router.get('/lookup.php', ErrorHandler.asyncHandler(this.lookupMeal.bind(this)));
-    v1Router.get('/random.php', ErrorHandler.asyncHandler(this.getRandomMeal.bind(this)));
+    apiRouter.get('/search.php', ErrorHandler.asyncHandler(this.searchMeals.bind(this)));
+    apiRouter.get('/lookup.php', ErrorHandler.asyncHandler(this.lookupMeal.bind(this)));
+    apiRouter.get('/random.php', ErrorHandler.asyncHandler(this.getRandomMeal.bind(this)));
     
-    // Premium endpoints
-    v1Router.get('/randomselection.php', 
-      rateLimitManager.requirePremium,
-      rateLimitManager.getPremiumLimiter(),
-      ErrorHandler.asyncHandler(this.getRandomSelection.bind(this))
-    );
-    v1Router.get('/latest.php', 
-      rateLimitManager.requirePremium,
-      rateLimitManager.getPremiumLimiter(),
-      ErrorHandler.asyncHandler(this.getLatestMeals.bind(this))
-    );
+    // Previously "premium" endpoints - NOW FREE!
+    apiRouter.get('/randomselection.php', ErrorHandler.asyncHandler(this.getRandomSelection.bind(this)));
+    apiRouter.get('/latest.php', ErrorHandler.asyncHandler(this.getLatestMeals.bind(this)));
     
     // Category and listing endpoints
-    v1Router.get('/categories.php', ErrorHandler.asyncHandler(this.getCategories.bind(this)));
-    v1Router.get('/list.php', ErrorHandler.asyncHandler(this.getListings.bind(this)));
+    apiRouter.get('/categories.php', ErrorHandler.asyncHandler(this.getCategories.bind(this)));
+    apiRouter.get('/list.php', ErrorHandler.asyncHandler(this.getListings.bind(this)));
     
     // Filter endpoints
-    v1Router.get('/filter.php', ErrorHandler.asyncHandler(this.filterMeals.bind(this)));
+    apiRouter.get('/filter.php', ErrorHandler.asyncHandler(this.filterMeals.bind(this)));
     
-    // CRUD endpoints for adding recipes (premium)
-    v1Router.post('/meals', 
-      rateLimitManager.requirePremium,
-      rateLimitManager.getUploadLimiter(),
+    // ===== CRUD ENDPOINTS (FREE) =====
+    
+    // Recipe management - NO authentication needed!
+    apiRouter.post('/meals', 
       this.imageManager.getSingleUploadMiddleware('image'),
       ErrorHandler.asyncHandler(this.createMeal.bind(this))
     );
-    v1Router.put('/meals/:id', 
-      rateLimitManager.requirePremium,
+    apiRouter.put('/meals/:id', 
       this.imageManager.getSingleUploadMiddleware('image'),
       ErrorHandler.asyncHandler(this.updateMeal.bind(this))
     );
-    v1Router.delete('/meals/:id', 
-      rateLimitManager.requirePremium,
-      ErrorHandler.asyncHandler(this.deleteMeal.bind(this))
-    );
+    apiRouter.delete('/meals/:id', ErrorHandler.asyncHandler(this.deleteMeal.bind(this)));
     
-    // Image management endpoints
-    v1Router.get('/meals/:id/images', ErrorHandler.asyncHandler(this.getMealImages.bind(this)));
-    v1Router.post('/meals/:id/images', 
-      rateLimitManager.requirePremium,
-      rateLimitManager.getUploadLimiter(),
-      ErrorHandler.asyncHandler(this.addMealImage.bind(this))
-    );
-    v1Router.delete('/meals/:id/images/:imageIndex', 
-      rateLimitManager.requirePremium,
-      ErrorHandler.asyncHandler(this.deleteMealImage.bind(this))
-    );
-    v1Router.put('/meals/:id/images/primary/:imageIndex', 
-      rateLimitManager.requirePremium,
-      ErrorHandler.asyncHandler(this.setPrimaryImage.bind(this))
-    );
+    // ===== IMAGE MANAGEMENT (FREE) =====
+    
+    // Image endpoints - NO authentication needed!
+    apiRouter.get('/meals/:id/images', ErrorHandler.asyncHandler(this.getMealImages.bind(this)));
+    apiRouter.post('/meals/:id/images', ErrorHandler.asyncHandler(this.addMealImage.bind(this)));
+    apiRouter.delete('/meals/:id/images/:imageIndex', ErrorHandler.asyncHandler(this.deleteMealImage.bind(this)));
+    apiRouter.put('/meals/:id/images/primary/:imageIndex', ErrorHandler.asyncHandler(this.setPrimaryImage.bind(this)));
 
-    // Mount v1 routes
-    this.router.use('/json/v1/:key', (req, res, next) => {
-      req.query.key = req.params.key;
-      next();
-    }, v1Router);
+    // ===== MOUNT ALL ROUTES AS FREE API =====
+    
+    // Mount on multiple paths for maximum compatibility
+    this.router.use('/v1', apiRouter);                    // /api/v1/random.php
+    this.router.use('/json/v1/1', apiRouter);            // /api/json/v1/1/random.php (backward compatibility)
+    this.router.use('/json/v1/:any', apiRouter);         // /api/json/v1/{anything}/random.php
 
-    // Alternative route structure without key in path
-    this.router.use('/v1', v1Router);
-
-    // PUBLIC ENDPOINTS (No authentication required) - For mobile apps
+    // ===== SIMPLIFIED PUBLIC ROUTES (ALTERNATIVE FORMATS) =====
+    
     const publicRouter = express.Router();
     
-    // Public random endpoint - truly random from database
+    // Simple REST-style endpoints for modern apps
     publicRouter.get('/random', ErrorHandler.asyncHandler(this.getRandomMeal.bind(this)));
-    
-    // Public search endpoints
     publicRouter.get('/search/:query', ErrorHandler.asyncHandler(async (req, res) => {
       req.query.s = req.params.query;
       return this.searchMeals(req, res);
     }));
-    
-    // Public lookup by ID
     publicRouter.get('/lookup/:id', ErrorHandler.asyncHandler(async (req, res) => {
       req.query.i = req.params.id;
       return this.lookupMeal(req, res);
     }));
-    
-    // Public filter endpoints
     publicRouter.get('/filter/category/:category', ErrorHandler.asyncHandler(async (req, res) => {
       req.query.c = req.params.category;
       return this.filterMeals(req, res);
     }));
-    
     publicRouter.get('/filter/area/:area', ErrorHandler.asyncHandler(async (req, res) => {
       req.query.a = req.params.area;
       return this.filterMeals(req, res);
     }));
-    
-    // Public listings
     publicRouter.get('/categories', ErrorHandler.asyncHandler(this.getCategories.bind(this)));
     publicRouter.get('/areas', ErrorHandler.asyncHandler(async (req, res) => {
       req.query.a = 'list';
       return this.getListings(req, res);
     }));
     
-    // DEBUG: Random system status endpoint
-    publicRouter.get('/debug/random-info', ErrorHandler.asyncHandler(async (req, res) => {
+    // API status and info endpoint
+    publicRouter.get('/info', ErrorHandler.asyncHandler(async (req, res) => {
       try {
-        // Get total recipe count
         const allRecipes = this.db.getAllRecipes ? await this.db.getAllRecipes() : [];
         const count = allRecipes.length;
-        
-        // Test random selection
         const randomResult = await this.recipeManager.getTrulyRandom();
         
         res.json({
-          status: 'Random system operational',
+          status: '🆓 COMPLETELY FREE API - NO KEYS REQUIRED!',
+          message: 'All endpoints are free to use without any authentication',
           database: {
             type: this.db.getAllRecipes ? 'Firebase' : 'SQLite',
             totalRecipes: count,
             randomWorking: randomResult && randomResult.meals && randomResult.meals.length > 0
           },
-          randomAlgorithm: {
-            description: 'Advanced multi-layer randomization',
-            steps: [
-              '1. Fetch ALL recipes from Firebase',
-              '2. Apply Fisher-Yates shuffling algorithm',
-              '3. Use timestamp-based seed for entropy',
-              '4. Apply dual-index randomization',
-              '5. Return truly random selection'
+          endpoints: {
+            classicFormat: [
+              '/api/v1/random.php',
+              '/api/v1/search.php?s={query}',
+              '/api/v1/lookup.php?i={id}',
+              '/api/v1/filter.php?c={category}',
+              '/api/v1/categories.php',
+              '/api/v1/list.php?c=list',
+              '/api/v1/randomselection.php?count=5',
+              '/api/v1/latest.php'
+            ],
+            modernFormat: [
+              '/api/public/random',
+              '/api/public/search/{query}',
+              '/api/public/lookup/{id}',
+              '/api/public/filter/category/{category}',
+              '/api/public/filter/area/{area}',
+              '/api/public/categories',
+              '/api/public/areas'
+            ],
+            backwardCompatibility: [
+              '/api/json/v1/1/random.php (works with any "key")',
+              '/api/json/v1/anything/random.php (ignores key)'
             ]
           },
-          testResult: {
-            selectedRecipe: randomResult.meals ? randomResult.meals[0].strMeal : null,
-            isNull: !randomResult.meals
-          },
-          endpoints: {
-            public: {
-              random: '/api/public/random',
-              search: '/api/public/search/{query}',
-              lookup: '/api/public/lookup/{id}',
-              categories: '/api/public/categories'
-            },
-            authenticated: {
-              random: '/api/v1/random.php?key=1',
-              randomWithFilters: '/api/v1/random.php?key=1&c=Pasta',
-              premium: '/api/v1/randomselection.php?key={premium_key}'
-            }
-          }
+          note: 'Use ANY format above - all work without authentication!'
         });
       } catch (error) {
         res.status(500).json({
-          status: 'Random system error',
-          error: error.message,
-          troubleshooting: [
-            'Check Firebase connection',
-            'Verify database has recipes',
-            'Check RecipeManager methods'
-          ]
+          status: 'API error',
+          error: error.message
         });
       }
     }));
     
-    // Mount public routes
+    // Mount public routes  
     this.router.use('/public', publicRouter);
 
     // Images endpoint for Firebase Storage access
