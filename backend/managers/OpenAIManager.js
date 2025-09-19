@@ -148,6 +148,19 @@ ${existingContext ? 'IMPORTANT: Create something different from the existing rec
 - Add ingredient-specific tips (choose heavy fruits, avoid soft spots, select bright green herbs)
 - Mention texture and quality indicators for each ingredient
 - Include seasonal availability and freshness markers where applicable
+- 🥗 DIETARY ANALYSIS: Analyze ingredients and set dietary flags appropriately:
+  * vegetarian: true if no meat, fish, or animal products (except dairy/eggs)
+  * vegan: true if no animal products whatsoever (no meat, fish, dairy, eggs, honey)
+  * pescatarian: true if contains fish but no other meat
+  * keto: true if very low carb (under 10g carbs per serving)
+  * lowCarb: true if moderate low carb (under 30g carbs per serving)
+  * highProtein: true if over 25g protein per serving
+  * glutenFree: true if no wheat, barley, rye, or gluten-containing ingredients
+  * dairyFree: true if no milk, cheese, butter, cream, or dairy products
+  * nutFree: true if no nuts or nut products
+  * lowSodium: true if under 600mg sodium per serving
+  * lowSugar: true if under 10g sugar per serving
+  * mediterraneanDiet: true if uses olive oil, fish, vegetables, herbs typical of Mediterranean cuisine
 - 🚨 ONLY use ingredients from this EXACT list (match names precisely): abalone, acai berry, ackee, acorn squash, active dry yeast, adzuki beans, agar agar, agave nectar, aioli, aleppo pepper, alfalfa sprouts, alfredo sauce, all-purpose flour, allspice, almond butter, almond extract, almond flour, almond milk, almond paste, almonds, anchovies, Anchovy Paste, andouille sausage, anise seeds, annatto, apple, apple butter, applesauce, apricot, apricot jam, arborio rice, Arrowroot powder, artichoke, asafoetida, asiago cheese, Asian Pear, asparagus, avocado, bacon, Baguette, baking powder, baking soda, balsamic vinegar, banana, banana blossom, barbecue sauce, barley, barley flour, basil, basil seeds, Basmati Rice, Bay Leaf, beef, Beef Bourguignon, beef brisket, beef broth, Beef Ribs, beef stock, beef tenderloin, beets, Belacan (shrimp paste), bell pepper, bell peppers, besan (chickpea flour), black beans, black cardamom, black fungus (cloud ear), Black Garlic, Black Pepper, Black Peppercorns, black salt (kala namak), Black Tea, black truffle, Black-Eyed Peas, Blood Sausage, blue cheese, blue cheese dressing, blueberry, bok choy, Bonito Flakes, bourbon, Brandy, Bread, bread flour, Breadcrumbs, Breakfast Sausage, Brie, Broccoli, Broccolini, Brown Mustard Seeds, brown rice, brown sugar, brownie mix, brussels sprouts, buckwheat, buckwheat flour, bulgur, burdock root, butter, butter lettuce, buttermilk, buttermilk powder, butternut squash, cabbage, Cacao Nibs, Cactus Pear (Prickly Pear), Cajun Seasoning, Calamari (Squid), camembert, candied ginger, candied orange peel, candlenut, cane vinegar, canned salmon, canned tomatoes, canned tuna, cannellini beans, Caper Berries, Capers, Caramel Sauce, caraway seeds, carne asada, carolina reaper, carrot, cashew butter, cashew milk, cashews, cassava, catfish, cauliflower, cayenne pepper, celery, celery root (celeriac), champagne vinegar, chana dal, chanterelle mushrooms, char siu sauce, cheddar cheese, cheese, cheese curds, cherry, cherry tomato, chervil, chickpeas, chili oil, chili paste, chili powder, chili sauce, Chinese five-spice, chipotle chili powder, chives, chocolate chips, chocolate hazelnut spread, chocolate syrup, cider, cilantro, cinnamon, cinnamon stick, clam juice, clams, clarified butter, clotted cream, cloves, cocoa powder, coconut, coconut aminos, coconut cream, coconut milk, coconut oil, coconut sugar, coconut vinegar, cod, coffee, cognac, collard greens, condensed milk, coriander seeds, corn, corn flakes, corn oil, corn syrup, corn tortillas, corned beef, cornmeal, cotija cheese, cottage cheese, crab, crab meat, cranberries, cream cheese, cream of coconut, cream of tartar, crème fraîche, cremebrule, cremini mushrooms, cucumber, cumin seeds, curly parsley, currants, curry leaves, curry paste, curry powder, daikon radish, dashi, dates, demi-glace, diced tomatoes, dijon mustard, dill, dill seeds, dried apricots, dried cranberries, dried figs, dried hibiscus, dried shrimp, dried thyme, dry mustard powder, duck, duck eggs, duck fat, duck sauce, dulce de leche, edam cheese, edamame, egg noodles, egg whites, egg yolks, eggplant, eggs, egusi seeds, elderberry, empanadas, enoki mushrooms, espresso powder, evaporated milk, extra virgin olive oil, fava beans, fennel bulb, fennel seeds, fenugreek leaves, fenugreek seeds, fermented black beans, filé powder, fish maw, fish sauce, five-spice powder, flaxseeds, flour tortillas, fontina cheese, forbidden rice (black rice), freekeh, freeze-dried fruit, french dressing, fried onions, frosting, fruit cocktail (canned), garam masala, garlic, garlic chives, garlic powder, garlic scapes, gelatin, gin, ginger, ginger paste, ginger powder, gingersnaps (crushed), glucose syrup, glutinous rice (sticky rice), goat, goat cheese, gochugaru (Korean chili flakes), gochujang, salmon, salt, spaghetti, Spaghetti Carbonara, spinach, sugar, sushi, tiramisu
 
 Return ONLY this comprehensive JSON format with NO extra text:
@@ -163,6 +176,20 @@ Return ONLY this comprehensive JSON format with NO extra text:
   "strCookTime": "30 minutes",
   "strTotalTime": "45 minutes",
   "strServings": "4",
+  "dietary": {
+    "vegetarian": false,
+    "vegan": false,
+    "pescatarian": false,
+    "keto": false,
+    "lowCarb": false,
+    "highProtein": false,
+    "glutenFree": false,
+    "dairyFree": false,
+    "nutFree": false,
+    "lowSodium": false,
+    "lowSugar": false,
+    "mediterraneanDiet": false
+  },
   "strIngredient1": "First ingredient", "strMeasure1": "Amount",
   "strIngredient2": "Second ingredient", "strMeasure2": "Amount",
   "strIngredient3": "Third ingredient", "strMeasure3": "Amount",
@@ -695,6 +722,20 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
     "Step 7: Continue with extremely detailed cooking steps, including specific temperatures, exact times, visual cues, sounds to listen for, aromas to notice, and professional techniques",
     "...Steps 8-25+: Each step must be ultra-detailed with temperatures, timing, visual indicators, troubleshooting tips, and professional cooking techniques to ensure perfect results..."
   ],
+  "dietary": {
+    "vegetarian": false,
+    "vegan": false,
+    "pescatarian": false,
+    "keto": false,
+    "lowCarb": false,
+    "highProtein": false,
+    "glutenFree": false,
+    "dairyFree": false,
+    "nutFree": false,
+    "lowSodium": false,
+    "lowSugar": false,
+    "mediterraneanDiet": false
+  },
   "strIngredient1": "First ingredient", "strMeasure1": "Amount",
   "strIngredient2": "Second ingredient", "strMeasure2": "Amount",
   "strIngredient3": "Third ingredient", "strMeasure3": "Amount",
@@ -719,6 +760,20 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
   "strArea": "${randomCuisine}",
   "strDescription": "Brief appetizing description (2-3 sentences)",
   "instructions": ["Step 1: detailed instruction", "Step 2: detailed instruction", "Step 3: detailed instruction"],
+  "dietary": {
+    "vegetarian": false,
+    "vegan": false,
+    "pescatarian": false,
+    "keto": false,
+    "lowCarb": false,
+    "highProtein": false,
+    "glutenFree": false,
+    "dairyFree": false,
+    "nutFree": false,
+    "lowSodium": false,
+    "lowSugar": false,
+    "mediterraneanDiet": false
+  },
   "strIngredient1": "First ingredient", "strMeasure1": "Amount",
   "strIngredient2": "Second ingredient", "strMeasure2": "Amount",
   "strIngredient3": "Third ingredient", "strMeasure3": "Amount",
@@ -733,7 +788,7 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
       messages: [
         {
           role: 'system',
-          content: 'You are a chef. Create realistic recipes with real ingredients and detailed instructions. Return only valid JSON.'
+          content: 'You are a chef. Create realistic recipes with real ingredients and detailed instructions. IMPORTANT: Analyze ingredients and set dietary flags appropriately (vegetarian if no meat/fish, vegan if no animal products, glutenFree if no wheat/gluten, etc.). Return only valid JSON.'
         },
         {
           role: 'user',
@@ -1557,11 +1612,24 @@ Return as JSON array.`;
 3. 🍳 EQUIPMENT SELECTION: Choose 4-8 items from this comprehensive equipment list based on cooking methods and ingredients used:
    Air fryer, Broiler pan, Dutch oven, Grill, Grill pan, Microwave, Oven, Pressure cooker, Rice cooker, Saucepan, Baking sheet, Frying pan, Slow cooker, Small pot, Medium pot, Large pot, Stovetop, Wok, Bench scraper, Chef's knife, Citrus juicer, Citrus zester, Cutting board, Dough scraper, Egg separator, Fish spatula, Food tweezers, Garlic press, Jar opener, Kitchen scissors, Ladle, Mandoline slicer, Meat tenderizer, Spray bottle, Paring knife, Pastry blender, Pastry brush, Pasta spoon, Peeler, Pizza cutter, Rolling pin, Spatula (rubber), Spatula (metal), Tongs, Vegetable peeler, Whisk, Zester, Glass measuring cup, Kitchen scale, Large mixing bowl, Medium mixing bowl, Small mixing bowl, Measuring cups, Measuring spoons, Mortar and pestle, Piping bag, Plate, Bowl, Salad bowl, Serving bowl, Tamper (for blender), Timer, Toothpicks, Tweezers (plating), Fork, Spoon, Knife (table), Serving spoon, Slotted spoon, Baking dish, Baking ramekin, Cake pan, Cooling rack, Cookie cutters, Loaf pan, Muffin tin, Parchment paper, Pie dish, Silicone baking mat, Springform pan, Stand mixer, Whipped cream siphon, Can opener, Colander, Funnel, Salad spinner, Sieve, Skewers, Strainer, Storage container, Bottle opener, Corkscrew, Ice cube mold, Ice cream scoop, Cocktail shaker, Aluminum foil, Apron, Dish towel, Oven mitts, Paper towels, Plastic wrap, Trivet, Chopsticks, Food processor, Hand mixer, Sous vide wand
 4. 🚨 CRITICAL: ONLY use ingredients from this EXACT list - match names PRECISELY: ${allowedIngredients.join(', ')}
-5. ✅ Instructions must be COMPREHENSIVE cooking steps with 25-40 detailed actions (not descriptions)
-6. ✅ All times must be specific numbers (15 min, 25 min, etc.)
-7. ✅ All measurements must be precise (2 cups, 1 tbsp, etc.)
-8. ✅ Generate complete ingredient slots 1-20
-9. 🔧 EQUIPMENT INTELLIGENCE: Select equipment logically:
+5. 🥗 DIETARY ANALYSIS: Analyze ingredients and set dietary flags appropriately:
+   - vegetarian: true if no meat, fish, or animal products (except dairy/eggs)
+   - vegan: true if no animal products whatsoever (no meat, fish, dairy, eggs, honey)
+   - pescatarian: true if contains fish but no other meat
+   - keto: true if very low carb (under 10g carbs per serving)
+   - lowCarb: true if moderate low carb (under 30g carbs per serving)
+   - highProtein: true if over 25g protein per serving
+   - glutenFree: true if no wheat, barley, rye, or gluten-containing ingredients
+   - dairyFree: true if no milk, cheese, butter, cream, or dairy products
+   - nutFree: true if no nuts or nut products
+   - lowSodium: true if under 600mg sodium per serving
+   - lowSugar: true if under 10g sugar per serving
+   - mediterraneanDiet: true if uses olive oil, fish, vegetables, herbs typical of Mediterranean cuisine
+6. ✅ Instructions must be COMPREHENSIVE cooking steps with 25-40 detailed actions (not descriptions)
+7. ✅ All times must be specific numbers (15 min, 25 min, etc.)
+8. ✅ All measurements must be precise (2 cups, 1 tbsp, etc.)
+9. ✅ Generate complete ingredient slots 1-20
+10. 🔧 EQUIPMENT INTELLIGENCE: Select equipment logically:
    - For chopping/prep: Chef's knife, Cutting board, Measuring cups/spoons
    - For stovetop cooking: Frying pan/Saucepan + Spatula + Tongs
    - For baking: Oven + Baking sheet/dish + Measuring tools
@@ -1654,6 +1722,21 @@ Return ONLY valid JSON with this COMPLETE structure:
     "fiber": "4g",
     "sugar": "6g",
     "sodium": "580mg"
+  },
+  
+  "dietary": {
+    "vegetarian": false,
+    "vegan": false,
+    "pescatarian": false,
+    "keto": false,
+    "lowCarb": false,
+    "highProtein": false,
+    "glutenFree": false,
+    "dairyFree": false,
+    "nutFree": false,
+    "lowSodium": false,
+    "lowSugar": false,
+    "mediterraneanDiet": false
   },
   
   "cookingInfo": {
