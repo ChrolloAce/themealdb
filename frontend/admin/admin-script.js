@@ -805,96 +805,157 @@ class AdminPanel {
     };
 
     this.generateResult.innerHTML = `
-      <div class="generation-results">
-        <div class="generated-recipe-card">
-        <!-- Recipe Header -->
-        <div class="recipe-header-modern">
-          <h1 class="recipe-title-modern">${recipe.strMeal}</h1>
-          ${imageUrl ? `
-            <img src="${imageUrl}" alt="${recipe.strMeal}" style="width: 100%; max-width: 600px; border-radius: 12px; margin-top: 1rem;">
+      <div style="background: var(--color-surface); border-radius: var(--radius-card); padding: var(--space-6); box-shadow: var(--shadow-lg); border: 2px solid var(--color-success, #10B981); margin-top: var(--space-6);">
+        
+        <!-- SUCCESS HEADER -->
+        <div style="background: linear-gradient(135deg, var(--color-success, #10B981) 0%, var(--color-success-600, #059669) 100%); color: white; padding: var(--space-6); border-radius: var(--radius-card); margin-bottom: var(--space-6); box-shadow: var(--shadow-md); text-align: center;">
+          <div style="font-size: 3rem; margin-bottom: var(--space-2);">🎉</div>
+          <h2 style="font-size: 2rem; font-weight: 700; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Recipe Generated Successfully!</h2>
+          <p style="margin: var(--space-2) 0 0 0; font-size: 1.1rem; opacity: 0.9;">${isPreview ? 'Preview Mode' : 'Your AI-powered recipe is ready'}</p>
+        </div>
+        
+        <div style="background: var(--color-input-bg); border-radius: var(--radius-card); padding: var(--space-6); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
+          
+          <!-- RECIPE TITLE & IMAGE -->
+          <div style="text-align: center; margin-bottom: var(--space-6); padding-bottom: var(--space-4); border-bottom: 2px solid var(--color-divider);">
+            <h1 style="font-size: 2.5rem; font-weight: 700; color: var(--color-text); margin: 0 0 var(--space-4) 0; display: flex; align-items: center; justify-content: center; gap: var(--space-2);">
+              🍽️ ${recipe.strMeal}
+            </h1>
+            ${imageUrl ? `
+              <div style="display: inline-block; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg); border: 3px solid var(--color-divider);">
+                <img src="${imageUrl}" alt="${recipe.strMeal}" style="width: 100%; max-width: 400px; height: 250px; object-fit: cover; display: block;">
+            </div>
+            ` : `
+              <div style="width: 100%; max-width: 400px; height: 250px; background: linear-gradient(135deg, var(--color-input-bg) 0%, var(--color-divider) 100%); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 4rem; border: 2px dashed var(--color-divider); margin: 0 auto;">🍽️</div>
+            `}
+          </div>
+          
+          <!-- STATS BAR WITH ENHANCED STYLING -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-6);">
+            <div style="text-align: center; padding: var(--space-4); background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
+              <div style="font-size: 2rem; margin-bottom: var(--space-1);">⏱️</div>
+              <div style="font-size: 12px; color: var(--color-muted); font-weight: 600; text-transform: uppercase; margin-bottom: var(--space-1);">Prep</div>
+              <div style="font-size: 16px; font-weight: 700; color: var(--color-text);">${recipe.prepTime || '15 min'}</div>
+            </div>
+            <div style="text-align: center; padding: var(--space-4); background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
+              <div style="font-size: 2rem; margin-bottom: var(--space-1);">🔥</div>
+              <div style="font-size: 12px; color: var(--color-muted); font-weight: 600; text-transform: uppercase; margin-bottom: var(--space-1);">Cook</div>
+              <div style="font-size: 16px; font-weight: 700; color: var(--color-text);">${recipe.cookTime || '30 min'}</div>
+          </div>
+            <div style="text-align: center; padding: var(--space-4); background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
+              <div style="font-size: 2rem; margin-bottom: var(--space-1);">⏰</div>
+              <div style="font-size: 12px; color: var(--color-muted); font-weight: 600; text-transform: uppercase; margin-bottom: var(--space-1);">Total</div>
+              <div style="font-size: 16px; font-weight: 700; color: var(--color-text);">${recipe.totalTime || '45 min'}</div>
+            </div>
+            <div style="text-align: center; padding: var(--space-4); background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
+              <div style="font-size: 2rem; margin-bottom: var(--space-1);">🍽️</div>
+              <div style="font-size: 12px; color: var(--color-muted); font-weight: 600; text-transform: uppercase; margin-bottom: var(--space-1);">Serves</div>
+              <div style="font-size: 16px; font-weight: 700; color: var(--color-text);">${recipe.servings || '4'}</div>
+          </div>
+            <div style="text-align: center; padding: var(--space-4); background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
+              <div style="font-size: 2rem; margin-bottom: var(--space-1);">📊</div>
+              <div style="font-size: 12px; color: var(--color-muted); font-weight: 600; text-transform: uppercase; margin-bottom: var(--space-1);">Difficulty</div>
+              <div style="font-size: 16px; font-weight: 700; color: var(--color-text);">${recipe.difficulty || 'Medium'}</div>
+            </div>
+            <div style="text-align: center; padding: var(--space-4); background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
+              <div style="font-size: 2rem; margin-bottom: var(--space-1);">🥘</div>
+              <div style="font-size: 12px; color: var(--color-muted); font-weight: 600; text-transform: uppercase; margin-bottom: var(--space-1);">Yield</div>
+              <div style="font-size: 16px; font-weight: 700; color: var(--color-text);">${recipe.yield || 'Serves 4'}</div>
+          </div>
+            </div>
+          
+          <!-- RECIPE BADGES -->
+          <div style="display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: center; margin-bottom: var(--space-6);">
+            <span style="padding: var(--space-2) var(--space-4); background: var(--color-primary); color: white; border-radius: var(--radius-full); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: var(--space-1);">
+              🏷️ ${recipe.strCategory || 'Uncategorized'}
+            </span>
+            <span style="padding: var(--space-2) var(--space-4); background: var(--color-info, #3B82F6); color: white; border-radius: var(--radius-full); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: var(--space-1);">
+              🌍 ${recipe.strArea || 'International'}
+            </span>
+            ${qualityBadge ? `<span style="padding: var(--space-2) var(--space-4); background: var(--color-success, #10B981); color: white; border-radius: var(--radius-full); font-size: 14px; font-weight: 600;">${qualityBadge}</span>` : ''}
+        </div>
+        
+          <!-- DESCRIPTION -->
+          ${recipe.strDescription ? `
+            <div style="background: var(--color-surface); padding: var(--space-5); border-radius: var(--radius-card); margin-bottom: var(--space-6); border-left: 4px solid var(--color-info, #3B82F6); box-shadow: var(--shadow-sm);">
+              <h3 style="margin: 0 0 var(--space-3) 0; color: var(--color-text); display: flex; align-items: center; gap: var(--space-2); font-size: 1.25rem; font-weight: 600;">📖 Description</h3>
+              <p style="color: var(--color-muted); line-height: 1.6; margin: 0; font-size: 1rem;">${recipe.strDescription}</p>
+          </div>
           ` : ''}
-        </div>
-        
-        <!-- Stats Bar -->
-        <div class="recipe-stats-bar">
-          <div class="stat-badge">
-            <span class="stat-badge-icon">⏱️</span>
-            <div class="stat-badge-content">
-              <span class="stat-badge-label">Prep</span>
-              <span class="stat-badge-value">${recipe.prepTime || '15 min'}</span>
-            </div>
-          </div>
-          <div class="stat-badge">
-            <span class="stat-badge-icon">🔥</span>
-            <div class="stat-badge-content">
-              <span class="stat-badge-label">Cook</span>
-              <span class="stat-badge-value">${recipe.cookTime || '30 min'}</span>
-            </div>
-          </div>
-          <div class="stat-badge">
-            <span class="stat-badge-icon">⏰</span>
-            <div class="stat-badge-content">
-              <span class="stat-badge-label">Total</span>
-              <span class="stat-badge-value">${recipe.totalTime || '45 min'}</span>
-            </div>
-          </div>
-          <div class="stat-badge">
-            <span class="stat-badge-icon">🍽️</span>
-            <div class="stat-badge-content">
-              <span class="stat-badge-label">Serves</span>
-              <span class="stat-badge-value">${recipe.servings || '4'}</span>
-            </div>
-          </div>
-          <div class="stat-badge">
-            <span class="stat-badge-icon">📊</span>
-            <div class="stat-badge-content">
-              <span class="stat-badge-label">Difficulty</span>
-              <span class="stat-badge-value">${recipe.difficulty || 'Medium'}</span>
-            </div>
-          </div>
-          <div class="stat-badge">
-            <span class="stat-badge-icon">🥘</span>
-            <div class="stat-badge-content">
-              <span class="stat-badge-label">Yield</span>
-              <span class="stat-badge-value">${recipe.yield || 'Serves 4'}</span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Ingredients Grid -->
-        <div class="ingredients-grid-modern">
-          <div class="ingredients-grid-header">
-            <span class="ingredients-grid-title">🥘 Ingredients</span>
-          </div>
-          <div class="ingredients-container">
-            ${ingredients.map(ing => {
+          
+          <!-- INGREDIENTS SECTION -->
+          <div style="background: var(--color-surface); padding: var(--space-5); border-radius: var(--radius-card); margin-bottom: var(--space-6); border: 2px solid var(--color-success, #10B981); box-shadow: var(--shadow-sm); position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--color-success, #10B981) 0%, var(--color-success-600, #059669) 100%);"></div>
+            <h3 style="margin: 0 0 var(--space-4) 0; color: var(--color-text); display: flex; align-items: center; gap: var(--space-2); font-size: 1.5rem; font-weight: 600;">
+              🥄 Ingredients (${ingredients.length} items)
+            </h3>
+            <div style="display: grid; gap: var(--space-3);">
+              ${ingredients.map((ing, index) => {
               const [amount, ...nameParts] = ing.split(' ');
               const name = nameParts.join(' ');
               return `
-                <div class="ingredient-card">
-                  <div class="ingredient-icon">🥄</div>
-                  <div class="ingredient-details">
-                    <div class="ingredient-name">${name || ing}</div>
-                    <div class="ingredient-amount">${amount && !name ? ing : amount}</div>
+                  <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); background: var(--color-input-bg); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
+                    <span style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: var(--color-success, #10B981); color: white; border-radius: 50%; font-size: 14px; font-weight: 600; flex-shrink: 0;">${index + 1}</span>
+                    <div style="flex: 1;">
+                      <div style="color: var(--color-text); font-weight: 500; font-size: 1rem;">${name || ing}</div>
+                      ${amount && name ? `<div style="color: var(--color-muted); font-size: 0.9rem; margin-top: 2px;">${amount}</div>` : ''}
                   </div>
                 </div>
               `;
             }).join('')}
+            </div>
           </div>
+          
+          <!-- INSTRUCTIONS SECTION -->
+          <div style="background: var(--color-surface); padding: var(--space-5); border-radius: var(--radius-card); margin-bottom: var(--space-6); border: 2px solid var(--color-warning, #F59E0B); box-shadow: var(--shadow-sm); position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--color-warning, #F59E0B) 0%, var(--color-warning-600, #D97706) 100%);"></div>
+            <h3 style="margin: 0 0 var(--space-4) 0; color: var(--color-text); display: flex; align-items: center; gap: var(--space-2); font-size: 1.5rem; font-weight: 600;">
+              📝 Instructions (${steps.length > 0 ? steps.length : 1} steps)
+            </h3>
+            <div style="display: grid; gap: var(--space-4);">
+              ${steps.length > 0 ? 
+                steps.map((step, index) => `
+                  <div style="display: flex; gap: var(--space-4); padding: var(--space-4); background: var(--color-input-bg); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
+                    <span style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: var(--color-warning, #F59E0B); color: white; border-radius: 50%; font-size: 16px; font-weight: 700; flex-shrink: 0; box-shadow: var(--shadow-md);">${index + 1}</span>
+                    <span style="flex: 1; line-height: 1.6; color: var(--color-text); font-size: 1rem; padding-top: 8px;">${step}</span>
+                  </div>
+                `).join('') :
+                `<div style="padding: var(--space-6); text-align: center; background: var(--color-input-bg); border-radius: var(--radius-lg); border: 2px dashed var(--color-divider);">
+                  <p style="color: var(--color-muted); font-size: 1rem; margin: 0; line-height: 1.6;">${recipe.strInstructions || 'No instructions provided.'}</p>
+                </div>`
+              }
+            </div>
           </div>
         </div>
       </div>
     `;
     
-    // Add save button if not preview
+    // Add action buttons if not preview
     if (!isPreview) {
-      this.generateResult.innerHTML += `
-        <div class="generated-recipe-actions" style="margin-top: var(--space-4);">
-          <button id="saveRecipeBtn" class="btn-generated btn-primary">
-            <i class="fas fa-save"></i> Save Recipe to Database
+      const actionsHtml = `
+        <div style="display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap; margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--color-divider);">
+          <button id="saveRecipeBtn" style="padding: var(--space-3) var(--space-5); background: var(--color-primary); color: white; border: none; border-radius: var(--radius-lg); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: var(--space-2); transition: all 0.2s ease; box-shadow: var(--shadow-sm);">
+            💾 Save Recipe to Database
+          </button>
+          <button onclick="navigator.clipboard.writeText(JSON.stringify(${JSON.stringify(recipe).replace(/"/g, '&quot;')}, null, 2))" style="padding: var(--space-3) var(--space-5); background: var(--color-info, #3B82F6); color: white; border: none; border-radius: var(--radius-lg); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: var(--space-2); transition: all 0.2s ease; box-shadow: var(--shadow-sm);">
+            📋 Copy Recipe Data
+          </button>
+          <button onclick="adminPanel.generateRecipe()" style="padding: var(--space-3) var(--space-5); background: var(--color-success, #10B981); color: white; border: none; border-radius: var(--radius-lg); cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: var(--space-2); transition: all 0.2s ease; box-shadow: var(--shadow-sm);">
+            🎲 Generate Another
           </button>
         </div>
       `;
+      
+      // Find the last closing div and insert before it
+      const lastClosingDiv = this.generateResult.innerHTML.lastIndexOf('</div>');
+      if (lastClosingDiv !== -1) {
+        const beforeClosing = this.generateResult.innerHTML.substring(0, lastClosingDiv);
+        const afterClosing = this.generateResult.innerHTML.substring(lastClosingDiv);
+        this.generateResult.innerHTML = beforeClosing + actionsHtml + afterClosing;
+      } else {
+        this.generateResult.innerHTML += actionsHtml;
+      }
+      
       document.getElementById('saveRecipeBtn').addEventListener('click', () => this.saveGeneratedRecipe(recipe));
     }
   }
