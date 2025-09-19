@@ -56,20 +56,32 @@ class AdminPanel {
     
     // Forms (with null checks)
     if (this.generateForm) {
-      this.generateForm.addEventListener('submit', this.handleGenerateRecipe.bind(this));
+    this.generateForm.addEventListener('submit', this.handleGenerateRecipe.bind(this));
     }
     
     // Handle random mode toggle
     const randomModeCheckbox = document.getElementById('randomMode');
     const customFiltersSection = document.getElementById('customFiltersSection');
+    const switchElement = document.querySelector('.switch');
+    
+    console.log('🔍 Toggle elements found:', {
+      randomModeCheckbox: !!randomModeCheckbox,
+      customFiltersSection: !!customFiltersSection,
+      switchElement: !!switchElement
+    });
     
     if (randomModeCheckbox && customFiltersSection) {
       // Set initial state
-      customFiltersSection.style.display = randomModeCheckbox.checked ? 'none' : 'block';
+      const initialState = randomModeCheckbox.checked;
+      customFiltersSection.style.display = initialState ? 'none' : 'block';
+      console.log('🎯 Initial toggle state:', initialState, 'Filters display:', customFiltersSection.style.display);
       
-      randomModeCheckbox.addEventListener('change', () => {
-        console.log('🎛️ Random mode toggle changed:', randomModeCheckbox.checked);
-        if (randomModeCheckbox.checked) {
+      // Function to handle toggle
+      const handleToggle = () => {
+        const isChecked = randomModeCheckbox.checked;
+        console.log('🎛️ Random mode toggle changed:', isChecked);
+        
+        if (isChecked) {
           // Random mode ON - hide custom filters
           customFiltersSection.style.display = 'none';
           console.log('🎲 Random mode enabled - filters hidden');
@@ -78,9 +90,23 @@ class AdminPanel {
           customFiltersSection.style.display = 'block';
           console.log('🎯 Custom mode enabled - filters shown');
         }
-      });
+      };
+      
+      // Add multiple event listeners to ensure it works
+      randomModeCheckbox.addEventListener('change', handleToggle);
+      randomModeCheckbox.addEventListener('click', handleToggle);
+      
+      // Also add click to the switch container
+      if (switchElement) {
+        switchElement.addEventListener('click', (e) => {
+          if (e.target !== randomModeCheckbox) {
+            randomModeCheckbox.checked = !randomModeCheckbox.checked;
+            handleToggle();
+          }
+        });
+      }
     } else {
-      console.log('⚠️ Toggle elements not found:', {
+      console.error('⚠️ Toggle elements not found:', {
         randomModeCheckbox: !!randomModeCheckbox,
         customFiltersSection: !!customFiltersSection
       });
@@ -161,8 +187,8 @@ class AdminPanel {
       this.storeToken(this.token);
       
       // Show admin panel immediately
-      this.showAdminPanel();
-      this.loadDashboard();
+        this.showAdminPanel();
+        this.loadDashboard();
       
       // Update username display
       const userNameElement = document.querySelector('.user-name');
@@ -851,7 +877,7 @@ class AdminPanel {
               `;
             }).join('')}
           </div>
-        </div>
+          </div>
         </div>
       </div>
     `;
@@ -1230,12 +1256,12 @@ class AdminPanel {
           </div>
         </td>
       </tr>
-    `).join('');
-    
+      `).join('');
+      
     console.log('✅ Table HTML generated, setting up event listeners');
     
     // Add event listeners for the new minimalistic action buttons
-    this.setupRecipeActionListeners();
+      this.setupRecipeActionListeners();
     
     console.log('🎉 Recipes table rendered successfully!');
   }
@@ -1329,93 +1355,40 @@ class AdminPanel {
       const data = await response.json();
       const recipe = data.recipe || data;
       
-      // Create a modal or dedicated section for the comprehensive view
-      const modal = document.createElement('div');
-      modal.className = 'comprehensive-recipe-modal';
-      modal.innerHTML = `
-        <div class="modal-overlay"></div>
-        <div class="modal-content-large">
-          <button class="close-modal-btn">×</button>
-          <div id="comprehensiveRecipeContent"></div>
-        </div>
-      `;
+      console.log('📊 Recipe data received:', recipe);
       
-      document.body.appendChild(modal);
-      
-      // Add event listeners for closing the modal
-      const overlay = modal.querySelector('.modal-overlay');
-      const closeBtn = modal.querySelector('.close-modal-btn');
-      
-      if (overlay) {
-        overlay.addEventListener('click', () => modal.remove());
+      // Check if comprehensive recipe display is available
+      if (typeof window.recipeDisplay === 'undefined') {
+        console.error('❌ Comprehensive recipe display not loaded');
+        alert('Recipe display component not loaded. Please refresh the page.');
+        return;
       }
       
-      if (closeBtn) {
-        closeBtn.addEventListener('click', () => modal.remove());
+      // Switch to recipe editor section and display the recipe
+      this.switchSection('recipeEditor');
+      
+      // Get the container for comprehensive recipe display
+      const container = document.getElementById('comprehensiveRecipeDisplayContainer');
+      if (!container) {
+        console.error('❌ Recipe display container not found');
+        alert('Recipe display container not found.');
+        return;
       }
       
-      // Use the comprehensive display component
-      const container = document.getElementById('comprehensiveRecipeContent');
+      console.log('🖼️ Rendering recipe in comprehensive display');
       
-      // Debug logging
-      console.log('Attempting to load comprehensive display...');
-      console.log('window.recipeDisplay exists:', !!window.recipeDisplay);
-      console.log('window.ComprehensiveRecipeDisplay exists:', !!window.ComprehensiveRecipeDisplay);
-      
-      // Function to render recipe
-      const renderRecipe = () => {
-        try {
-          if (window.recipeDisplay && typeof window.recipeDisplay.renderRecipe === 'function') {
-            console.log('Using existing recipeDisplay instance');
-            window.recipeDisplay.renderRecipe(recipe, container);
-            return true;
-          } else if (window.ComprehensiveRecipeDisplay) {
-            console.log('Creating new recipeDisplay instance');
-            window.recipeDisplay = new window.ComprehensiveRecipeDisplay();
-            window.recipeDisplay.renderRecipe(recipe, container);
-            return true;
-          }
-          return false;
-        } catch (error) {
-          console.error('Error rendering recipe:', error);
-          return false;
-        }
-      };
-      
-      // Try to render immediately
-      if (!renderRecipe()) {
-        console.log('Component not ready, waiting...');
-        // Fallback - try to load after delays
-        setTimeout(() => {
-          if (!renderRecipe()) {
-            setTimeout(() => {
-              if (!renderRecipe()) {
-                console.error('Comprehensive recipe display failed to load after multiple attempts');
-                container.innerHTML = `
-                  <div class="error-message" style="padding: 20px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px;">
-                    <h3 style="color: #dc3545; margin-bottom: 15px;">🚨 Component Loading Error</h3>
-                    <p><strong>The comprehensive recipe display component failed to load.</strong></p>
-                    <p>Debug info:</p>
-                    <ul style="margin: 10px 0;">
-                      <li>window.recipeDisplay: ${!!window.recipeDisplay}</li>
-                      <li>window.ComprehensiveRecipeDisplay: ${!!window.ComprehensiveRecipeDisplay}</li>
-                      <li>Script loaded: ${document.querySelector('script[src*="comprehensive-recipe-display.js"]') ? 'Yes' : 'No'}</li>
-                    </ul>
-                    <details style="margin-top: 15px;">
-                      <summary style="cursor: pointer; font-weight: bold;">View Recipe Data</summary>
-                      <pre style="background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 4px; max-height: 300px; overflow: auto; font-size: 12px;">${JSON.stringify(recipe, null, 2)}</pre>
-                    </details>
-                    <button onclick="location.reload()" style="margin-top: 15px; padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">🔄 Refresh Page</button>
-                  </div>`;
-              }
-            }, 1000);
-          }
-        }, 500);
+      // Use the comprehensive recipe display component
+      try {
+        window.recipeDisplay.renderRecipe(recipe, container);
+        console.log('✅ Recipe rendered successfully');
+      } catch (error) {
+        console.error('❌ Error rendering recipe:', error);
+        alert('Error displaying recipe: ' + error.message);
       }
       
     } catch (error) {
-      console.error('Failed to view recipe:', error);
-      alert('Failed to load recipe details');
+      console.error('❌ Failed to view recipe:', error);
+      alert('Failed to load recipe: ' + error.message);
     }
   }
 
