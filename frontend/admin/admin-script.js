@@ -1607,6 +1607,10 @@ class AdminPanel {
     if (!finalConfirmation) return;
     
     try {
+      console.log('🗑️ Attempting to delete all recipes...');
+      console.log('📡 Making DELETE request to: /admin/recipes/delete-all');
+      console.log('🔑 Using token:', this.token ? 'Present' : 'Missing');
+      
       const response = await fetch('/admin/recipes/delete-all', {
         method: 'DELETE',
         headers: {
@@ -1615,9 +1619,19 @@ class AdminPanel {
         }
       });
       
-      const data = await response.json();
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
       
-      if (response.ok) {
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Response error text:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+      
+      const data = await response.json();
+      console.log('📊 Delete response data:', data);
+      
+      if (data.success) {
         alert(`✅ Success! Deleted ${data.deletedCount || 'all'} recipes from the database.`);
         this.loadRecipes(); // Reload the recipes list
       } else {
@@ -1625,7 +1639,7 @@ class AdminPanel {
       }
     } catch (error) {
       console.error('❌ Error deleting all recipes:', error);
-      alert('❌ Network error: Failed to delete recipes');
+      alert(`❌ Network error: ${error.message}`);
     }
   }
 
