@@ -42,6 +42,12 @@ class AdminPanel {
     // Logout
     document.getElementById('logoutBtn').addEventListener('click', this.handleLogout.bind(this));
     
+    // Delete All Recipes Button
+    const deleteAllBtn = document.getElementById('deleteAllRecipesBtn');
+    if (deleteAllBtn) {
+      deleteAllBtn.addEventListener('click', this.deleteAllRecipes.bind(this));
+    }
+    
     // Navigation
     document.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', (e) => {
@@ -805,62 +811,62 @@ class AdminPanel {
     };
 
     this.generateResult.innerHTML = `
-      <div style="background: var(--color-surface); border-radius: var(--radius-card); padding: var(--space-6); box-shadow: var(--shadow-lg); border: 2px solid var(--color-success, #10B981); margin-top: var(--space-6);">
+      <div style="background: #ffffff !important; border-radius: 20px !important; padding: 40px !important; box-shadow: 0 25px 70px rgba(0,0,0,0.2) !important; border: 4px solid #10B981 !important; margin: 40px 0 !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important; max-width: 100% !important; color: #1a202c !important;">
         
         <!-- SUCCESS HEADER -->
-        <div style="background: linear-gradient(135deg, var(--color-success, #10B981) 0%, var(--color-success-600, #059669) 100%); color: white; padding: var(--space-6); border-radius: var(--radius-card); margin-bottom: var(--space-6); box-shadow: var(--shadow-md); text-align: center;">
-          <div style="font-size: 3rem; margin-bottom: var(--space-2);">🎉</div>
-          <h2 style="font-size: 2rem; font-weight: 700; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Recipe Generated Successfully!</h2>
-          <p style="margin: var(--space-2) 0 0 0; font-size: 1.1rem; opacity: 0.9;">${isPreview ? 'Preview Mode' : 'Your AI-powered recipe is ready'}</p>
+        <div style="background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important; color: white !important; padding: 50px !important; border-radius: 20px !important; margin-bottom: 40px !important; box-shadow: 0 15px 40px rgba(16,185,129,0.4) !important; text-align: center !important;">
+          <div style="font-size: 5rem !important; margin-bottom: 20px !important;">🎉</div>
+          <h2 style="font-size: 3rem !important; font-weight: 900 !important; margin: 0 !important; text-shadow: 0 6px 12px rgba(0,0,0,0.4) !important; letter-spacing: -1px !important; color: white !important;">RECIPE GENERATED!</h2>
+          <p style="margin: 20px 0 0 0 !important; font-size: 1.4rem !important; opacity: 0.95 !important; font-weight: 600 !important; color: white !important;">${isPreview ? '🔍 PREVIEW MODE' : '✨ YOUR AI RECIPE IS READY'}</p>
         </div>
         
-        <div style="background: var(--color-input-bg); border-radius: var(--radius-card); padding: var(--space-6); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
+        <div style="background: #f8fafc; border-radius: 16px; padding: 32px; border: 2px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
           
           <!-- RECIPE TITLE & IMAGE -->
-          <div style="text-align: center; margin-bottom: var(--space-6); padding-bottom: var(--space-4); border-bottom: 2px solid var(--color-divider);">
-            <h1 style="font-size: 2.5rem; font-weight: 700; color: var(--color-text); margin: 0 0 var(--space-4) 0; display: flex; align-items: center; justify-content: center; gap: var(--space-2);">
+          <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 3px solid #e2e8f0;">
+            <h1 style="font-size: 3rem; font-weight: 800; color: #1a202c; margin: 0 0 24px 0; display: flex; align-items: center; justify-content: center; gap: 16px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
               🍽️ ${recipe.strMeal}
             </h1>
             ${imageUrl ? `
-              <div style="display: inline-block; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg); border: 3px solid var(--color-divider);">
-                <img src="${imageUrl}" alt="${recipe.strMeal}" style="width: 100%; max-width: 400px; height: 250px; object-fit: cover; display: block;">
+              <div style="display: inline-block; border-radius: 16px; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.15); border: 4px solid #e2e8f0; transition: transform 0.3s ease;">
+                <img src="${imageUrl}" alt="${recipe.strMeal}" style="width: 100%; max-width: 500px; height: 300px; object-fit: cover; display: block;">
             </div>
             ` : `
-              <div style="width: 100%; max-width: 400px; height: 250px; background: linear-gradient(135deg, var(--color-input-bg) 0%, var(--color-divider) 100%); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 4rem; border: 2px dashed var(--color-divider); margin: 0 auto;">🍽️</div>
+              <div style="width: 100%; max-width: 500px; height: 300px; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 5rem; border: 3px dashed #cbd5e1; margin: 0 auto; box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);">🍽️</div>
             `}
           </div>
           
           <!-- STATS BAR WITH ENHANCED STYLING -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-6);">
-            <div style="text-align: center; padding: var(--space-4); background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
-              <div style="font-size: 2rem; margin-bottom: var(--space-1);">⏱️</div>
-              <div style="font-size: 12px; color: var(--color-muted); font-weight: 600; text-transform: uppercase; margin-bottom: var(--space-1);">Prep</div>
-              <div style="font-size: 16px; font-weight: 700; color: var(--color-text);">${recipe.prepTime || '15 min'}</div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 32px;">
+            <div style="text-align: center; padding: 20px; background: #ffffff; border-radius: 12px; border: 2px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s ease; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div style="font-size: 2.5rem; margin-bottom: 8px;">⏱️</div>
+              <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Prep Time</div>
+              <div style="font-size: 18px; font-weight: 800; color: #1a202c;">${recipe.prepTime || '15 min'}</div>
             </div>
-            <div style="text-align: center; padding: var(--space-4); background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
-              <div style="font-size: 2rem; margin-bottom: var(--space-1);">🔥</div>
-              <div style="font-size: 12px; color: var(--color-muted); font-weight: 600; text-transform: uppercase; margin-bottom: var(--space-1);">Cook</div>
-              <div style="font-size: 16px; font-weight: 700; color: var(--color-text);">${recipe.cookTime || '30 min'}</div>
+            <div style="text-align: center; padding: 20px; background: #ffffff; border-radius: 12px; border: 2px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s ease; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div style="font-size: 2.5rem; margin-bottom: 8px;">🔥</div>
+              <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Cook Time</div>
+              <div style="font-size: 18px; font-weight: 800; color: #1a202c;">${recipe.cookTime || '30 min'}</div>
           </div>
-            <div style="text-align: center; padding: var(--space-4); background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
-              <div style="font-size: 2rem; margin-bottom: var(--space-1);">⏰</div>
-              <div style="font-size: 12px; color: var(--color-muted); font-weight: 600; text-transform: uppercase; margin-bottom: var(--space-1);">Total</div>
-              <div style="font-size: 16px; font-weight: 700; color: var(--color-text);">${recipe.totalTime || '45 min'}</div>
+            <div style="text-align: center; padding: 20px; background: #ffffff; border-radius: 12px; border: 2px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s ease; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div style="font-size: 2.5rem; margin-bottom: 8px;">⏰</div>
+              <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Total Time</div>
+              <div style="font-size: 18px; font-weight: 800; color: #1a202c;">${recipe.totalTime || '45 min'}</div>
             </div>
-            <div style="text-align: center; padding: var(--space-4); background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
-              <div style="font-size: 2rem; margin-bottom: var(--space-1);">🍽️</div>
-              <div style="font-size: 12px; color: var(--color-muted); font-weight: 600; text-transform: uppercase; margin-bottom: var(--space-1);">Serves</div>
-              <div style="font-size: 16px; font-weight: 700; color: var(--color-text);">${recipe.servings || '4'}</div>
+            <div style="text-align: center; padding: 20px; background: #ffffff; border-radius: 12px; border: 2px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s ease; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div style="font-size: 2.5rem; margin-bottom: 8px;">🍽️</div>
+              <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Servings</div>
+              <div style="font-size: 18px; font-weight: 800; color: #1a202c;">${recipe.servings || '4'}</div>
           </div>
-            <div style="text-align: center; padding: var(--space-4); background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
-              <div style="font-size: 2rem; margin-bottom: var(--space-1);">📊</div>
-              <div style="font-size: 12px; color: var(--color-muted); font-weight: 600; text-transform: uppercase; margin-bottom: var(--space-1);">Difficulty</div>
-              <div style="font-size: 16px; font-weight: 700; color: var(--color-text);">${recipe.difficulty || 'Medium'}</div>
+            <div style="text-align: center; padding: 20px; background: #ffffff; border-radius: 12px; border: 2px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s ease; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div style="font-size: 2.5rem; margin-bottom: 8px;">📊</div>
+              <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Difficulty</div>
+              <div style="font-size: 18px; font-weight: 800; color: #1a202c;">${recipe.difficulty || 'Medium'}</div>
             </div>
-            <div style="text-align: center; padding: var(--space-4); background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm);">
-              <div style="font-size: 2rem; margin-bottom: var(--space-1);">🥘</div>
-              <div style="font-size: 12px; color: var(--color-muted); font-weight: 600; text-transform: uppercase; margin-bottom: var(--space-1);">Yield</div>
-              <div style="font-size: 16px; font-weight: 700; color: var(--color-text);">${recipe.yield || 'Serves 4'}</div>
+            <div style="text-align: center; padding: 20px; background: #ffffff; border-radius: 12px; border: 2px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s ease; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div style="font-size: 2.5rem; margin-bottom: 8px;">🥘</div>
+              <div style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Yield</div>
+              <div style="font-size: 18px; font-weight: 800; color: #1a202c;">${recipe.yield || 'Serves 4'}</div>
           </div>
             </div>
           
@@ -1624,6 +1630,40 @@ class AdminPanel {
         </div>
       </div>
     `;
+  }
+
+  async deleteAllRecipes() {
+    const confirmation = prompt('⚠️ DANGER: This will delete ALL recipes from the database permanently!\n\nType "DELETE ALL RECIPES" to confirm:');
+    
+    if (confirmation !== 'DELETE ALL RECIPES') {
+      alert('❌ Action cancelled. You must type "DELETE ALL RECIPES" exactly to confirm.');
+      return;
+    }
+    
+    const finalConfirmation = confirm('🚨 FINAL WARNING: This action cannot be undone!\n\nAre you absolutely sure you want to delete ALL recipes?');
+    if (!finalConfirmation) return;
+    
+    try {
+      const response = await fetch('/admin/recipes/delete-all', {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        alert(`✅ Success! Deleted ${data.deletedCount || 'all'} recipes from the database.`);
+        this.loadRecipes(); // Reload the recipes list
+      } else {
+        alert(`❌ Error: ${data.message || 'Failed to delete recipes'}`);
+      }
+    } catch (error) {
+      console.error('❌ Error deleting all recipes:', error);
+      alert('❌ Network error: Failed to delete recipes');
+    }
   }
 
   async deleteRecipe(recipeId) {
