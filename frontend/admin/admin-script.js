@@ -1273,6 +1273,9 @@ class AdminPanel {
         <td class="col-cuisine">
           <span class="badge-table cuisine-badge-table">${recipe.strArea || 'Unknown'}</span>
         </td>
+        <td class="col-dietary">
+          <div class="dietary-badges">${this.renderDietaryBadges(recipe.dietary || {})}</div>
+        </td>
         <td class="col-date">
           <div class="date-table">${recipe.dateModified ? new Date(recipe.dateModified).toLocaleDateString() : 'Unknown'}</div>
         </td>
@@ -1301,6 +1304,67 @@ class AdminPanel {
       this.setupRecipeActionListeners();
     
     console.log('🎉 Recipes table rendered successfully!');
+  }
+  
+  // Render dietary badges with emojis
+  renderDietaryBadges(dietary) {
+    const dietaryEmojis = {
+      'vegetarian': '🥗',
+      'vegan': '🌱',
+      'pescatarian': '🐟',
+      'keto': '🥑',
+      'lowCarb': '🥩',
+      'highProtein': '💪',
+      'glutenFree': '🌾',
+      'dairyFree': '🥛',
+      'nutFree': '🥜',
+      'lowSodium': '🧂',
+      'lowSugar': '🍯',
+      'mediterraneanDiet': '🫒'
+    };
+    
+    const activeDietary = Object.entries(dietary)
+      .filter(([key, value]) => value === true)
+      .map(([key]) => key);
+    
+    if (activeDietary.length === 0) {
+      return '<span class="dietary-none">None</span>';
+    }
+    
+    // Show max 3 dietary badges to avoid overcrowding
+    const displayDietary = activeDietary.slice(0, 3);
+    const remainingCount = activeDietary.length - displayDietary.length;
+    
+    let badges = displayDietary.map(diet => {
+      const emoji = dietaryEmojis[diet] || '🍽️';
+      const label = this.formatDietaryLabel(diet);
+      return `<span class="badge-mini dietary-badge-mini" title="${label}">${emoji}</span>`;
+    }).join('');
+    
+    if (remainingCount > 0) {
+      badges += `<span class="badge-mini dietary-more" title="+${remainingCount} more">+${remainingCount}</span>`;
+    }
+    
+    return badges;
+  }
+  
+  // Format dietary label for display
+  formatDietaryLabel(diet) {
+    const labels = {
+      'vegetarian': 'Vegetarian',
+      'vegan': 'Vegan', 
+      'pescatarian': 'Pescatarian',
+      'keto': 'Keto',
+      'lowCarb': 'Low-Carb',
+      'highProtein': 'High-Protein',
+      'glutenFree': 'Gluten-Free',
+      'dairyFree': 'Dairy-Free',
+      'nutFree': 'Nut-Free',
+      'lowSodium': 'Low-Sodium',
+      'lowSugar': 'Low-Sugar',
+      'mediterraneanDiet': 'Mediterranean Diet'
+    };
+    return labels[diet] || diet;
   }
   
   // Setup event listeners for recipe action buttons (dynamically created)
