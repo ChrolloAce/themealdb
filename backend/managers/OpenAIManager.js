@@ -448,7 +448,7 @@ Return ONLY this JSON format with NO extra text:
       const recipeData = this.parseAIResponse(completion.choices[0].message.content);
       
       // Simple formatting - fill missing slots immediately
-      const formattedRecipe = this.quickFormatRecipe(recipeData, params);
+      const formattedRecipe = await this.quickFormatRecipe(recipeData, params);
       console.log('✅ Recipe generation completed successfully');
       return formattedRecipe;
     } catch (error) {
@@ -756,7 +756,7 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
     });
 
     const recipeData = this.parseAIResponse(completion.choices[0].message.content);
-    return this.quickFormatRecipe(recipeData, params);
+    return await this.quickFormatRecipe(recipeData, params);
   }
 
   // STEP 1: Generate basic recipe with simple prompt
@@ -1527,36 +1527,7 @@ Return JSON with:
 
       const ingredients = seasonalIngredients[season.toLowerCase()] || 'seasonal ingredients';
 
-      const allowedIngredients = [
-        "abalone", "acai berry", "ackee", "acorn squash", "active dry yeast", "adzuki beans", "agar agar", "agave nectar", "aioli", "aleppo pepper",
-        "alfalfa sprouts", "alfredo sauce", "all-purpose flour", "allspice", "almond butter", "almond extract", "almond flour", "almond milk", "almond paste", "almonds",
-        "anchovies", "Anchovy Paste", "andouille sausage", "anise seeds", "annatto", "apple", "apple butter", "applesauce", "apricot", "apricot jam",
-        "arborio rice", "Arrowroot powder", "artichoke", "asafoetida", "asiago cheese", "Asian Pear", "asparagus", "avocado", "bacon", "Baguette",
-        "baking powder", "baking soda", "balsamic vinegar", "banana", "banana blossom", "barbecue sauce", "barley", "barley flour", "basil", "basil seeds",
-        "Basmati Rice", "Bay Leaf", "beef", "Beef Bourguignon", "beef brisket", "beef broth", "Beef Ribs", "beef stock", "beef tenderloin", "beets",
-        "Belacan (shrimp paste)", "bell pepper", "bell peppers", "besan (chickpea flour)", "black beans", "black cardamom", "black fungus (cloud ear)", "Black Garlic", "Black Pepper", "Black Peppercorns",
-        "black salt (kala namak)", "Black Tea", "black truffle", "Black-Eyed Peas", "Blood Sausage", "blue cheese", "blue cheese dressing", "blueberry", "bok choy", "Bonito Flakes",
-        "bourbon", "Brandy", "Bread", "bread flour", "Breadcrumbs", "Breakfast Sausage", "Brie", "Broccoli", "Broccolini", "Brown Mustard Seeds",
-        "brown rice", "brown sugar", "brownie mix", "brussels sprouts", "buckwheat", "buckwheat flour", "bulgur", "burdock root", "butter", "butter lettuce",
-        "buttermilk", "buttermilk powder", "butternut squash", "cabbage", "Cacao Nibs", "Cactus Pear (Prickly Pear)", "Cajun Seasoning", "Calamari (Squid)", "camembert", "candied ginger",
-        "candied orange peel", "candlenut", "cane vinegar", "canned salmon", "canned tomatoes", "canned tuna", "cannellini beans", "Caper Berries", "Capers", "Caramel Sauce",
-        "caraway seeds", "carne asada", "carolina reaper", "carrot", "cashew butter", "cashew milk", "cashews", "cassava", "catfish", "cauliflower",
-        "cayenne pepper", "celery", "celery root (celeriac)", "champagne vinegar", "chana dal", "chanterelle mushrooms", "char siu sauce", "cheddar cheese", "cheese", "cheese curds",
-        "cherry", "cherry tomato", "chervil", "chickpeas", "chili oil", "chili paste", "chili powder", "chili sauce", "Chinese five-spice", "chipotle chili powder",
-        "chives", "chocolate chips", "chocolate hazelnut spread", "chocolate syrup", "cider", "cilantro", "cinnamon", "cinnamon stick", "clam juice", "clams",
-        "clarified butter", "clotted cream", "cloves", "cocoa powder", "coconut", "coconut aminos", "coconut cream", "coconut milk", "coconut oil", "coconut sugar",
-        "coconut vinegar", "cod", "coffee", "cognac", "collard greens", "condensed milk", "coriander seeds", "corn", "corn flakes", "corn oil",
-        "corn syrup", "corn tortillas", "corned beef", "cornmeal", "cotija cheese", "cottage cheese", "crab", "crab meat", "cranberries", "cream cheese",
-        "cream of coconut", "cream of tartar", "crème fraîche", "cremebrule", "cremini mushrooms", "cucumber", "cumin seeds", "curly parsley", "currants", "curry leaves",
-        "curry paste", "curry powder", "daikon radish", "dashi", "dates", "demi-glace", "diced tomatoes", "dijon mustard", "dill", "dill seeds",
-        "dried apricots", "dried cranberries", "dried figs", "dried hibiscus", "dried shrimp", "dried thyme", "dry mustard powder", "duck", "duck eggs", "duck fat",
-        "duck sauce", "dulce de leche", "edam cheese", "edamame", "egg noodles", "egg whites", "egg yolks", "eggplant", "eggs", "egusi seeds",
-        "elderberry", "empanadas", "enoki mushrooms", "espresso powder", "evaporated milk", "extra virgin olive oil", "fava beans", "fennel bulb", "fennel seeds", "fenugreek leaves",
-        "fenugreek seeds", "fermented black beans", "filé powder", "fish maw", "fish sauce", "five-spice powder", "flaxseeds", "flour tortillas", "fontina cheese", "forbidden rice (black rice)",
-        "freekeh", "freeze-dried fruit", "french dressing", "fried onions", "frosting", "fruit cocktail (canned)", "garam masala", "garlic", "garlic chives", "garlic powder",
-        "garlic scapes", "gelatin", "gin", "ginger", "ginger paste", "ginger powder", "gingersnaps (crushed)", "glucose syrup", "glutinous rice (sticky rice)", "goat",
-        "goat cheese", "gochugaru (Korean chili flakes)", "gochujang", "salmon", "salt", "spaghetti", "Spaghetti Carbonara", "spinach", "sugar", "sushi", "tiramisu"
-      ];
+      const allowedIngredients = await this.getIngredientsList();
 
       const prompt = `Generate ${count} delicious ${season} recipes featuring seasonal ingredients like ${ingredients}. 
 
@@ -1755,7 +1726,7 @@ Return ONLY valid JSON with this COMPLETE structure:
     "totalTime": "40 minutes",
     "servings": ${params.servings},
     "difficulty": "${params.difficulty}",
-    "equipment": ["Large pot", "Chef's knife", "Cutting board"],
+    "equipment": ${JSON.stringify((await this.getEquipmentList()).slice(0, 3))},
     "yield": "Serves ${params.servings}"
   }
 }
@@ -1775,7 +1746,7 @@ Return ONLY valid JSON with this COMPLETE structure:
   }
 
   // COMPREHENSIVE recipe formatting - NO N/A VALUES EVER
-  quickFormatRecipe(recipeData, params) {
+  async quickFormatRecipe(recipeData, params) {
     // Handle instructions array - create strInstructions from array if needed
     let instructionsArray = recipeData.instructions || [];
     let strInstructions = recipeData.strInstructions || '';
@@ -1859,8 +1830,8 @@ Return ONLY valid JSON with this COMPLETE structure:
       
       // EQUIPMENT - NEVER EMPTY
       equipment: recipeData.strEquipment ? recipeData.strEquipment.split(',').map(e => e.trim()) : 
-                recipeData.equipment || ['Large pot', 'Wooden spoon', 'Chef\'s knife', 'Cutting board', 'Measuring cups'],
-      strEquipment: recipeData.strEquipment || 'Large skillet (12-inch), Mixing bowl (medium), Measuring cups, Chef\'s knife (8-inch), Cutting board, Wooden spoon, Tongs'
+                recipeData.equipment || (await this.getEquipmentList()).slice(0, 5),
+      strEquipment: recipeData.strEquipment || (await this.getEquipmentList()).slice(0, 7).join(', ')
     };
 
     // Fill ALL 20 ingredient slots - NEVER LEAVE EMPTY
