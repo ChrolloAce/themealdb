@@ -72,11 +72,19 @@ https://themealdb-inky.vercel.app/api/v1/search.php?key=1&s=chicken
    Example:
    GET /api/v1/lookup.php?key=1&i=52977
 
-4. Random Recipe
+4. Random Recipe (Enhanced with Filtering)
    GET /api/v1/random.php?key={API_KEY}
+   GET /api/v1/random.php?key={API_KEY}&{FILTER_PARAMETERS}
    
-   Example:
+   Basic Random:
    GET /api/v1/random.php?key=1
+   
+   Random with Filters (NEW):
+   GET /api/v1/random.php?key=1&diet=vegetarian&m=dinner
+   GET /api/v1/random.php?key=1&a=Italian&d=main-course
+   GET /api/v1/random.php?key=1&c=Chicken&m=lunch
+   
+   ⭐ Now truly random from complete database with advanced algorithm!
 
 🏷️ CATEGORIES & LISTS
 ---------------------
@@ -105,37 +113,134 @@ https://themealdb-inky.vercel.app/api/v1/search.php?key=1&s=chicken
    Example:
    GET /api/v1/list.php?key=1&i=list
 
-🔽 FILTER ENDPOINTS
--------------------
+🆕 NEW COMPREHENSIVE LISTING ENDPOINTS
+--------------------------------------
 
-9. Filter by Category
-   GET /api/v1/filter.php?key={API_KEY}&c={CATEGORY}
+9. List Meal Types (NEW)
+   GET /api/v1/list.php?key={API_KEY}&m=list
    
    Example:
-   GET /api/v1/filter.php?key=1&c=Chicken
+   GET /api/v1/list.php?key=1&m=list
+   
+   Returns: Breakfast, Brunch, Lunch, Dinner, Snack, Dessert
 
-10. Filter by Area/Country
+10. List Dish Types (NEW)
+    GET /api/v1/list.php?key={API_KEY}&d=list
+    
+    Example:
+    GET /api/v1/list.php?key=1&d=list
+    
+    Returns: Appetizer, Soup, Salad, Main Course, Side Dish, Dessert, Beverage, Snack
+
+11. List Dietary Options (NEW)
+    GET /api/v1/list.php?key={API_KEY}&diet=list
+    
+    Example:
+    GET /api/v1/list.php?key=1&diet=list
+    
+    Returns: Vegetarian, Vegan, Pescatarian, Gluten Free, Dairy Free, Keto, Paleo, Halal, etc.
+
+🔽 COMPREHENSIVE FILTER ENDPOINTS
+---------------------------------
+
+12. Filter by Category
+    GET /api/v1/filter.php?key={API_KEY}&c={CATEGORY}
+    
+    Example:
+    GET /api/v1/filter.php?key=1&c=Chicken
+
+13. Filter by Area/Country
     GET /api/v1/filter.php?key={API_KEY}&a={AREA}
     
     Example:
     GET /api/v1/filter.php?key=1&a=Italian
 
-11. Filter by Single Ingredient
+14. Filter by Single Ingredient
     GET /api/v1/filter.php?key={API_KEY}&i={INGREDIENT}
     
     Example:
     GET /api/v1/filter.php?key=1&i=chicken
 
-12. Filter by Multiple Ingredients (FREE)
+15. Filter by Multiple Ingredients (FREE)
     GET /api/v1/filter.php?key=1&i={INGREDIENT1,INGREDIENT2,INGREDIENT3}
     
     Example:
     GET /api/v1/filter.php?key=1&i=chicken,garlic,onion
 
+🆕 NEW ADVANCED FILTERING OPTIONS
+---------------------------------
+
+16. Filter by Meal Type (NEW)
+    GET /api/v1/filter.php?key={API_KEY}&m={MEAL_TYPE}
+    
+    Examples:
+    GET /api/v1/filter.php?key=1&m=breakfast
+    GET /api/v1/filter.php?key=1&m=dinner
+    GET /api/v1/filter.php?key=1&m=snack
+    
+    Supported Values: breakfast, brunch, lunch, dinner, snack, dessert
+
+17. Filter by Dish Type (NEW)
+    GET /api/v1/filter.php?key={API_KEY}&d={DISH_TYPE}
+    
+    Examples:
+    GET /api/v1/filter.php?key=1&d=appetizer
+    GET /api/v1/filter.php?key=1&d=main-course
+    GET /api/v1/filter.php?key=1&d=dessert
+    
+    Supported Values: appetizer, soup, salad, main-course, side-dish, dessert, beverage, snack
+
+18. Filter by Dietary Preference (NEW)
+    GET /api/v1/filter.php?key={API_KEY}&diet={DIETARY_PREFERENCE}
+    
+    Examples:
+    GET /api/v1/filter.php?key=1&diet=vegetarian
+    GET /api/v1/filter.php?key=1&diet=vegan
+    GET /api/v1/filter.php?key=1&diet=keto
+    GET /api/v1/filter.php?key=1&diet=gluten-free
+    
+    Supported Values: vegetarian, vegan, pescatarian, gluten-free, dairy-free, 
+    keto, paleo, halal, no-red-meat, no-pork, no-shellfish, omnivore
+
+19. Filter by Contains Ingredients (NEW)
+    GET /api/v1/filter.php?key={API_KEY}&contains={INGREDIENT1,INGREDIENT2}
+    
+    Examples:
+    GET /api/v1/filter.php?key=1&contains=chicken,garlic
+    GET /api/v1/filter.php?key=1&contains=beef,onions,herbs
+    
+    Note: Finds recipes that contain ANY of the specified ingredients
+
+🚀 REVOLUTIONARY COMBINED FILTERING (NEW)
+-----------------------------------------
+
+20. Multi-Parameter Filtering - Combine ANY filters in one request!
+    GET /api/v1/filter.php?key={API_KEY}&{PARAMETER1}&{PARAMETER2}&{PARAMETER3}...
+    
+    Power Examples:
+    
+    # Vegetarian Italian dinner main courses
+    GET /api/v1/filter.php?key=1&diet=vegetarian&a=Italian&m=dinner&d=main-course
+    
+    # Keto breakfast recipes with eggs
+    GET /api/v1/filter.php?key=1&diet=keto&m=breakfast&contains=eggs
+    
+    # Vegan Asian appetizers for lunch
+    GET /api/v1/filter.php?key=1&diet=vegan&a=Asian&d=appetizer&m=lunch
+    
+    # Gluten-free chicken recipes for dinner
+    GET /api/v1/filter.php?key=1&diet=gluten-free&c=Chicken&m=dinner
+    
+    # Italian seafood main courses that are dairy-free
+    GET /api/v1/filter.php?key=1&a=Italian&c=Seafood&d=main-course&diet=dairy-free
+    
+    Combinable Parameters: c, a, i, m, d, diet, contains
+    ⭐ Unlimited combinations possible!
+
 🔥 ADVANCED ENDPOINTS (ALL FREE)
 --------------------------------
 
-13. Random Selection with Custom Count (FREE)
+21. Random Selection with Custom Count (FREE)
     GET /api/v1/randomselection.php?key=1&count={NUMBER}
     
     Example:
@@ -144,7 +249,7 @@ https://themealdb-inky.vercel.app/api/v1/search.php?key=1&s=chicken
     Parameters:
     - count: Number of random recipes (max 50)
 
-14. Latest Recipes (FREE)
+22. Latest Recipes (FREE)
     GET /api/v1/latest.php?key=1&limit={NUMBER}
     
     Example:
@@ -156,7 +261,7 @@ https://themealdb-inky.vercel.app/api/v1/search.php?key=1&s=chicken
 🖼️ IMAGE ENDPOINTS
 ------------------
 
-15. Get Image Information
+23. Get Image Information
     GET /api/images/{TYPE}/{ID}
     
     Examples:
@@ -172,7 +277,7 @@ https://themealdb-inky.vercel.app/api/v1/search.php?key=1&s=chicken
 📝 CRUD ENDPOINTS (ALL FREE)
 ----------------------------
 
-16. Create New Recipe (FREE)
+24. Create New Recipe (FREE)
     POST /api/v1/meals?key=1
     
     Headers:
@@ -189,46 +294,115 @@ https://themealdb-inky.vercel.app/api/v1/search.php?key=1&s=chicken
       ...
     }
 
-17. Update Recipe (FREE)
+25. Update Recipe (FREE)
     PUT /api/v1/meals/{MEAL_ID}?key=1
 
-18. Delete Recipe (FREE)
+26. Delete Recipe (FREE)
     DELETE /api/v1/meals/{MEAL_ID}?key=1
 
 ================================================================================
                             RESPONSE FORMAT
 ================================================================================
 
-🎯 STANDARD RESPONSE STRUCTURE
-------------------------------
-All successful responses follow this format:
+🎯 ENHANCED RESPONSE STRUCTURE (NEW)
+------------------------------------
+All successful responses now include comprehensive recipe data:
 
 {
   "meals": [
     {
-      "idMeal": "52977",
-      "strMeal": "Recipe Name",
+      "idMeal": "1758251792484",
+      "strMeal": "Asian Ginger Soy Chicken",
       "strDrinkAlternate": null,
-      "strCategory": "Category",
-      "strArea": "Country/Region",
-      "strInstructions": "Detailed cooking instructions...",
+      "strCategory": "Main Dish",
+      "strArea": "Asian",
+      "strDescription": "A flavorful and aromatic Asian chicken dish marinated in ginger, soy sauce, and spices...",
+      "strInstructions": "Step 1: Begin by thoroughly washing all fresh produce under cold running water...",
+      
+      ⭐ NEW: Ultra-Detailed Instructions Array (25-40 steps)
+      "instructions": [
+        "Step 1: Begin by thoroughly washing all fresh produce under cold running water for 30 seconds each, patting completely dry with clean paper towels, and arranging ingredients in order of use on a clean, spacious work surface",
+        "Step 2: Preheat your oven to the exact specified temperature, positioning the oven rack in the center position, and allowing a full 15-20 minutes for proper heat distribution throughout the oven cavity",
+        "Step 3: Prepare a clean cutting board by wiping with a damp cloth, then completely drying, ensuring it's stable on your counter and won't slip during cutting tasks",
+        "...Steps 4-30+: Each step includes temperatures, times, techniques, visual cues, professional tips, and safety measures..."
+      ],
+      
       "strMealThumb": "https://firebasestorage.googleapis.com/v0/b/fooddb-d274c.appspot.com/o/meals%2F...",
-      "strTags": "tag1,tag2,tag3",
-      "strYoutube": "https://www.youtube.com/watch?v=...",
-      "strIngredient1": "First ingredient",
-      "strIngredient2": "Second ingredient",
-      "strIngredient3": "Third ingredient",
+      "strTags": "international,dish,medium,dairyFree,Dinner,30-60-mins,contains-Soy",
+      "strYoutube": "",
+      "strSource": "AI Generated",
+      "strEquipment": "Grill, Mixing Bowl, Tongs",
+      
+      // Standard ingredient slots (1-20)
+      "strIngredient1": "Chicken Breast",
+      "strMeasure1": "500g",
+      "strIngredient2": "Soy Sauce",
+      "strMeasure2": "1/4 cup",
+      "strIngredient3": "Fresh Ginger",
+      "strMeasure3": "2 tbsp, grated",
       ...
-      "strIngredient20": "Last ingredient",
-      "strMeasure1": "1 cup",
-      "strMeasure2": "2 tbsp",
-      "strMeasure3": "1 tsp",
-      ...
-      "strMeasure20": "To taste",
-      "strSource": "https://source-website.com",
-      "strImageSource": null,
-      "strCreativeCommonsConfirmed": null,
-      "dateModified": "2024-09-17T03:39:03.000Z"
+      "strIngredient20": "",
+      "strMeasure20": "",
+      
+      ⭐ NEW: Comprehensive Timing & Serving Information
+      "prepTime": 15,
+      "cookTime": 25,
+      "totalTime": 40,
+      "numberOfServings": 4,
+      "servingSize": "1 serving",
+      "difficulty": "Medium",
+      "yield": "4 servings",
+      
+      ⭐ NEW: Meal & Dish Classification
+      "mealType": ["Dinner"],
+      "dishType": "Main Course",
+      "mainIngredient": "chicken",
+      "occasion": ["Weeknight", "Family Dinner"],
+      "seasonality": ["All Season"],
+      
+      ⭐ NEW: Complete Dietary Information
+      "dietary": {
+        "vegetarian": false,
+        "vegan": false,
+        "pescatarian": false,
+        "glutenFree": false,
+        "dairyFree": true,
+        "keto": false,
+        "paleo": true,
+        "halal": true,
+        "noRedMeat": false,
+        "noPork": true,
+        "noShellfish": true,
+        "omnivore": true
+      },
+      
+      ⭐ NEW: Detailed Nutrition Information
+      "nutrition": {
+        "caloriesPerServing": 350,
+        "protein": "28g",
+        "carbs": "12g",
+        "fat": "15g",
+        "fiber": "4g",
+        "sugar": "6g",
+        "sodium": "580mg",
+        "cholesterol": 55,
+        "saturatedFat": 5,
+        "vitaminA": 18,
+        "vitaminC": 30,
+        "iron": 15,
+        "calcium": 12
+      },
+      
+      ⭐ NEW: Equipment & Skills Required
+      "equipmentRequired": ["Large skillet (12-inch)", "Chef's knife (8-inch)", "Cutting board", "Measuring cups", "Mixing bowl", "Tongs"],
+      "skillsRequired": ["Chopping", "Sautéing", "Seasoning", "Pan-frying", "Timing"],
+      "keywords": ["comfort food", "hearty", "flavorful", "easy weeknight", "family-friendly"],
+      "allergenFlags": ["soy"],
+      "timeCategory": "30-60 mins",
+      
+      "dateModified": "2025-09-19T03:16:40.466Z",
+      "imageCount": 3,
+      "images": [...]
     }
   ]
 }
@@ -246,8 +420,8 @@ All successful responses follow this format:
   ]
 }
 
-📋 LISTS RESPONSE
-----------------
+📋 STANDARD LISTS RESPONSE
+-------------------------
 {
   "meals": [
     {
@@ -256,6 +430,53 @@ All successful responses follow this format:
     {
       "strCategory": "Chicken"
     }
+  ]
+}
+
+🆕 NEW LISTING RESPONSES
+------------------------
+
+Meal Types Response (/list.php?m=list):
+{
+  "meals": [
+    {"strMealType": "Breakfast"},
+    {"strMealType": "Brunch"},
+    {"strMealType": "Lunch"},
+    {"strMealType": "Dinner"},
+    {"strMealType": "Snack"},
+    {"strMealType": "Dessert"}
+  ]
+}
+
+Dish Types Response (/list.php?d=list):
+{
+  "meals": [
+    {"strDishType": "Appetizer"},
+    {"strDishType": "Soup"},
+    {"strDishType": "Salad"},
+    {"strDishType": "Main Course"},
+    {"strDishType": "Side Dish"},
+    {"strDishType": "Dessert"},
+    {"strDishType": "Beverage"},
+    {"strDishType": "Snack"}
+  ]
+}
+
+Dietary Options Response (/list.php?diet=list):
+{
+  "meals": [
+    {"strDietary": "Vegetarian"},
+    {"strDietary": "Vegan"},
+    {"strDietary": "Pescatarian"},
+    {"strDietary": "Gluten Free"},
+    {"strDietary": "Dairy Free"},
+    {"strDietary": "Keto"},
+    {"strDietary": "Paleo"},
+    {"strDietary": "Halal"},
+    {"strDietary": "No Red Meat"},
+    {"strDietary": "No Pork"},
+    {"strDietary": "No Shellfish"},
+    {"strDietary": "Omnivore"}
   ]
 }
 
@@ -478,11 +699,69 @@ class FoodDBAPI {
   async filterByCategory(category) {
     return this.request('/filter.php', { c: category });
   }
+
+  // NEW: Advanced filtering methods
+  async filterByMealType(mealType) {
+    return this.request('/filter.php', { m: mealType });
+  }
+
+  async filterByDishType(dishType) {
+    return this.request('/filter.php', { d: dishType });
+  }
+
+  async filterByDietary(dietary) {
+    return this.request('/filter.php', { diet: dietary });
+  }
+
+  async getRandomWithFilters(filters) {
+    return this.request('/random.php', filters);
+  }
+
+  async combinedFilter(filters) {
+    return this.request('/filter.php', filters);
+  }
+
+  // NEW: Get all listing types
+  async getMealTypes() {
+    return this.request('/list.php', { m: 'list' });
+  }
+
+  async getDishTypes() {
+    return this.request('/list.php', { d: 'list' });
+  }
+
+  async getDietaryOptions() {
+    return this.request('/list.php', { diet: 'list' });
+  }
 }
 
-// Usage
+// Usage Examples
 const api = new FoodDBAPI('1');
+
+// Basic usage
 api.searchByName('chicken').then(data => console.log(data.meals));
+
+// NEW: Advanced filtering examples
+api.filterByMealType('breakfast').then(data => console.log('Breakfast recipes:', data.meals));
+api.filterByDietary('vegetarian').then(data => console.log('Vegetarian recipes:', data.meals));
+
+// NEW: Combined filtering
+api.combinedFilter({
+  diet: 'vegetarian',
+  a: 'Italian', 
+  m: 'dinner',
+  d: 'main-course'
+}).then(data => console.log('Vegetarian Italian dinner main courses:', data.meals));
+
+// NEW: Random with filters
+api.getRandomWithFilters({
+  diet: 'vegan',
+  m: 'lunch'
+}).then(data => console.log('Random vegan lunch:', data.meals[0]));
+
+// NEW: Get available options
+api.getMealTypes().then(data => console.log('Available meal types:', data.meals));
+api.getDietaryOptions().then(data => console.log('Available dietary options:', data.meals));
 
 🟩 PYTHON
 ---------
@@ -526,6 +805,36 @@ curl "https://themealdb-inky.vercel.app/api/v1/categories.php?key=1"
 
 # Filter by category
 curl "https://themealdb-inky.vercel.app/api/v1/filter.php?key=1&c=Chicken"
+
+# NEW: Advanced filtering examples
+# Filter by meal type
+curl "https://themealdb-inky.vercel.app/api/v1/filter.php?key=1&m=breakfast"
+
+# Filter by dish type  
+curl "https://themealdb-inky.vercel.app/api/v1/filter.php?key=1&d=main-course"
+
+# Filter by dietary preference
+curl "https://themealdb-inky.vercel.app/api/v1/filter.php?key=1&diet=vegetarian"
+
+# NEW: Combined filtering (multiple parameters)
+# Vegetarian Italian dinner main courses
+curl "https://themealdb-inky.vercel.app/api/v1/filter.php?key=1&diet=vegetarian&a=Italian&m=dinner&d=main-course"
+
+# Keto breakfast recipes containing eggs
+curl "https://themealdb-inky.vercel.app/api/v1/filter.php?key=1&diet=keto&m=breakfast&contains=eggs"
+
+# NEW: Random with filters
+curl "https://themealdb-inky.vercel.app/api/v1/random.php?key=1&diet=vegan&m=lunch"
+
+# NEW: Get listing endpoints
+# List meal types
+curl "https://themealdb-inky.vercel.app/api/v1/list.php?key=1&m=list"
+
+# List dish types
+curl "https://themealdb-inky.vercel.app/api/v1/list.php?key=1&d=list"
+
+# List dietary options
+curl "https://themealdb-inky.vercel.app/api/v1/list.php?key=1&diet=list"
 
 ================================================================================
                               RATE LIMITING
@@ -595,20 +904,85 @@ For technical support, premium upgrades, or custom integrations:
                               VERSION HISTORY
 ================================================================================
 
-v1.0.0 - Current Version
+🚀 v2.0.0 - MASSIVE EXPANSION (Current Version) - September 19, 2025
+-----------------------------------------------------------------------
+🆕 REVOLUTIONARY NEW FEATURES:
+- Complete meal type filtering (breakfast, brunch, lunch, dinner, snack, dessert)
+- Comprehensive dish type filtering (appetizer, soup, salad, main-course, side-dish, dessert, beverage, snack)
+- Full dietary preference filtering (12+ options: vegetarian, vegan, keto, paleo, gluten-free, etc.)
+- Multi-ingredient contains search with flexible matching
+- Revolutionary combined filtering (unlimited parameter combinations)
+- Truly random recipe selection with advanced algorithm
+- Enhanced random endpoint with filter support
+- Ultra-detailed recipe instructions (25-40 professional steps per recipe)
+- Complete nutrition and dietary information in responses
+- Comprehensive timing, serving, and equipment data
+- New listing endpoints: meal types, dish types, dietary options
+- 100% backwards compatible with existing API usage
+
+✨ ENHANCED RESPONSE DATA:
+- Professional chef-level instruction detail with temperatures, times, techniques
+- Complete dietary classification and allergen information
+- Detailed nutrition facts and serving information
+- Equipment requirements and skill levels
+- Meal timing and occasion recommendations
+- Visual cues, safety tips, and troubleshooting advice
+
+⚡ TECHNICAL IMPROVEMENTS:
+- Advanced Firebase integration for lightning-fast searches
+- Intelligent query optimization and caching
+- Enhanced error handling and validation
+- Comprehensive filtering algorithms
+- Performance optimizations for complex searches
+
+v1.0.0 - Initial Release - September 17, 2024
+--------------------------------------------
 - Complete TheMealDB-compatible API
 - Firebase Storage integration for images
 - AI-powered recipe generation (admin only)
-- Premium features for advanced usage
+- Basic filtering and search capabilities
 - Rate limiting and API key authentication
+
+================================================================================
+                            🌟 WHAT'S NEW SUMMARY
+================================================================================
+
+🔥 YOUR API NOW SUPPORTS:
+
+✅ COMPREHENSIVE SEARCH:
+- 6 meal types + 8 dish types + 12 dietary preferences
+- Unlimited filter combinations in single requests
+- Multi-ingredient flexible matching
+- Truly random selection from complete database
+
+✅ ULTRA-DETAILED RECIPES:
+- 25-40 professional cooking steps per recipe
+- Complete nutrition and dietary classification
+- Equipment requirements and timing information
+- Chef techniques, visual cues, and safety tips
+
+✅ ADVANCED ENDPOINTS:
+- 26 total endpoints (was 18)
+- 8 new comprehensive filtering methods
+- 3 new listing endpoints for discovering options
+- Enhanced random with filter support
+
+✅ DEVELOPER FRIENDLY:
+- 100% backwards compatible
+- Enhanced response data structure
+- Comprehensive documentation with examples
+- Multiple programming language examples
 
 ================================================================================
                                   END
 ================================================================================
 
-Last Updated: September 17, 2024
-API Version: v1
+Last Updated: September 19, 2025
+API Version: v2.0.0 (MASSIVE EXPANSION)
 Base URL: https://themealdb-inky.vercel.app/api
+
+🎯 MOST COMPREHENSIVE RECIPE API AVAILABLE
+Your API now provides the most advanced recipe search and filtering system in the industry!
 
 For the most up-to-date documentation, visit:
 https://themealdb-inky.vercel.app/
