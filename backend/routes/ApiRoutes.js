@@ -89,6 +89,103 @@ class ApiRoutes {
     // Alternative route structure without key in path
     this.router.use('/v1', v1Router);
 
+    // PUBLIC ENDPOINTS (No authentication required) - For mobile apps
+    const publicRouter = express.Router();
+    
+    // Public random endpoint - truly random from database
+    publicRouter.get('/random', ErrorHandler.asyncHandler(this.getRandomMeal.bind(this)));
+    
+    // Public search endpoints
+    publicRouter.get('/search/:query', ErrorHandler.asyncHandler(async (req, res) => {
+      req.query.s = req.params.query;
+      return this.searchMeals(req, res);
+    }));
+    
+    // Public lookup by ID
+    publicRouter.get('/lookup/:id', ErrorHandler.asyncHandler(async (req, res) => {
+      req.query.i = req.params.id;
+      return this.lookupMeal(req, res);
+    }));
+    
+    // Public filter endpoints
+    publicRouter.get('/filter/category/:category', ErrorHandler.asyncHandler(async (req, res) => {
+      req.query.c = req.params.category;
+      return this.filterMeals(req, res);
+    }));
+    
+    publicRouter.get('/filter/area/:area', ErrorHandler.asyncHandler(async (req, res) => {
+      req.query.a = req.params.area;
+      return this.filterMeals(req, res);
+    }));
+    
+    // Public listings
+    publicRouter.get('/categories', ErrorHandler.asyncHandler(this.getCategories.bind(this)));
+    publicRouter.get('/areas', ErrorHandler.asyncHandler(async (req, res) => {
+      req.query.a = 'list';
+      return this.getListings(req, res);
+    }));
+    
+    // DEBUG: Random system status endpoint
+    publicRouter.get('/debug/random-info', ErrorHandler.asyncHandler(async (req, res) => {
+      try {
+        // Get total recipe count
+        const allRecipes = this.db.getAllRecipes ? await this.db.getAllRecipes() : [];
+        const count = allRecipes.length;
+        
+        // Test random selection
+        const randomResult = await this.recipeManager.getTrulyRandom();
+        
+        res.json({
+          status: 'Random system operational',
+          database: {
+            type: this.db.getAllRecipes ? 'Firebase' : 'SQLite',
+            totalRecipes: count,
+            randomWorking: randomResult && randomResult.meals && randomResult.meals.length > 0
+          },
+          randomAlgorithm: {
+            description: 'Advanced multi-layer randomization',
+            steps: [
+              '1. Fetch ALL recipes from Firebase',
+              '2. Apply Fisher-Yates shuffling algorithm',
+              '3. Use timestamp-based seed for entropy',
+              '4. Apply dual-index randomization',
+              '5. Return truly random selection'
+            ]
+          },
+          testResult: {
+            selectedRecipe: randomResult.meals ? randomResult.meals[0].strMeal : null,
+            isNull: !randomResult.meals
+          },
+          endpoints: {
+            public: {
+              random: '/api/public/random',
+              search: '/api/public/search/{query}',
+              lookup: '/api/public/lookup/{id}',
+              categories: '/api/public/categories'
+            },
+            authenticated: {
+              random: '/api/v1/random.php?key=1',
+              randomWithFilters: '/api/v1/random.php?key=1&c=Pasta',
+              premium: '/api/v1/randomselection.php?key={premium_key}'
+            }
+          }
+        });
+      } catch (error) {
+        res.status(500).json({
+          status: 'Random system error',
+          error: error.message,
+          troubleshooting: [
+            'Check Firebase connection',
+            'Verify database has recipes',
+            'Check RecipeManager methods'
+          ]
+        });
+      }
+    }));
+    
+    // Mount public routes
+    this.router.use('/public', publicRouter);
+
     // Images endpoint for Firebase Storage access
     this.router.get('/images/:type/:id?', ErrorHandler.asyncHandler(this.getImage.bind(this)));
   }
