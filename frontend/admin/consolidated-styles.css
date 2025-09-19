@@ -998,7 +998,10 @@ body {
 .filter-grid {
   display: grid;
   gap: var(--space-6);
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: var(--space-2);
 }
 
 .filter-group {
@@ -1017,6 +1020,12 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+  max-height: 200px;
+  overflow-y: auto;
+  padding: var(--space-1);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
 }
 
 .filter-btn {

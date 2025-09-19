@@ -1478,8 +1478,56 @@ class AdminPanel {
         const button = e.currentTarget;
         button.classList.toggle('active');
         
-        // Update filter selections (you can extend this for actual filtering)
-        console.log('Filter toggled:', button.textContent, button.classList.contains('active'));
+        // Update filter selections based on data attributes
+        const category = button.dataset.category;
+        const dishType = button.dataset.dishtype;
+        const cuisine = button.dataset.cuisine;
+        const dietary = button.dataset.dietary;
+        
+        const isActive = button.classList.contains('active');
+        
+        if (category) {
+          if (isActive) {
+            this.generationFilters.categories.add(category);
+          } else {
+            this.generationFilters.categories.delete(category);
+          }
+          console.log('🍽️ Category filter:', category, isActive ? 'added' : 'removed');
+        }
+        
+        if (dishType) {
+          if (isActive) {
+            this.generationFilters.dishTypes.add(dishType);
+          } else {
+            this.generationFilters.dishTypes.delete(dishType);
+          }
+          console.log('🍴 Dish type filter:', dishType, isActive ? 'added' : 'removed');
+        }
+        
+        if (cuisine) {
+          if (isActive) {
+            this.generationFilters.cuisines.add(cuisine);
+          } else {
+            this.generationFilters.cuisines.delete(cuisine);
+          }
+          console.log('🌍 Cuisine filter:', cuisine, isActive ? 'added' : 'removed');
+        }
+        
+        if (dietary) {
+          if (isActive) {
+            this.generationFilters.dietary.add(dietary);
+          } else {
+            this.generationFilters.dietary.delete(dietary);
+          }
+          console.log('🥗 Dietary filter:', dietary, isActive ? 'added' : 'removed');
+        }
+        
+        console.log('📊 Current filters:', {
+          categories: Array.from(this.generationFilters.categories),
+          dishTypes: Array.from(this.generationFilters.dishTypes),
+          cuisines: Array.from(this.generationFilters.cuisines),
+          dietary: Array.from(this.generationFilters.dietary)
+        });
       });
     });
   }
