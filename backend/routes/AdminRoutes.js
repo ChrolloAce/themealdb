@@ -105,6 +105,12 @@ class AdminRoutes {
     
     // Admin recipe management
     this.router.get('/recipes', ErrorHandler.asyncHandler(this.getAllRecipes.bind(this)));
+    // Delete all recipes route (MUST come before /:id routes)
+    this.router.delete('/recipes/delete-all', 
+      requirePermission('delete'),
+      ErrorHandler.asyncHandler(this.deleteAllRecipes.bind(this))
+    );
+    
     this.router.get('/recipes/:id', ErrorHandler.asyncHandler(this.getRecipe.bind(this)));
     this.router.put('/recipes/:id', 
       requirePermission('write'),
@@ -113,12 +119,6 @@ class AdminRoutes {
     this.router.delete('/recipes/:id', 
       requirePermission('delete'),
       ErrorHandler.asyncHandler(this.deleteRecipe.bind(this))
-    );
-    
-    // Delete all recipes route
-    this.router.delete('/recipes/delete-all', 
-      requirePermission('delete'),
-      ErrorHandler.asyncHandler(this.deleteAllRecipes.bind(this))
     );
   }
 
