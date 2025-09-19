@@ -1901,6 +1901,100 @@ body {
 }
 
 /* ============================================
+   📝 RECIPE EDITOR SECTION
+   ============================================ */
+#recipeEditor {
+  background: var(--color-surface);
+}
+
+#recipeEditor .card {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+#comprehensiveRecipeDisplayContainer {
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+  padding: var(--space-6);
+  min-height: 400px;
+}
+
+/* Ensure comprehensive recipe display has proper styling */
+#comprehensiveRecipeDisplayContainer .recipe-display,
+#comprehensiveRecipeDisplayContainer .comprehensive-recipe-display {
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-divider);
+}
+
+/* Recipe editor specific styling */
+.recipe-editor-content {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: 1fr;
+}
+
+.recipe-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.recipe-editor-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.recipe-editor-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* Loading state for recipe editor */
+.recipe-editor-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: var(--color-muted);
+}
+
+.recipe-editor-loading i {
+  font-size: 3rem;
+  margin-bottom: var(--space-4);
+  animation: spin 1s linear infinite;
+}
+
+/* Error state for recipe editor */
+.recipe-editor-error {
+  background: var(--color-danger-50, #FEF2F2);
+  border: 1px solid var(--color-danger-200, #FECACA);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  text-align: center;
+  color: var(--color-danger-700, #B91C1C);
+}
+
+.recipe-editor-error h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}
+
+.recipe-editor-error p {
+  margin-bottom: var(--space-4);
+}
+
+/* ============================================
    🔄 LOGIN MODAL
    ============================================ */
 .modal {

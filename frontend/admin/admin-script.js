@@ -1381,19 +1381,140 @@ class AdminPanel {
       
       console.log('🖼️ Rendering recipe in comprehensive display');
       
+      // Show loading state first
+      container.innerHTML = `
+        <div class="recipe-editor-loading">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>Loading recipe editor...</p>
+        </div>
+      `;
+      
       // Use the comprehensive recipe display component
       try {
-        window.recipeDisplay.renderRecipe(recipe, container);
-        console.log('✅ Recipe rendered successfully');
+        if (window.recipeDisplay && typeof window.recipeDisplay.renderRecipe === 'function') {
+          window.recipeDisplay.renderRecipe(recipe, container);
+          console.log('✅ Recipe rendered successfully with comprehensive display');
+        } else {
+          // Fallback: render basic recipe display if comprehensive component not available
+          console.log('⚠️ Comprehensive display not available, using fallback');
+          this.renderBasicRecipeEditor(recipe, container);
+        }
       } catch (error) {
         console.error('❌ Error rendering recipe:', error);
-        alert('Error displaying recipe: ' + error.message);
+        // Show error state with recipe data
+        container.innerHTML = `
+          <div class="recipe-editor-error">
+            <h3>🚨 Recipe Display Error</h3>
+            <p>Unable to load the recipe editor component.</p>
+            <details style="margin-top: var(--space-4);">
+              <summary style="cursor: pointer; font-weight: bold;">View Recipe Data (Debug)</summary>
+              <pre style="background: var(--color-surface); padding: var(--space-4); border-radius: var(--radius-lg); margin-top: var(--space-2); text-align: left; font-size: 12px; max-height: 300px; overflow: auto;">${JSON.stringify(recipe, null, 2)}</pre>
+            </details>
+            <button onclick="location.reload()" style="margin-top: var(--space-4); padding: var(--space-2) var(--space-4); background: var(--color-primary); color: white; border: none; border-radius: var(--radius-lg); cursor: pointer;">
+              🔄 Refresh Page
+            </button>
+          </div>
+        `;
       }
       
     } catch (error) {
       console.error('❌ Failed to view recipe:', error);
       alert('Failed to load recipe: ' + error.message);
     }
+  }
+
+  renderBasicRecipeEditor(recipe, container) {
+    console.log('🎨 Rendering basic recipe editor');
+    
+    // Get ingredients
+    const ingredients = [];
+    for (let i = 1; i <= 20; i++) {
+      const ingredient = recipe[`strIngredient${i}`];
+      const measure = recipe[`strMeasure${i}`];
+      if (ingredient && ingredient.trim()) {
+        ingredients.push(`${measure || ''} ${ingredient}`.trim());
+      }
+    }
+    
+    // Parse instructions
+    let instructions = recipe.strInstructions || 'No instructions available';
+    if (Array.isArray(instructions)) {
+      instructions = instructions.join(' ');
+    }
+    
+    // Split instructions into steps
+    const steps = instructions.split(/(?:\d+\.|Step \d+:|\n\n)/)
+      .map(step => step.trim())
+      .filter(step => step.length > 10);
+    
+    container.innerHTML = `
+      <div class="recipe-editor-content">
+        <div class="recipe-editor-header">
+          <h1 class="recipe-editor-title">${recipe.strMeal || 'Unnamed Recipe'}</h1>
+          <div class="recipe-editor-actions">
+            <button class="btn btn-primary" onclick="adminPanel.switchSection('allRecipes')">
+              <i class="fas fa-arrow-left"></i> Back to Recipes
+            </button>
+          </div>
+        </div>
+        
+        <div class="recipe-details-grid" style="display: grid; gap: var(--space-6); grid-template-columns: 1fr 1fr;">
+          <div class="recipe-info-card" style="background: var(--color-input-bg); padding: var(--space-4); border-radius: var(--radius-card);">
+            <h3 style="margin-bottom: var(--space-3); color: var(--color-text);">📊 Recipe Information</h3>
+            <div style="display: grid; gap: var(--space-2);">
+              <div><strong>Category:</strong> ${recipe.strCategory || 'Not specified'}</div>
+              <div><strong>Cuisine:</strong> ${recipe.strArea || 'Not specified'}</div>
+              <div><strong>Prep Time:</strong> ${recipe.prepTime || 'Not specified'}</div>
+              <div><strong>Cook Time:</strong> ${recipe.cookTime || 'Not specified'}</div>
+              <div><strong>Servings:</strong> ${recipe.servings || 'Not specified'}</div>
+            </div>
+          </div>
+          
+          <div class="recipe-image-card" style="background: var(--color-input-bg); padding: var(--space-4); border-radius: var(--radius-card); text-align: center;">
+            ${recipe.strMealThumb ? 
+              `<img src="${recipe.strMealThumb}" alt="${recipe.strMeal}" style="width: 100%; max-width: 300px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">` :
+              `<div style="width: 100%; height: 200px; background: var(--color-divider); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 3rem;">🍽️</div>`
+            }
+          </div>
+        </div>
+        
+        <div class="ingredients-card" style="background: var(--color-input-bg); padding: var(--space-4); border-radius: var(--radius-card);">
+          <h3 style="margin-bottom: var(--space-3); color: var(--color-text);">🥄 Ingredients</h3>
+          <div class="ingredients-list" style="display: grid; gap: var(--space-2);">
+            ${ingredients.map(ingredient => `
+              <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-divider);">
+                <span style="color: var(--color-primary); font-weight: bold;">•</span>
+                <span>${ingredient}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        
+        <div class="instructions-card" style="background: var(--color-input-bg); padding: var(--space-4); border-radius: var(--radius-card);">
+          <h3 style="margin-bottom: var(--space-3); color: var(--color-text);">📝 Instructions</h3>
+          <div class="instructions-list" style="display: grid; gap: var(--space-3);">
+            ${steps.length > 0 ? 
+              steps.map((step, index) => `
+                <div style="display: flex; gap: var(--space-3); padding: var(--space-3); background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-divider);">
+                  <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: var(--color-primary); color: white; border-radius: 50%; font-size: 12px; font-weight: 600; flex-shrink: 0;">${index + 1}</span>
+                  <span style="flex: 1; line-height: 1.5;">${step}</span>
+                </div>
+              `).join('') :
+              `<div style="padding: var(--space-4); text-align: center; color: var(--color-muted);">
+                <p>${instructions}</p>
+              </div>`
+            }
+          </div>
+        </div>
+        
+        ${recipe.strDescription ? `
+          <div class="description-card" style="background: var(--color-input-bg); padding: var(--space-4); border-radius: var(--radius-card);">
+            <h3 style="margin-bottom: var(--space-3); color: var(--color-text);">📖 Description</h3>
+            <p style="line-height: 1.6; color: var(--color-text);">${recipe.strDescription}</p>
+          </div>
+        ` : ''}
+      </div>
+    `;
   }
 
   async deleteRecipe(recipeId) {
