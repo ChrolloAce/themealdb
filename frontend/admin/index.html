@@ -58,15 +58,24 @@
                             <div class="nav-tooltip">AI Generate</div>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-section="allRecipes">
-                            <span class="nav-icon">
-                                <i class="fas fa-utensils"></i>
-                            </span>
-                            <span class="nav-text">All Recipes</span>
-                            <div class="nav-tooltip">All Recipes</div>
-                        </a>
-                    </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" data-section="allRecipes">
+                                    <span class="nav-icon">
+                                        <i class="fas fa-utensils"></i>
+                                    </span>
+                                    <span class="nav-text">All Recipes</span>
+                                    <div class="nav-tooltip">All Recipes</div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" data-section="recipeEditor" style="display: none;">
+                                    <span class="nav-icon">
+                                        <i class="fas fa-edit"></i>
+                                    </span>
+                                    <span class="nav-text">Recipe Editor</span>
+                                    <div class="nav-tooltip">Recipe Editor</div>
+                                </a>
+                            </li>
                 </ul>
             </nav>
             
@@ -367,8 +376,8 @@
                                             <button type="button" class="filter-btn" data-dishtype="Cookies & Bars">🍪 Cookies & Bars</button>
                                             <button type="button" class="filter-btn" data-dishtype="Pies & Cobblers">🥧 Pies & Cobblers</button>
                                             <button type="button" class="filter-btn" data-dishtype="Frozen Treats">🍦 Frozen Treats</button>
-                                        </div>
                                     </div>
+                                </div>
                                 
                                     <div class="filter-group">
                                         <label class="filter-label">Dietary</label>
@@ -410,7 +419,7 @@
                                             <button type="button" class="filter-btn" data-cuisine="Brazilian">🇧🇷 Brazilian</button>
                                             <button type="button" class="filter-btn" data-cuisine="Moroccan">🇲🇦 Moroccan</button>
                                         </div>
-                                    </div>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -495,7 +504,7 @@
                                 <button id="importCsvBtn" class="btn btn-ghost">
                                     <i class="fas fa-file-import"></i> Import CSV
                                 </button>
-                            </div>
+                        </div>
                         </div>
                         
                         <!-- Active Filters Display -->
@@ -561,6 +570,19 @@
                                 <button class="btn btn-pagination">»</button>
                     </div>
                 </div>
+                    </div>
+                </section>
+
+                <!-- Recipe Editor Section (for comprehensive view) -->
+                <section id="recipeEditor" class="admin-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Recipe Editor</h2>
+                            <p class="card-subtitle">View and edit recipe details</p>
+                        </div>
+                        <div id="comprehensiveRecipeDisplayContainer">
+                            <!-- Comprehensive recipe display will be loaded here -->
+                        </div>
                     </div>
                 </section>
             </main>

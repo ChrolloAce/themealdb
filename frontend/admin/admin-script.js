@@ -468,6 +468,9 @@ class AdminPanel {
       case 'generate':
         // AI Generate section - no special loading needed
         break;
+      case 'recipeEditor':
+        // Recipe Editor section - no special loading needed (content loaded by viewRecipeComprehensive)
+        break;
     }
   }
 
@@ -477,7 +480,8 @@ class AdminPanel {
       const titles = {
         'dashboard': 'Dashboard',
         'generate': 'AI Recipe Generator',
-        'allRecipes': 'All Recipes'
+        'allRecipes': 'All Recipes',
+        'recipeEditor': 'Recipe Editor'
       };
       titleElement.textContent = titles[sectionName] || 'Dashboard';
     }
