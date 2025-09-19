@@ -1,6 +1,5 @@
 const express = require('express');
 const { ErrorHandler } = require('../middleware/errorHandler');
-const { rateLimitManager } = require('../middleware/rateLimitMiddleware');
 const RecipeManager = require('../managers/RecipeManager');
 const ImageManager = require('../managers/ImageManager');
 const CategoryManager = require('../managers/CategoryManager');
