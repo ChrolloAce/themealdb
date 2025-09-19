@@ -527,7 +527,24 @@ Return ONLY this JSON format with NO extra text:
       const filterPrompt = this.buildFilterPrompt(filters);
       optimizedPrompt = `${filterPrompt}
 
-Generate a recipe that matches these criteria with comprehensive data. Return ONLY this JSON:`;
+Generate a recipe that matches these criteria with ultra-detailed, comprehensive instructions.
+
+🔥 INSTRUCTIONS MUST BE ULTRA-DETAILED (25-40 COMPREHENSIVE STEPS):
+- BREAK DOWN EVERY SINGLE ACTION into separate detailed steps (NEVER combine multiple actions)  
+- EVERY step must include specific temperatures, exact times, and precise techniques
+- Include exact visual cues (golden brown edges, vigorous bubbling, tender when pierced with fork)
+- Mention specific cooking sounds (gentle sizzling, rapid bubbling, crackling), distinct aromas, and texture changes
+- Explain WHY each step is crucial (develops flavor layers, ensures proper texture, prevents overcooking)
+- Include detailed troubleshooting tips and exactly what to do if something goes wrong
+- Specify exact pan sizes, precise heat levels, and accurate timing for every single step
+- Detail ALL prep work separately (washing technique, peeling method, cutting size, arrangement)
+- Include resting times, temperature checks, doneness indicators, and food safety measures
+- Add professional chef tips, advanced techniques, and kitchen organization advice for each step
+- Mention equipment positioning, ingredient preparation sequence, and workspace management
+- Include safety precautions, proper handling techniques, and storage instructions where needed
+- Add sensory descriptions (what to smell, hear, see, feel) at each critical stage
+
+Return ONLY this JSON:`;
     } else {
       // Random recipe
       const cuisines = ['Italian', 'Mexican', 'Asian', 'Mediterranean', 'Indian', 'French'];
@@ -535,7 +552,24 @@ Generate a recipe that matches these criteria with comprehensive data. Return ON
       const randomCuisine = cuisines[Math.floor(Math.random() * cuisines.length)];
       const randomCategory = categories[Math.floor(Math.random() * categories.length)];
       
-      optimizedPrompt = `Create a creative ${randomCuisine} ${randomCategory} recipe with comprehensive data. Return ONLY this JSON:`;
+      optimizedPrompt = `Create a creative ${randomCuisine} ${randomCategory} recipe with ultra-detailed, comprehensive instructions.
+
+🔥 INSTRUCTIONS MUST BE ULTRA-DETAILED (25-40 COMPREHENSIVE STEPS):
+- BREAK DOWN EVERY SINGLE ACTION into separate detailed steps (NEVER combine multiple actions)  
+- EVERY step must include specific temperatures, exact times, and precise techniques
+- Include exact visual cues (golden brown edges, vigorous bubbling, tender when pierced with fork)
+- Mention specific cooking sounds (gentle sizzling, rapid bubbling, crackling), distinct aromas, and texture changes
+- Explain WHY each step is crucial (develops flavor layers, ensures proper texture, prevents overcooking)
+- Include detailed troubleshooting tips and exactly what to do if something goes wrong
+- Specify exact pan sizes, precise heat levels, and accurate timing for every single step
+- Detail ALL prep work separately (washing technique, peeling method, cutting size, arrangement)
+- Include resting times, temperature checks, doneness indicators, and food safety measures
+- Add professional chef tips, advanced techniques, and kitchen organization advice for each step
+- Mention equipment positioning, ingredient preparation sequence, and workspace management
+- Include safety precautions, proper handling techniques, and storage instructions where needed
+- Add sensory descriptions (what to smell, hear, see, feel) at each critical stage
+
+Return ONLY this JSON:`;
     }
 
     optimizedPrompt += `
@@ -544,7 +578,16 @@ Generate a recipe that matches these criteria with comprehensive data. Return ON
   "strCategory": "Category",
   "strArea": "Cuisine",
   "strDescription": "2-3 sentence description",
-  "instructions": ["Step 1: instruction", "Step 2: instruction", "Step 3: instruction"],
+  "instructions": [
+    "Step 1: Begin by thoroughly washing all fresh produce under cold running water for 30 seconds each, patting completely dry with clean paper towels, and arranging ingredients in order of use on a clean, spacious work surface",
+    "Step 2: Preheat your oven to the exact specified temperature, positioning the oven rack in the center position, and allowing a full 15-20 minutes for proper heat distribution throughout the oven cavity",
+    "Step 3: Prepare a clean cutting board by wiping with a damp cloth, then completely drying, ensuring it's stable on your counter and won't slip during cutting tasks",
+    "Step 4: Using a sharp chef's knife, carefully dice onions into uniform 1/4-inch pieces, keeping fingertips curled under and using a rocking motion for consistent cuts",
+    "Step 5: Heat your specified cooking pan over medium heat for 2-3 minutes until you can feel warmth when holding your hand 6 inches above the surface",
+    "Step 6: Add oil to the heated pan, swirling to coat evenly, and wait until the oil shimmers but doesn't smoke, indicating the perfect temperature for cooking",
+    "Step 7: Continue with extremely detailed cooking steps, including specific temperatures, exact times, visual cues, sounds to listen for, aromas to notice, and professional techniques",
+    "...Steps 8-25+: Each step must be ultra-detailed with temperatures, timing, visual indicators, troubleshooting tips, and professional cooking techniques to ensure perfect results..."
+  ],
   "strIngredient1": "ingredient", "strMeasure1": "amount",
   "strIngredient2": "ingredient", "strMeasure2": "amount",
   "strIngredient3": "ingredient", "strMeasure3": "amount",
@@ -607,7 +650,7 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
       messages: [
         {
           role: 'system',
-          content: 'You are a chef and nutritionist. Create complete recipes with realistic data. Return only valid JSON.'
+          content: 'You are a professional chef and culinary instructor. Create ultra-detailed, comprehensive recipes with 25-40 step-by-step instructions. Break down EVERY single action into separate steps. Include specific temperatures, times, techniques, visual cues, sounds, aromas, and professional tips. Return only valid JSON with realistic data.'
         },
         {
           role: 'user',
@@ -615,7 +658,7 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
         }
       ],
       temperature: 0.8,
-      max_tokens: 2000 // Balanced for speed and completeness
+      max_tokens: 4000 // Increased for ultra-detailed instructions with 25-40 steps
     });
 
     const recipeData = this.parseAIResponse(completion.choices[0].message.content);
@@ -634,7 +677,16 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
   "strCategory": "Category (Beef, Chicken, Seafood, Vegetarian, etc)",
   "strArea": "Cuisine (Italian, Mexican, Asian, etc)",
   "strDescription": "Brief appetizing description (2-3 sentences)",
-  "instructions": ["Step 1: detailed instruction", "Step 2: detailed instruction", "Step 3: detailed instruction"],
+  "instructions": [
+    "Step 1: Begin by thoroughly washing all fresh produce under cold running water for 30 seconds each, patting completely dry with clean paper towels, and arranging ingredients in order of use on a clean, spacious work surface",
+    "Step 2: Preheat your oven to the exact specified temperature, positioning the oven rack in the center position, and allowing a full 15-20 minutes for proper heat distribution throughout the oven cavity",
+    "Step 3: Prepare a clean cutting board by wiping with a damp cloth, then completely drying, ensuring it's stable on your counter and won't slip during cutting tasks",
+    "Step 4: Using a sharp chef's knife, carefully dice onions into uniform 1/4-inch pieces, keeping fingertips curled under and using a rocking motion for consistent cuts",
+    "Step 5: Heat your specified cooking pan over medium heat for 2-3 minutes until you can feel warmth when holding your hand 6 inches above the surface",
+    "Step 6: Add oil to the heated pan, swirling to coat evenly, and wait until the oil shimmers but doesn't smoke, indicating the perfect temperature for cooking",
+    "Step 7: Continue with extremely detailed cooking steps, including specific temperatures, exact times, visual cues, sounds to listen for, aromas to notice, and professional techniques",
+    "...Steps 8-25+: Each step must be ultra-detailed with temperatures, timing, visual indicators, troubleshooting tips, and professional cooking techniques to ensure perfect results..."
+  ],
   "strIngredient1": "First ingredient", "strMeasure1": "Amount",
   "strIngredient2": "Second ingredient", "strMeasure2": "Amount",
   "strIngredient3": "Third ingredient", "strMeasure3": "Amount",
