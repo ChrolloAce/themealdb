@@ -378,6 +378,84 @@ class SimpleFirebaseManager {
     return this.collections.recipes;
   }
 
+  // Delete a recipe by idMeal
+  async deleteRecipe(idMeal) {
+    try {
+      console.log(`🗑️ Deleting recipe with idMeal: ${idMeal}`);
+      
+      const recipesRef = collection(this.db, this.collections.recipes);
+      const q = query(recipesRef, where('idMeal', '==', idMeal));
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        console.log(`❌ Recipe with idMeal ${idMeal} not found`);
+        return { success: false, message: 'Recipe not found' };
+      }
+      
+      // Delete the recipe document
+      const recipeDoc = querySnapshot.docs[0];
+      await deleteDoc(doc(this.db, this.collections.recipes, recipeDoc.id));
+      
+      console.log(`✅ Recipe ${idMeal} deleted successfully`);
+      return { success: true, message: 'Recipe deleted successfully' };
+    } catch (error) {
+      console.error(`❌ Error deleting recipe ${idMeal}:`, error);
+      return { success: false, message: 'Failed to delete recipe', error: error.message };
+    }
+  }
+
+  // Delete all recipes
+  async deleteAllRecipes() {
+    try {
+      console.log('🗑️ Deleting ALL recipes from Firebase...');
+      
+      const recipesRef = collection(this.db, this.collections.recipes);
+      const querySnapshot = await getDocs(recipesRef);
+      
+      if (querySnapshot.empty) {
+        console.log('📝 No recipes found to delete');
+        return { success: true, deletedCount: 0, message: 'No recipes found to delete' };
+      }
+      
+      let deletedCount = 0;
+      const batchSize = 10; // Delete in batches to avoid overwhelming Firebase
+      
+      // Process recipes in batches
+      const docs = querySnapshot.docs;
+      for (let i = 0; i < docs.length; i += batchSize) {
+        const batch = docs.slice(i, i + batchSize);
+        
+        // Delete batch
+        await Promise.all(
+          batch.map(async (recipeDoc) => {
+            try {
+              await deleteDoc(doc(this.db, this.collections.recipes, recipeDoc.id));
+              deletedCount++;
+              console.log(`✅ Deleted recipe: ${recipeDoc.data().strMeal || recipeDoc.id}`);
+            } catch (error) {
+              console.error(`❌ Failed to delete recipe ${recipeDoc.id}:`, error);
+            }
+          })
+        );
+      }
+      
+      console.log(`🎉 Successfully deleted ${deletedCount} recipes from Firebase`);
+      return { 
+        success: true, 
+        deletedCount: deletedCount, 
+        message: `Successfully deleted ${deletedCount} recipes` 
+      };
+    } catch (error) {
+      console.error('❌ Error deleting all recipes:', error);
+      return { 
+        success: false, 
+        deletedCount: 0, 
+        message: 'Failed to delete all recipes', 
+        error: error.message 
+      };
+    }
+  }
+
   async close() {
     console.log('🔥 Simple Firebase connection remains open (managed automatically)');
   }

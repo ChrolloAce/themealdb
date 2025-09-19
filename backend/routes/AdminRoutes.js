@@ -114,6 +114,12 @@ class AdminRoutes {
       requirePermission('delete'),
       ErrorHandler.asyncHandler(this.deleteRecipe.bind(this))
     );
+    
+    // Delete all recipes route
+    this.router.delete('/recipes/delete-all', 
+      requirePermission('delete'),
+      ErrorHandler.asyncHandler(this.deleteAllRecipes.bind(this))
+    );
   }
 
   // Dashboard with stats
@@ -862,6 +868,61 @@ class AdminRoutes {
       res.status(500).json({
         error: 'Internal Server Error',
         message: 'Failed to delete recipe'
+      });
+    }
+  }
+
+  // Delete all recipes
+  async deleteAllRecipes(req, res) {
+    try {
+      let deletedCount = 0;
+      
+      // Use Firebase method if available
+      if (this.db.deleteAllRecipes) {
+        const result = await this.db.deleteAllRecipes();
+        deletedCount = result.deletedCount || 0;
+        
+        res.json({
+          success: true,
+          message: `Successfully deleted ${deletedCount} recipes`,
+          deletedCount: deletedCount
+        });
+      } else if (this.db.getAllRecipes) {
+        // Fallback: Get all recipes first, then delete them one by one
+        const recipes = await this.db.getAllRecipes();
+        
+        for (const recipe of recipes) {
+          try {
+            if (this.db.deleteRecipe) {
+              await this.db.deleteRecipe(recipe.idMeal);
+              deletedCount++;
+            }
+          } catch (error) {
+            console.error(`Failed to delete recipe ${recipe.idMeal}:`, error);
+          }
+        }
+        
+        res.json({
+          success: true,
+          message: `Successfully deleted ${deletedCount} recipes`,
+          deletedCount: deletedCount
+        });
+      } else {
+        // Last resort: Use RecipeManager for SQLite
+        const result = await this.recipeManager.deleteAll();
+        
+        res.json({
+          success: result.success,
+          message: result.success ? `Successfully deleted all recipes` : 'Failed to delete recipes',
+          deletedCount: result.deletedCount || 0
+        });
+      }
+    } catch (error) {
+      console.error('❌ Error deleting all recipes:', error);
+      res.status(500).json({
+        error: 'Internal Server Error',
+        message: 'Failed to delete all recipes',
+        details: error.message
       });
     }
   }
