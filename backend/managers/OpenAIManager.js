@@ -121,23 +121,33 @@ ${existingContext ? 'IMPORTANT: Create something different from the existing rec
 - dishType: specify like "Appetizer", "Soup", "Salad", "Main Course", "Side Dish", "Dessert", "Beverage", "Snack"
 - Arrays: all must have at least 1-2 items
 
-🔥 INSTRUCTIONS MUST BE EXTREMELY DETAILED (10-15 steps):
-- EVERY step must include specific temperatures, times, and techniques
+🔥 INSTRUCTIONS MUST BE ULTRA-DETAILED (25-40 COMPREHENSIVE STEPS):
+- BREAK DOWN EVERY SINGLE ACTION into separate detailed steps (NEVER combine multiple actions)
+- EVERY step must include specific temperatures, exact times, and precise techniques
 - Include exact visual cues (golden brown, bubbling, tender when pierced)
 - Mention specific cooking sounds, smells, and textures to watch for
 - Explain WHY each step is important (develops flavor, ensures doneness)
 - Include troubleshooting tips (if this happens, do this)
 - Specify exact pan sizes, heat levels, and timing
-- Detail prep work (how to cut, what size pieces, proper technique)
-- Instructions: MUST be array format ["Step 1: extremely detailed instruction with temperatures, times, visual cues, and techniques", "Step 2: continue with same level of detail", etc.]
+- Detail ALL prep work separately (washing technique, peeling method, cutting size, arrangement)
+- Include resting times, temperature checks, doneness indicators, and food safety measures
+- Add professional chef tips, advanced techniques, and kitchen organization advice for each step
+- Mention equipment positioning, ingredient preparation sequence, and workspace management
+- Include safety precautions, proper handling techniques, and storage instructions where needed
+- Add sensory descriptions (what to smell, hear, see, feel) at each critical stage
+- Instructions: MUST be comprehensive array format with 25+ detailed steps ["Step 1: ultra-detailed instruction with temperatures, times, visual cues, techniques, professional tips, and safety notes", "Step 2: continue with same comprehensive level of detail covering every micro-action", "Step 3: break down all prep work separately", "Steps 4-30+: each step must be extremely granular with specific temperatures, exact times, visual indicators, troubleshooting tips, and professional techniques"]
 
-🥄 INGREDIENTS MUST BE ULTRA-SPECIFIC:
+🥄 INGREDIENTS MUST BE ULTRA-SPECIFIC WITH MAXIMUM DETAIL:
 - Include exact measurements with alternatives (1 cup = 240ml)
 - Specify preparation method (diced small 1/4-inch, julienned thin)
 - Include quality indicators (ripe, fresh, room temperature)
 - Mention substitutions where applicable (or 2 tsp dried herbs)
 - For proteins: specify cut, grade, or type (boneless skinless, 85% lean)
-- For produce: specify ripeness, size, variety when relevant
+- For produce: specify ripeness level, size, variety, and preparation state (medium yellow onion, peeled and quartered)
+- Include storage and handling notes (refrigerated until use, brought to room temperature)
+- Add ingredient-specific tips (choose heavy fruits, avoid soft spots, select bright green herbs)
+- Mention texture and quality indicators for each ingredient
+- Include seasonal availability and freshness markers where applicable
 - 🚨 ONLY use ingredients from this EXACT list (match names precisely): abalone, acai berry, ackee, acorn squash, active dry yeast, adzuki beans, agar agar, agave nectar, aioli, aleppo pepper, alfalfa sprouts, alfredo sauce, all-purpose flour, allspice, almond butter, almond extract, almond flour, almond milk, almond paste, almonds, anchovies, Anchovy Paste, andouille sausage, anise seeds, annatto, apple, apple butter, applesauce, apricot, apricot jam, arborio rice, Arrowroot powder, artichoke, asafoetida, asiago cheese, Asian Pear, asparagus, avocado, bacon, Baguette, baking powder, baking soda, balsamic vinegar, banana, banana blossom, barbecue sauce, barley, barley flour, basil, basil seeds, Basmati Rice, Bay Leaf, beef, Beef Bourguignon, beef brisket, beef broth, Beef Ribs, beef stock, beef tenderloin, beets, Belacan (shrimp paste), bell pepper, bell peppers, besan (chickpea flour), black beans, black cardamom, black fungus (cloud ear), Black Garlic, Black Pepper, Black Peppercorns, black salt (kala namak), Black Tea, black truffle, Black-Eyed Peas, Blood Sausage, blue cheese, blue cheese dressing, blueberry, bok choy, Bonito Flakes, bourbon, Brandy, Bread, bread flour, Breadcrumbs, Breakfast Sausage, Brie, Broccoli, Broccolini, Brown Mustard Seeds, brown rice, brown sugar, brownie mix, brussels sprouts, buckwheat, buckwheat flour, bulgur, burdock root, butter, butter lettuce, buttermilk, buttermilk powder, butternut squash, cabbage, Cacao Nibs, Cactus Pear (Prickly Pear), Cajun Seasoning, Calamari (Squid), camembert, candied ginger, candied orange peel, candlenut, cane vinegar, canned salmon, canned tomatoes, canned tuna, cannellini beans, Caper Berries, Capers, Caramel Sauce, caraway seeds, carne asada, carolina reaper, carrot, cashew butter, cashew milk, cashews, cassava, catfish, cauliflower, cayenne pepper, celery, celery root (celeriac), champagne vinegar, chana dal, chanterelle mushrooms, char siu sauce, cheddar cheese, cheese, cheese curds, cherry, cherry tomato, chervil, chickpeas, chili oil, chili paste, chili powder, chili sauce, Chinese five-spice, chipotle chili powder, chives, chocolate chips, chocolate hazelnut spread, chocolate syrup, cider, cilantro, cinnamon, cinnamon stick, clam juice, clams, clarified butter, clotted cream, cloves, cocoa powder, coconut, coconut aminos, coconut cream, coconut milk, coconut oil, coconut sugar, coconut vinegar, cod, coffee, cognac, collard greens, condensed milk, coriander seeds, corn, corn flakes, corn oil, corn syrup, corn tortillas, corned beef, cornmeal, cotija cheese, cottage cheese, crab, crab meat, cranberries, cream cheese, cream of coconut, cream of tartar, crème fraîche, cremebrule, cremini mushrooms, cucumber, cumin seeds, curly parsley, currants, curry leaves, curry paste, curry powder, daikon radish, dashi, dates, demi-glace, diced tomatoes, dijon mustard, dill, dill seeds, dried apricots, dried cranberries, dried figs, dried hibiscus, dried shrimp, dried thyme, dry mustard powder, duck, duck eggs, duck fat, duck sauce, dulce de leche, edam cheese, edamame, egg noodles, egg whites, egg yolks, eggplant, eggs, egusi seeds, elderberry, empanadas, enoki mushrooms, espresso powder, evaporated milk, extra virgin olive oil, fava beans, fennel bulb, fennel seeds, fenugreek leaves, fenugreek seeds, fermented black beans, filé powder, fish maw, fish sauce, five-spice powder, flaxseeds, flour tortillas, fontina cheese, forbidden rice (black rice), freekeh, freeze-dried fruit, french dressing, fried onions, frosting, fruit cocktail (canned), garam masala, garlic, garlic chives, garlic powder, garlic scapes, gelatin, gin, ginger, ginger paste, ginger powder, gingersnaps (crushed), glucose syrup, glutinous rice (sticky rice), goat, goat cheese, gochugaru (Korean chili flakes), gochujang, salmon, salt, spaghetti, Spaghetti Carbonara, spinach, sugar, sushi, tiramisu
 
 Return ONLY this comprehensive JSON format with NO extra text:
@@ -191,23 +201,33 @@ Make it innovative and delicious. Use unexpected flavor combinations or techniqu
 - dishType: specify like "Appetizer", "Soup", "Salad", "Main Course", "Side Dish", "Dessert", "Beverage", "Snack"
 - Arrays: all must have at least 1-2 items
 
-🔥 INSTRUCTIONS MUST BE EXTREMELY DETAILED (10-15 steps):
-- EVERY step must include specific temperatures, times, and techniques
+🔥 INSTRUCTIONS MUST BE ULTRA-DETAILED (25-40 COMPREHENSIVE STEPS):
+- BREAK DOWN EVERY SINGLE ACTION into separate detailed steps (NEVER combine multiple actions)
+- EVERY step must include specific temperatures, exact times, and precise techniques
 - Include exact visual cues (golden brown, bubbling, tender when pierced)
 - Mention specific cooking sounds, smells, and textures to watch for
 - Explain WHY each step is important (develops flavor, ensures doneness)
 - Include troubleshooting tips (if this happens, do this)
 - Specify exact pan sizes, heat levels, and timing
-- Detail prep work (how to cut, what size pieces, proper technique)
-- Instructions: MUST be array format ["Step 1: extremely detailed instruction with temperatures, times, visual cues, and techniques", "Step 2: continue with same level of detail", etc.]
+- Detail ALL prep work separately (washing technique, peeling method, cutting size, arrangement)
+- Include resting times, temperature checks, doneness indicators, and food safety measures
+- Add professional chef tips, advanced techniques, and kitchen organization advice for each step
+- Mention equipment positioning, ingredient preparation sequence, and workspace management
+- Include safety precautions, proper handling techniques, and storage instructions where needed
+- Add sensory descriptions (what to smell, hear, see, feel) at each critical stage
+- Instructions: MUST be comprehensive array format with 25+ detailed steps ["Step 1: ultra-detailed instruction with temperatures, times, visual cues, techniques, professional tips, and safety notes", "Step 2: continue with same comprehensive level of detail covering every micro-action", "Step 3: break down all prep work separately", "Steps 4-30+: each step must be extremely granular with specific temperatures, exact times, visual indicators, troubleshooting tips, and professional techniques"]
 
-🥄 INGREDIENTS MUST BE ULTRA-SPECIFIC:
+🥄 INGREDIENTS MUST BE ULTRA-SPECIFIC WITH MAXIMUM DETAIL:
 - Include exact measurements with alternatives (1 cup = 240ml)
 - Specify preparation method (diced small 1/4-inch, julienned thin)
 - Include quality indicators (ripe, fresh, room temperature)
 - Mention substitutions where applicable (or 2 tsp dried herbs)
 - For proteins: specify cut, grade, or type (boneless skinless, 85% lean)
-- For produce: specify ripeness, size, variety when relevant
+- For produce: specify ripeness level, size, variety, and preparation state (medium yellow onion, peeled and quartered)
+- Include storage and handling notes (refrigerated until use, brought to room temperature)
+- Add ingredient-specific tips (choose heavy fruits, avoid soft spots, select bright green herbs)
+- Mention texture and quality indicators for each ingredient
+- Include seasonal availability and freshness markers where applicable
 
 Return ONLY this JSON format with NO extra text:
 {
@@ -1476,7 +1496,7 @@ Return as JSON array.`;
 2. 🚫 ALL fields must have REAL, SPECIFIC values - no generic descriptions
 3. 🚫 ONLY use equipment from this list: ${allowedEquipment.join(', ')}
 4. 🚨 CRITICAL: ONLY use ingredients from this EXACT list - match names PRECISELY: ${allowedIngredients.join(', ')}
-5. ✅ Instructions must be ACTUAL cooking steps (not descriptions)
+5. ✅ Instructions must be COMPREHENSIVE cooking steps with 25-40 detailed actions (not descriptions)
 6. ✅ All times must be specific numbers (15 min, 25 min, etc.)
 7. ✅ All measurements must be precise (2 cups, 1 tbsp, etc.)
 8. ✅ Generate complete ingredient slots 1-20
@@ -1500,9 +1520,13 @@ Return ONLY valid JSON with this COMPLETE structure:
   "dateModified": "${new Date().toISOString()}",
   
   "instructionsArray": [
-    "Step 1: Detailed first instruction with specific techniques",
-    "Step 2: Detailed second instruction with temperatures/times",
-    "Step 3: Continue with specific steps..."
+    "Step 1: Begin by thoroughly washing all fresh produce under cold running water for 30 seconds each, patting completely dry with clean paper towels, and arranging ingredients in order of use on a clean, spacious work surface",
+    "Step 2: Preheat your oven to the exact specified temperature, positioning the oven rack in the center position, and allowing a full 15-20 minutes for proper heat distribution throughout the oven cavity",
+    "Step 3: Prepare a clean cutting board by wiping with a damp cloth, then completely drying, ensuring it's stable on your counter and won't slip during cutting tasks",
+    "Step 4: Using a sharp chef's knife, carefully dice onions into uniform 1/4-inch pieces, keeping fingertips curled under and using a rocking motion for consistent cuts",
+    "Step 5: Heat your specified cooking pan over medium heat for 2-3 minutes until you can feel warmth when holding your hand 6 inches above the surface",
+    "Step 6: Add oil to the heated pan, swirling to coat evenly, and wait until the oil shimmers but doesn't smoke, indicating the perfect temperature for cooking",
+    "...Continue with 20+ more extremely detailed steps covering every single action, technique, temperature check, visual cue, timing, and professional tip needed for perfect results..."
   ],
   
   "ingredientsArray": [
