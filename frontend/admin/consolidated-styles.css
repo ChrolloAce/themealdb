@@ -24,8 +24,8 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   font-size: 16px;
   line-height: 1.5;
-  color: #0F172A;
-  background-color: #F7F9FC;
+  color: var(--color-text);
+  background-color: var(--color-bg);
   font-weight: 400;
   height: 100%;
   margin: 0;
@@ -36,18 +36,19 @@ body {
    🎨 CSS VARIABLES
    ============================================ */
 :root {
-  /* Colors */
-  --color-bg: #F7F9FC;
-  --color-surface: #FFFFFF;
-  --color-rail: #5BA8FF;
-  --color-text: #0F172A;
-  --color-muted: #64748B;
-  --color-primary: #3B82F6;
-  --color-success: #22C55E;
-  --color-warning: #F59E0B;
-  --color-danger: #EF4444;
-  --color-divider: #E5E7EB;
-  --color-input-bg: #F3F4F6;
+  /* Modern Color System */
+  --color-bg: #f9fafb;
+  --color-surface: #ffffff;
+  --color-rail: #2563eb;
+  --color-text: #111827;
+  --color-muted: #6b7280;
+  --color-primary: #2563eb;
+  --color-secondary: #f97316;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-divider: #e5e7eb;
+  --color-input-bg: #f9fafb;
   
   /* Spacing */
   --space-1: 4px;
@@ -2891,27 +2892,46 @@ body {
   border-left: 4px solid #8b5cf6 !important;
 }
 
-/* Ingredients section */
+/* Ingredients section - Modern Design */
 .ingredients-section {
-  background: white !important;
-  border-radius: 15px !important;
-  padding: 25px !important;
-  margin-bottom: 25px !important;
-  border: 3px solid #10B981 !important;
-  box-shadow: 0 5px 15px rgba(16,185,129,0.1) !important;
+  background: var(--surface) !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-6) !important;
+  margin-bottom: var(--space-6) !important;
+  border: 1px solid var(--divider) !important;
+  box-shadow: var(--shadow) !important;
+  position: relative !important;
+}
+
+.ingredients-section::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 4px !important;
+  background: var(--success) !important;
+  border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
 }
 
 .ingredients-section h3 {
-  background: #10B981 !important;
-  color: white !important;
-  padding: 15px !important;
-  border-radius: 10px !important;
-  margin: -25px -25px 20px -25px !important;
-  font-size: 20px !important;
-  font-weight: bold !important;
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  margin: 0 0 var(--space-4) 0 !important;
+  font-size: var(--font-size-base) !important;
+  font-weight: var(--font-weight-semibold) !important;
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
+  gap: var(--space-2) !important;
+  border-bottom: 1px solid var(--divider) !important;
+  padding-bottom: var(--space-4) !important;
+}
+
+.ingredients-section h3 i {
+  font-size: var(--font-size-sm) !important;
+  color: var(--success) !important;
 }
 
 .ingredients-list {
@@ -2922,118 +2942,271 @@ body {
   display: flex !important;
   justify-content: space-between !important;
   align-items: center !important;
-  padding: 15px !important;
-  margin: 10px 0 !important;
-  background: #f0fdf4 !important;
-  border-radius: 10px !important;
-  border-left: 4px solid #10B981 !important;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+  padding: var(--space-4) !important;
+  margin: var(--space-2) 0 !important;
+  background: var(--background) !important;
+  border-radius: var(--radius) !important;
+  border: 1px solid var(--divider) !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.ingredient-item:hover {
+  border-color: var(--success) !important;
+  box-shadow: var(--shadow-sm) !important;
+  background: var(--surface) !important;
 }
 
 .ingredient-name {
-  font-weight: 600 !important;
-  color: #333 !important;
-  font-size: 16px !important;
+  font-weight: var(--font-weight-medium) !important;
+  color: var(--text-primary) !important;
+  font-size: var(--font-size-sm) !important;
+  flex: 1 !important;
 }
 
 .ingredient-amount {
-  color: #10B981 !important;
-  font-weight: bold !important;
-  background: white !important;
-  padding: 5px 10px !important;
-  border-radius: 20px !important;
-  border: 2px solid #10B981 !important;
+  color: var(--success) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  background: var(--surface) !important;
+  padding: var(--space-1) var(--space-3) !important;
+  border-radius: var(--radius-full) !important;
+  border: 1px solid var(--success) !important;
+  font-size: var(--font-size-xs) !important;
 }
 
-/* Instructions section */
+/* Instructions section - Modern Design */
 .instructions-section {
-  background: white !important;
-  border-radius: 15px !important;
-  padding: 25px !important;
-  margin-bottom: 25px !important;
-  border: 3px solid #F59E0B !important;
-  box-shadow: 0 5px 15px rgba(245,158,11,0.1) !important;
+  background: var(--surface) !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-6) !important;
+  margin-bottom: var(--space-6) !important;
+  border: 1px solid var(--divider) !important;
+  box-shadow: var(--shadow) !important;
+  position: relative !important;
+}
+
+.instructions-section::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 4px !important;
+  background: var(--secondary) !important;
+  border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
 }
 
 .instructions-section h3 {
-  background: #F59E0B !important;
-  color: white !important;
-  padding: 15px !important;
-  border-radius: 10px !important;
-  margin: -25px -25px 20px -25px !important;
-  font-size: 20px !important;
-  font-weight: bold !important;
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  margin: 0 0 var(--space-4) 0 !important;
+  font-size: var(--font-size-base) !important;
+  font-weight: var(--font-weight-semibold) !important;
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
+  gap: var(--space-2) !important;
+  border-bottom: 1px solid var(--divider) !important;
+  padding-bottom: var(--space-4) !important;
+}
+
+.instructions-section h3 i {
+  font-size: var(--font-size-sm) !important;
+  color: var(--secondary) !important;
 }
 
 .instructions-text {
-  font-size: 16px !important;
-  line-height: 1.8 !important;
-  color: #333 !important;
-  padding: 20px !important;
-  background: #fef3c7 !important;
-  border-radius: 10px !important;
-  border-left: 4px solid #F59E0B !important;
+  font-size: var(--font-size-sm) !important;
+  line-height: var(--line-height-relaxed) !important;
+  color: var(--text-primary) !important;
+  padding: var(--space-4) !important;
+  background: var(--background) !important;
+  border-radius: var(--radius) !important;
+  border: 1px solid var(--divider) !important;
   margin: 0 !important;
 }
 
-/* Nutrition section */
+.instruction-step {
+  display: flex !important;
+  align-items: flex-start !important;
+  padding: var(--space-4) !important;
+  margin: var(--space-2) 0 !important;
+  background: var(--background) !important;
+  border-radius: var(--radius) !important;
+  border: 1px solid var(--divider) !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.instruction-step:hover {
+  border-color: var(--secondary) !important;
+  box-shadow: var(--shadow-sm) !important;
+  background: var(--surface) !important;
+}
+
+.step-number {
+  background: var(--secondary) !important;
+  color: white !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: var(--radius-full) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: var(--font-weight-semibold) !important;
+  margin-right: var(--space-3) !important;
+  flex-shrink: 0 !important;
+  font-size: var(--font-size-sm) !important;
+}
+
+.step-text {
+  flex: 1 !important;
+  line-height: var(--line-height-relaxed) !important;
+  color: var(--text-primary) !important;
+  margin: 0 !important;
+  padding-top: var(--space-1) !important;
+  font-size: var(--font-size-sm) !important;
+}
+
+/* Nutrition section - Modern 4-Column Grid Design */
 .nutrition-section {
-  background: white !important;
-  border-radius: 15px !important;
-  padding: 25px !important;
-  margin-bottom: 25px !important;
-  border: 3px solid #ef4444 !important;
-  box-shadow: 0 5px 15px rgba(239,68,68,0.1) !important;
+  background: var(--surface) !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-6) !important;
+  margin-bottom: var(--space-6) !important;
+  border: 1px solid var(--divider) !important;
+  box-shadow: var(--shadow) !important;
+  position: relative !important;
+}
+
+.nutrition-section::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 4px !important;
+  background: var(--primary) !important;
+  border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
 }
 
 .nutrition-section h3 {
-  background: #ef4444 !important;
-  color: white !important;
-  padding: 15px !important;
-  border-radius: 10px !important;
-  margin: -25px -25px 20px -25px !important;
-  font-size: 20px !important;
-  font-weight: bold !important;
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  margin: 0 0 var(--space-4) 0 !important;
+  font-size: var(--font-size-xl) !important;
+  font-weight: var(--font-weight-semibold) !important;
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
+  gap: var(--space-2) !important;
+  border-bottom: 1px solid var(--divider) !important;
+  padding-bottom: var(--space-4) !important;
+}
+
+.nutrition-section h3 i {
+  font-size: var(--font-size-lg) !important;
+  color: var(--primary) !important;
 }
 
 .btn-calculate {
-  background: #ef4444 !important;
+  background: var(--primary) !important;
   color: white !important;
   border: none !important;
-  padding: 12px 20px !important;
-  border-radius: 10px !important;
-  font-weight: 600 !important;
+  padding: var(--space-3) var(--space-4) !important;
+  border-radius: var(--radius) !important;
+  font-weight: var(--font-weight-medium) !important;
   cursor: pointer !important;
-  margin-bottom: 20px !important;
-  transition: all 0.2s ease !important;
+  margin-bottom: var(--space-6) !important;
+  transition: all var(--transition-fast) !important;
+  font-size: var(--font-size-sm) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: var(--space-2) !important;
 }
 
 .btn-calculate:hover {
-  background: #dc2626 !important;
-  transform: translateY(-2px) !important;
+  background: var(--primary-700) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-md) !important;
 }
 
+/* 4-Column Nutrition Grid */
 .nutrition-grid {
   display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
-  gap: 15px !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: var(--space-4) !important;
+  margin-top: var(--space-4) !important;
+}
+
+@media (max-width: 1024px) {
+  .nutrition-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .nutrition-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 .nutrition-item {
-  background: #fef2f2 !important;
-  border-radius: 10px !important;
-  padding: 15px !important;
-  border-left: 4px solid #ef4444 !important;
+  background: var(--background) !important;
+  border: 1px solid var(--divider) !important;
+  border-radius: var(--radius) !important;
+  padding: var(--space-4) !important;
+  text-align: center !important;
+  transition: all var(--transition-fast) !important;
   display: flex !important;
+  flex-direction: column !important;
   align-items: center !important;
-  gap: 15px !important;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+  gap: var(--space-2) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.nutrition-item:hover {
+  border-color: var(--primary) !important;
+  box-shadow: var(--shadow-md) !important;
+  transform: translateY(-2px) !important;
+}
+
+.nutrition-item i {
+  font-size: var(--font-size-lg) !important;
+  color: var(--primary) !important;
+  margin-bottom: var(--space-1) !important;
+}
+
+.nutrition-item label {
+  font-size: var(--font-size-xs) !important;
+  color: var(--text-muted) !important;
+  font-weight: var(--font-weight-medium) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  margin: 0 !important;
+}
+
+.nutrition-item input {
+  border: none !important;
+  background: transparent !important;
+  font-size: var(--font-size-lg) !important;
+  font-weight: var(--font-weight-bold) !important;
+  color: var(--text-primary) !important;
+  text-align: center !important;
+  width: 100% !important;
+  padding: var(--space-1) !important;
+}
+
+.nutrition-item input:focus {
+  outline: 2px solid var(--primary) !important;
+  outline-offset: 2px !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.nutrition-item .unit {
+  font-size: var(--font-size-xs) !important;
+  color: var(--text-muted) !important;
+  font-weight: var(--font-weight-normal) !important;
 }
 
 .nutrient-icon {
@@ -3113,27 +3286,46 @@ body {
   font-size: 1.5rem !important;
 }
 
-/* Equipment section */
+/* Equipment section - Modern Design */
 .equipment-section {
-  background: white !important;
-  border-radius: 15px !important;
-  padding: 25px !important;
-  margin-bottom: 25px !important;
-  border: 3px solid #84cc16 !important;
-  box-shadow: 0 5px 15px rgba(132,204,22,0.1) !important;
+  background: var(--surface) !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-6) !important;
+  margin-bottom: var(--space-6) !important;
+  border: 1px solid var(--divider) !important;
+  box-shadow: var(--shadow) !important;
+  position: relative !important;
+}
+
+.equipment-section::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 4px !important;
+  background: var(--danger) !important;
+  border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
 }
 
 .equipment-section h3 {
-  background: #84cc16 !important;
-  color: white !important;
-  padding: 15px !important;
-  border-radius: 10px !important;
-  margin: -25px -25px 20px -25px !important;
-  font-size: 20px !important;
-  font-weight: bold !important;
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  margin: 0 0 var(--space-4) 0 !important;
+  font-size: var(--font-size-base) !important;
+  font-weight: var(--font-weight-semibold) !important;
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
+  gap: var(--space-2) !important;
+  border-bottom: 1px solid var(--divider) !important;
+  padding-bottom: var(--space-4) !important;
+}
+
+.equipment-section h3 i {
+  font-size: var(--font-size-sm) !important;
+  color: var(--danger) !important;
 }
 
 .equipment-list p {
