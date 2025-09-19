@@ -176,20 +176,27 @@ Return ONLY this comprehensive JSON format with NO extra text:
         // Random mode - generate creative diverse recipe
         console.log('🎲 Using RANDOM mode with variety');
         
-        const cuisines = ['Italian', 'Mexican', 'Asian', 'Mediterranean', 'Indian', 'French', 'American', 'Japanese', 'Thai', 'Greek'];
+        const cuisines = ['Italian', 'Mexican', 'Asian', 'Mediterranean', 'Indian', 'French', 'American', 'Japanese', 'Thai', 'Greek', 'Chinese', 'Korean', 'Vietnamese', 'Middle Eastern', 'British', 'German', 'Brazilian', 'Moroccan'];
         const categories = ['Beef', 'Chicken', 'Seafood', 'Vegetarian', 'Vegan', 'Pasta', 'Dessert', 'Breakfast'];
         const themes = ['healthy', 'comfort food', 'spicy', 'fresh', 'hearty', 'light', 'creative fusion', 'traditional', 'modern twist'];
+        const mealTypes = ['Breakfast', 'Brunch', 'Lunch', 'Dinner', 'Snack', 'Dessert'];
+        const dishTypes = ['Appetizers', 'Side Dishes', 'Main Courses', 'Soups', 'Salads', 'Sandwiches & Wraps', 'Burgers', 'Pizza & Flatbreads', 'Pasta & Noodles', 'Rice Dishes', 'Tacos, Burritos & Quesadillas', 'Stir-Fries', 'Curries', 'Stews & Casseroles', 'Skillet & One-Pan Meals', 'Slow Cooker / Instant Pot', 'Grilling / BBQ', 'Baked Goods', 'Pastries', 'Cookies & Bars', 'Pies & Cobblers', 'Frozen Treats'];
+        const dietaryOptions = ['Vegetarian', 'Vegan', 'Pescatarian', 'Keto', 'Low-Carb', 'High-Protein', 'Gluten-Free', 'Dairy-Free', 'Nut-Free', 'Low-Sodium', 'Low-Sugar', 'Mediterranean Diet'];
         
         const randomCuisine = cuisines[Math.floor(Math.random() * cuisines.length)];
         const randomCategory = categories[Math.floor(Math.random() * categories.length)];
         const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+        const randomMealType = mealTypes[Math.floor(Math.random() * mealTypes.length)];
+        const randomDishType = dishTypes[Math.floor(Math.random() * dishTypes.length)];
+        const randomDietary = dietaryOptions[Math.floor(Math.random() * dietaryOptions.length)];
         
         comprehensivePrompt = `${existingContext}
 
 Generate a creative ${randomTheme} ${randomCuisine} ${randomCategory} recipe that would be unique and interesting.
+This should be a ${randomMealType} recipe that fits the ${randomDishType} category and has ${randomDietary} dietary characteristics.
 ${existingContext ? 'IMPORTANT: Create something completely different from the existing recipes listed above to ensure variety and innovation in our collection.' : ''}
 
-Make it innovative and delicious. Use unexpected flavor combinations or techniques.
+Make it innovative and delicious. Use unexpected flavor combinations or techniques that align with the specified meal type, dish type, and dietary requirements.
 
 🚨 CRITICAL: ALL fields must have realistic values (no zeros, empty strings, or N/A):
 - strDescription: 2-3 appetizing sentences
@@ -197,8 +204,9 @@ Make it innovative and delicious. Use unexpected flavor combinations or techniqu
 - servingSize: specify portion like "1 cup", "2 slices"
 - yield: specify output like "4 servings", "12 cookies"
 - nutrition: realistic numbers based on ingredients
-- dietary: appropriate true/false based on ingredients (vegetarian, vegan, pescatarian, glutenFree, dairyFree, keto, paleo, halal, noRedMeat, noPork, noShellfish, omnivore)
-- dishType: specify like "Appetizer", "Soup", "Salad", "Main Course", "Side Dish", "Dessert", "Beverage", "Snack"
+- mealType: MUST include "${randomMealType}" and can include additional appropriate meal times
+- dishType: MUST be "${randomDishType}" or closest appropriate match
+- dietary: Set appropriate true/false values with emphasis on ${randomDietary} characteristics
 - Arrays: all must have at least 1-2 items
 
 🔥 INSTRUCTIONS MUST BE ULTRA-DETAILED (25-40 COMPREHENSIVE STEPS):
@@ -248,7 +256,7 @@ Return ONLY this JSON format with NO extra text:
   ],
   "strMealThumb": "",
   "strTags": "${randomTheme},${randomCuisine.toLowerCase()},${randomCategory.toLowerCase()}",
-  "strEquipment": "Large skillet (12-inch), Mixing bowl (medium), Measuring cups, Chef's knife (8-inch), Cutting board, Wooden spoon, Meat thermometer, Colander, Whisk, Tongs",
+  "strEquipment": "Intelligently selected equipment based on cooking methods and ingredients (4-8 items)",
   "prepTime": 15,
   "cookTime": 30,
   "totalTime": 45,
@@ -285,12 +293,12 @@ Return ONLY this JSON format with NO extra text:
     "noShellfish": true,
     "omnivore": false
   },
-  "mealType": ["Dinner", "Lunch"],
-  "dishType": "Main Course",
+  "mealType": ["${randomMealType}"],
+  "dishType": "${randomDishType}",
   "mainIngredient": "chicken",
   "occasion": ["Weeknight", "Family Dinner", "Date Night"],
   "seasonality": ["Fall", "Winter"],
-  "equipmentRequired": ["Large skillet (12-inch)", "Chef's knife (8-inch)", "Cutting board", "Measuring cups", "Mixing bowl (large)", "Wooden spoon", "Tongs"],
+  "equipmentRequired": ["Chef's knife", "Cutting board", "Large mixing bowl", "Measuring cups", "Frying pan", "Spatula (rubber)", "Tongs", "Timer"],
   "skillsRequired": ["Chopping", "Sautéing", "Seasoning", "Pan-frying", "Timing"],
   "keywords": ["comfort food", "hearty", "flavorful", "easy weeknight", "family-friendly", "one-pan"],
   "allergenFlags": ["dairy", "gluten", "eggs"],
@@ -601,7 +609,7 @@ Return ONLY this JSON:`;
   "servingSize": "1 serving",
   "difficulty": "Medium",
   "yield": "4 servings",
-  "strEquipment": "cooking tools",
+  "strEquipment": "Intelligently selected equipment based on cooking methods (4-8 items from approved list)",
   "nutrition": {
     "caloriesPerServing": 400,
     "protein": 25,
@@ -636,7 +644,7 @@ Return ONLY this JSON:`;
   "mainIngredient": "main ingredient",
   "occasion": ["Weeknight"],
   "seasonality": ["All Season"],
-  "equipmentRequired": ["tools"],
+  "equipmentRequired": ["Select 4-8 appropriate tools from the comprehensive equipment list based on cooking methods"],
   "skillsRequired": ["techniques"],
   "keywords": ["terms"],
   "allergenFlags": ["allergens"],
@@ -1546,12 +1554,19 @@ Return as JSON array.`;
 🚨 ABSOLUTE CRITICAL REQUIREMENTS - FAILURE TO FOLLOW = REJECTED:
 1. 🚫 NEVER EVER use "N/A", "TBD", "Unknown", or any placeholder text
 2. 🚫 ALL fields must have REAL, SPECIFIC values - no generic descriptions
-3. 🚫 ONLY use equipment from this list: ${allowedEquipment.join(', ')}
+3. 🍳 EQUIPMENT SELECTION: Choose 4-8 items from this comprehensive equipment list based on cooking methods and ingredients used:
+   Air fryer, Broiler pan, Dutch oven, Grill, Grill pan, Microwave, Oven, Pressure cooker, Rice cooker, Saucepan, Baking sheet, Frying pan, Slow cooker, Small pot, Medium pot, Large pot, Stovetop, Wok, Bench scraper, Chef's knife, Citrus juicer, Citrus zester, Cutting board, Dough scraper, Egg separator, Fish spatula, Food tweezers, Garlic press, Jar opener, Kitchen scissors, Ladle, Mandoline slicer, Meat tenderizer, Spray bottle, Paring knife, Pastry blender, Pastry brush, Pasta spoon, Peeler, Pizza cutter, Rolling pin, Spatula (rubber), Spatula (metal), Tongs, Vegetable peeler, Whisk, Zester, Glass measuring cup, Kitchen scale, Large mixing bowl, Medium mixing bowl, Small mixing bowl, Measuring cups, Measuring spoons, Mortar and pestle, Piping bag, Plate, Bowl, Salad bowl, Serving bowl, Tamper (for blender), Timer, Toothpicks, Tweezers (plating), Fork, Spoon, Knife (table), Serving spoon, Slotted spoon, Baking dish, Baking ramekin, Cake pan, Cooling rack, Cookie cutters, Loaf pan, Muffin tin, Parchment paper, Pie dish, Silicone baking mat, Springform pan, Stand mixer, Whipped cream siphon, Can opener, Colander, Funnel, Salad spinner, Sieve, Skewers, Strainer, Storage container, Bottle opener, Corkscrew, Ice cube mold, Ice cream scoop, Cocktail shaker, Aluminum foil, Apron, Dish towel, Oven mitts, Paper towels, Plastic wrap, Trivet, Chopsticks, Food processor, Hand mixer, Sous vide wand
 4. 🚨 CRITICAL: ONLY use ingredients from this EXACT list - match names PRECISELY: ${allowedIngredients.join(', ')}
 5. ✅ Instructions must be COMPREHENSIVE cooking steps with 25-40 detailed actions (not descriptions)
 6. ✅ All times must be specific numbers (15 min, 25 min, etc.)
 7. ✅ All measurements must be precise (2 cups, 1 tbsp, etc.)
 8. ✅ Generate complete ingredient slots 1-20
+9. 🔧 EQUIPMENT INTELLIGENCE: Select equipment logically:
+   - For chopping/prep: Chef's knife, Cutting board, Measuring cups/spoons
+   - For stovetop cooking: Frying pan/Saucepan + Spatula + Tongs
+   - For baking: Oven + Baking sheet/dish + Measuring tools
+   - For mixing: Mixing bowls + Whisk/Spatula
+   - For specific techniques: Wok for stir-fry, Dutch oven for braising, etc.
 
 ⚠️ IF YOU USE "N/A" ANYWHERE, THE ENTIRE RESPONSE IS INVALID ⚠️
 

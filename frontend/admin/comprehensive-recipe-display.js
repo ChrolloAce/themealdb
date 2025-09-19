@@ -5,6 +5,77 @@ class ComprehensiveRecipeDisplay {
   constructor() {
     this.currentRecipe = null;
     this.editMode = false;
+    
+    // Emoji mappings for categories
+    this.mealTypeEmojis = {
+      'Breakfast': '🌅',
+      'Brunch': '🥐', 
+      'Lunch': '🌞',
+      'Dinner': '🌙',
+      'Snack': '🥨',
+      'Dessert': '🍰'
+    };
+    
+    this.dishTypeEmojis = {
+      'Appetizers': '🍤',
+      'Side Dishes': '🥗', 
+      'Main Courses': '🍽️',
+      'Soups': '🍲',
+      'Salads': '🥙',
+      'Sandwiches & Wraps': '🥪',
+      'Burgers': '🍔',
+      'Pizza & Flatbreads': '🍕',
+      'Pasta & Noodles': '🍝',
+      'Rice Dishes': '🍚',
+      'Tacos, Burritos & Quesadillas': '🌮',
+      'Stir-Fries': '🥘',
+      'Curries': '🍛',
+      'Stews & Casseroles': '🍯',
+      'Skillet & One-Pan Meals': '🍳',
+      'Slow Cooker / Instant Pot': '⏲️',
+      'Grilling / BBQ': '🔥',
+      'Baked Goods': '🥖',
+      'Pastries': '🥐',
+      'Cookies & Bars': '🍪',
+      'Pies & Cobblers': '🥧',
+      'Frozen Treats': '🍦'
+    };
+    
+    this.dietaryEmojis = {
+      'Vegetarian': '🥗',
+      'Vegan': '🌱',
+      'Pescatarian': '🐟',
+      'Keto': '🥑',
+      'Low-Carb': '🥩',
+      'High-Protein': '💪',
+      'Gluten-Free': '🌾',
+      'Dairy-Free': '🥛',
+      'Nut-Free': '🥜',
+      'Low-Sodium': '🧂',
+      'Low-Sugar': '🍯',
+      'Mediterranean Diet': '🫒'
+    };
+    
+    this.cuisineEmojis = {
+      'Italian': '🍝',
+      'Mexican': '🌮',
+      'American': '🍔',
+      'Chinese': '🥢',
+      'Japanese': '🍱',
+      'Indian': '🍛',
+      'Thai': '🍜',
+      'French': '🥖',
+      'Mediterranean': '🫒',
+      'Greek': '🇬🇷',
+      'Spanish': '🥘',
+      'Korean': '🍲',
+      'Vietnamese': '🍲',
+      'Middle Eastern': '🧆',
+      'British': '🇬🇧',
+      'German': '🥨',
+      'Brazilian': '🇧🇷',
+      'Moroccan': '🇲🇦'
+    };
   }
 
   // Render full recipe with all comprehensive data
@@ -53,7 +124,7 @@ class ComprehensiveRecipeDisplay {
             </div>
             <div class="editable-field" data-field="strArea">
               <label>Cuisine:</label>
-              <span class="value">${recipe.strArea || 'Not set'}</span>
+              <span class="value">${this.cuisineEmojis[recipe.strArea] || '🍽️'} ${recipe.strArea || 'Not set'}</span>
             </div>
             <div class="editable-field" data-field="difficulty">
               <label>Difficulty:</label>
@@ -61,7 +132,7 @@ class ComprehensiveRecipeDisplay {
             </div>
             <div class="editable-field" data-field="dishType">
               <label>Dish Type:</label>
-              <span class="value">${recipe.dishType || 'Main Course'}</span>
+              <span class="value">${this.dishTypeEmojis[recipe.dishType] || '🍽️'} ${recipe.dishType || 'Main Course'}</span>
             </div>
           </div>
 
@@ -209,7 +280,7 @@ class ComprehensiveRecipeDisplay {
             <div class="tag-group">
               <label>Meal Type:</label>
               <div class="tags">
-                ${(recipe.mealType || []).map(type => `<span class="tag">${type}</span>`).join('')}
+                ${(recipe.mealType || []).map(type => `<span class="tag">${this.mealTypeEmojis[type] || '🍽️'} ${type}</span>`).join('')}
               </div>
             </div>
             <div class="tag-group">
@@ -1143,6 +1214,174 @@ class ComprehensiveRecipeDisplay {
     if (equipmentList) {
       equipmentList.innerHTML = this.renderEquipment(this.currentRecipe.equipmentRequired || []);
       this.attachEventListeners();
+    }
+  }
+
+  // Render dietary information with emojis
+  renderDietary(dietary) {
+    const dietaryItems = [];
+    
+    // Convert dietary object to array of active dietary preferences
+    Object.entries(dietary).forEach(([key, value]) => {
+      if (value === true) {
+        // Convert camelCase to readable format
+        const readableKey = key
+          .replace(/([A-Z])/g, ' $1')
+          .replace(/^./, str => str.toUpperCase())
+          .replace(/No /g, 'No ')
+          .trim();
+        
+        const emoji = this.dietaryEmojis[readableKey] || this.dietaryEmojis[key] || '🍽️';
+        dietaryItems.push(`
+          <div class="dietary-tag active">
+            <span class="dietary-emoji">${emoji}</span>
+            <span class="dietary-label">${readableKey}</span>
+          </div>
+        `);
+      }
+    });
+
+    if (dietaryItems.length === 0) {
+      return '<p class="no-dietary">No specific dietary restrictions</p>';
+    }
+
+    return `<div class="dietary-tags">${dietaryItems.join('')}</div>`;
+  }
+
+  // Render nutrition information
+  renderNutrition(nutrition) {
+    const nutritionItems = [
+      { key: 'caloriesPerServing', label: 'Calories', emoji: '🔥', unit: '' },
+      { key: 'protein', label: 'Protein', emoji: '🥩', unit: 'g' },
+      { key: 'carbs', label: 'Carbs', emoji: '🍞', unit: 'g' },
+      { key: 'fat', label: 'Fat', emoji: '🥑', unit: 'g' },
+      { key: 'fiber', label: 'Fiber', emoji: '🌾', unit: 'g' },
+      { key: 'sugar', label: 'Sugar', emoji: '🍯', unit: 'g' },
+      { key: 'sodium', label: 'Sodium', emoji: '🧂', unit: 'mg' },
+      { key: 'cholesterol', label: 'Cholesterol', emoji: '🍳', unit: 'mg' }
+    ];
+
+    return nutritionItems.map(item => `
+      <div class="nutrition-item">
+        <div class="emoji">${item.emoji}</div>
+        <strong>${item.label}</strong>
+        <div class="value">${nutrition[item.key] || 0}${item.unit}</div>
+      </div>
+    `).join('');
+  }
+
+  // Render ingredients list
+  renderIngredients(recipe) {
+    const ingredients = [];
+    
+    // Check if we have detailed ingredients array
+    if (recipe.ingredientsDetailed && recipe.ingredientsDetailed.length > 0) {
+      return recipe.ingredientsDetailed.map((ing, idx) => `
+        <div class="ingredient-row" data-index="${idx}">
+          <span class="ingredient-name">${ing.name}</span>
+          <span class="ingredient-amount">${ing.quantity} ${ing.unit}</span>
+          ${this.editMode ? `<button class="btn-remove" onclick="window.recipeDisplay.removeIngredient(${idx})" title="Remove ingredient"><i class="fas fa-times"></i></button>` : ''}
+        </div>
+      `).join('');
+    }
+
+    // Fallback to traditional ingredient slots
+    for (let i = 1; i <= 20; i++) {
+      const ingredient = recipe[`strIngredient${i}`];
+      const measure = recipe[`strMeasure${i}`];
+      
+      if (ingredient && ingredient.trim()) {
+        ingredients.push(`
+          <div class="ingredient-row" data-index="${i}">
+            <span class="ingredient-name">${ingredient}</span>
+            <span class="ingredient-amount">${measure || 'To taste'}</span>
+            ${this.editMode ? `<button class="btn-remove" onclick="window.recipeDisplay.removeIngredient(${i})" title="Remove ingredient"><i class="fas fa-times"></i></button>` : ''}
+          </div>
+        `);
+      }
+    }
+
+    return ingredients.length > 0 ? ingredients.join('') : '<p class="no-ingredients">No ingredients listed</p>';
+  }
+
+  // Render equipment list
+  renderEquipment(equipment) {
+    if (!equipment || equipment.length === 0) {
+      return '<p class="no-equipment">No specific equipment required</p>';
+    }
+
+    return equipment.map((item, idx) => `
+      <div class="equipment-item" data-index="${idx}">
+        <span class="equipment-icon">🔧</span>
+        <span class="equipment-name">${item}</span>
+        ${this.editMode ? `<button class="btn-remove" onclick="window.recipeDisplay.removeEquipment(${idx})" title="Remove equipment"><i class="fas fa-times"></i></button>` : ''}
+      </div>
+    `).join('');
+  }
+
+  // Render instructions with step numbers
+  renderInstructions(recipe) {
+    let instructions = [];
+    
+    // Check if instructions is an array
+    if (recipe.instructions && Array.isArray(recipe.instructions)) {
+      instructions = recipe.instructions;
+    } else if (recipe.strInstructions) {
+      // Parse string instructions
+      const instructionText = recipe.strInstructions;
+      
+      // Try to split by step numbers
+      if (instructionText.includes('Step ')) {
+        instructions = instructionText.split(/Step \d+[:.]\s*/)
+          .filter(step => step.trim())
+          .map(step => step.trim());
+      } else {
+        // Split by sentences or periods as fallback
+        instructions = instructionText.split(/[.!?]\s+/)
+          .filter(step => step.trim() && step.length > 10)
+          .map(step => step.trim() + (step.endsWith('.') ? '' : '.'));
+      }
+    }
+
+    if (instructions.length === 0) {
+      return '<p class="no-instructions">No instructions available</p>';
+    }
+
+    return instructions.map((instruction, idx) => `
+      <div class="instruction-step" data-step="${idx + 1}">
+        <div class="step-number">${idx + 1}</div>
+        <div class="step-content">
+          <p>${instruction}</p>
+        </div>
+        ${this.editMode ? `<button class="btn-remove" onclick="window.recipeDisplay.removeInstruction(${idx})" title="Remove step"><i class="fas fa-times"></i></button>` : ''}
+      </div>
+    `).join('');
+  }
+
+  // Remove equipment item
+  async removeEquipment(index) {
+    if (this.currentRecipe.equipmentRequired && this.currentRecipe.equipmentRequired[index]) {
+      this.currentRecipe.equipmentRequired.splice(index, 1);
+      this.refreshEquipmentSection();
+      await this.saveChanges();
+      this.showNotification('Equipment removed!', 'success');
+    }
+  }
+
+  // Remove instruction step
+  async removeInstruction(index) {
+    if (this.currentRecipe.instructions && this.currentRecipe.instructions[index]) {
+      this.currentRecipe.instructions.splice(index, 1);
+      
+      // Re-render instructions
+      const instructionsList = document.querySelector('.instructions-list');
+      if (instructionsList) {
+        instructionsList.innerHTML = this.renderInstructions(this.currentRecipe);
+        this.attachEventListeners();
+      }
+      
+      await this.saveChanges();
+      this.showNotification('Instruction step removed!', 'success');
     }
   }
 }
