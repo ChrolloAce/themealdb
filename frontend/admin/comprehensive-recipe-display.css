@@ -62,59 +62,72 @@
 .comprehensive-recipe-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
-  background: #f8f9fa;
+  padding: 30px;
+  background: #f8fafc;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
-/* Header with Quick Actions */
+/* Header with Quick Actions - Modern Design */
 .recipe-header-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  padding: 20px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 25px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  color: white;
 }
 
 .recipe-title {
-  font-size: 2rem;
-  color: #2c3e50;
+  font-size: 2.2rem;
+  color: white !important;
   margin: 0;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .quick-actions {
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .btn-action {
-  padding: 10px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
+  padding: 12px 24px !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(10px) !important;
+  color: white !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 12px !important;
   cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.3s;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
 }
 
 .btn-action:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  background: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Image Section */
+/* Image Section - Modern Design */
 .recipe-images-section {
-  margin-bottom: 30px;
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 35px;
+  background: white !important;
+  border-radius: 20px !important;
+  padding: 25px !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1) !important;
+  border: 3px solid #e5e7eb !important;
+  overflow: hidden;
 }
 
 .main-image {
@@ -151,207 +164,281 @@
   transform: scale(1.05);
 }
 
-/* Info Grid */
+/* Info Grid - Modern Card Design */
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 25px;
+  margin-bottom: 35px;
 }
 
 .info-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  border: 2px solid #e5e7eb !important;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08) !important;
+  transition: all 0.3s ease !important;
+}
+
+.info-card:hover {
+  border-color: #667eea !important;
+  transform: translateY(-5px) !important;
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.15) !important;
 }
 
 .info-card h3 {
-  margin-top: 0;
-  margin-bottom: 20px;
-  color: #2c3e50;
-  font-size: 1.2rem;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  margin-top: 0 !important;
+  margin-bottom: 20px !important;
+  color: #1f2937 !important;
+  font-size: 1.3rem !important;
+  font-weight: 700 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  border-bottom: 2px solid #f3f4f6 !important;
+  padding-bottom: 15px !important;
 }
 
 .info-card i {
-  color: #667eea;
+  color: #667eea !important;
+  font-size: 1.4rem !important;
 }
 
-/* Editable Fields */
+/* Editable Fields - Modern Design */
 .editable-field {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #e0e0e0;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 12px 0 !important;
+  border-bottom: 2px solid #f3f4f6 !important;
+  transition: all 0.3s ease !important;
+}
+
+.editable-field:hover {
+  border-bottom-color: #e5e7eb !important;
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-radius: 6px !important;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
 }
 
 .editable-field:last-child {
-  border-bottom: none;
+  border-bottom: none !important;
 }
 
 .editable-field label {
-  font-weight: 600;
-  color: #555;
-  min-width: 120px;
+  font-weight: 600 !important;
+  color: #374151 !important;
+  min-width: 130px !important;
+  font-size: 14px !important;
 }
 
 .editable-field .value {
-  color: #333;
+  color: #1f2937 !important;
   flex: 1;
-  text-align: right;
+  text-align: right !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
 }
 
 .edit-input {
-  width: 100%;
-  padding: 5px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
+  width: 100% !important;
+  padding: 8px 12px !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  background: #f9fafb !important;
+  transition: all 0.3s ease !important;
 }
 
-/* Description Section */
+.edit-input:focus {
+  outline: none !important;
+  border-color: #667eea !important;
+  background: white !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+
+/* Description Section - Modern Purple Design */
 .description-section {
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #8b5cf6 !important;
+  box-shadow: 0 5px 15px rgba(139,92,246,0.1) !important;
 }
 
 .description-section h3 {
-  margin-top: 0;
-  color: #2c3e50;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  background: #8b5cf6 !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 .description-section p {
-  line-height: 1.8;
-  color: #555;
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+  color: #333 !important;
+  margin: 0 !important;
+  padding: 15px !important;
+  background: #f8f9fa !important;
+  border-radius: 10px !important;
+  border-left: 4px solid #8b5cf6 !important;
 }
 
-/* Ingredients Section */
+/* Ingredients Section - Modern Green Design */
 .ingredients-section {
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #10B981 !important;
+  box-shadow: 0 5px 15px rgba(16,185,129,0.1) !important;
 }
 
 .ingredients-section h3 {
-  margin-top: 0;
-  color: #2c3e50;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  background: #10B981 !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 .ingredients-list {
-  margin: 20px 0;
+  margin-bottom: 20px !important;
 }
 
 .ingredient-item {
-  display: flex;
-  align-items: center;
-  padding: 12px;
-  margin: 8px 0;
-  background: #f8f9fa;
-  border-radius: 8px;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 15px !important;
+  margin: 10px 0 !important;
+  background: #f0fdf4 !important;
+  border-radius: 10px !important;
+  border-left: 4px solid #10B981 !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
   position: relative;
 }
 
 .ingredient-name {
   flex: 1;
-  font-weight: 500;
-  color: #333;
+  font-weight: 600 !important;
+  color: #333 !important;
 }
 
 .ingredient-amount {
-  color: #667eea;
-  font-weight: 600;
+  color: #10B981 !important;
+  font-weight: 600 !important;
   margin-left: 20px;
 }
 
 .optional-badge {
-  background: #ffc107;
+  background: #fbbf24;
   color: white;
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 4px 12px;
+  border-radius: 12px;
   font-size: 12px;
+  font-weight: 600;
   margin-left: 10px;
 }
 
-/* Instructions Section */
+/* Instructions Section - Modern Orange Design */
 .instructions-section {
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #f59e0b !important;
+  box-shadow: 0 5px 15px rgba(245,158,11,0.1) !important;
 }
 
 .instructions-section h3 {
-  margin-top: 0;
-  color: #2c3e50;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  background: #f59e0b !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 .instructions-list {
-  margin: 20px 0;
+  margin-bottom: 20px !important;
 }
 
 .instruction-step {
-  display: flex;
-  align-items: flex-start;
-  margin: 20px 0;
+  display: flex !important;
+  align-items: flex-start !important;
+  padding: 15px !important;
+  margin: 10px 0 !important;
+  background: #fffbeb !important;
+  border-radius: 10px !important;
+  border-left: 4px solid #f59e0b !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
   position: relative;
 }
 
 .step-number {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  margin-right: 15px;
-  flex-shrink: 0;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: white !important;
+  width: 35px !important;
+  height: 35px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: bold !important;
+  margin-right: 15px !important;
+  flex-shrink: 0 !important;
+  font-size: 16px !important;
 }
 
 .step-text {
   flex: 1;
-  line-height: 1.6;
-  color: #555;
+  line-height: 1.7 !important;
+  color: #333 !important;
   margin: 0;
-  padding-top: 3px;
+  padding-top: 6px !important;
+  font-size: 15px !important;
 }
 
-/* Nutrition Section */
+/* Nutrition Section - Modern Blue Design */
 .nutrition-section {
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #3b82f6 !important;
+  box-shadow: 0 5px 15px rgba(59,130,246,0.1) !important;
 }
 
 .nutrition-section h3 {
-  margin-top: 0;
-  color: #2c3e50;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  background: #3b82f6 !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 .btn-calculate {
@@ -360,18 +447,26 @@
 
 .nutrition-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 15px;
-  margin-top: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 25px;
 }
 
 .nutrition-item {
-  display: flex;
-  align-items: center;
-  padding: 15px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  gap: 12px;
+  display: flex !important;
+  align-items: center !important;
+  padding: 18px !important;
+  background: #eff6ff !important;
+  border-radius: 12px !important;
+  border-left: 4px solid #3b82f6 !important;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.1) !important;
+  gap: 15px !important;
+  transition: all 0.3s ease !important;
+}
+
+.nutrition-item:hover {
+  background: #dbeafe !important;
+  transform: translateX(5px) !important;
 }
 
 .nutrient-icon {
@@ -401,41 +496,56 @@
   margin-left: 4px;
 }
 
-/* Dietary Section */
+/* Dietary Section - Modern Teal Design */
 .dietary-section {
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #14b8a6 !important;
+  box-shadow: 0 5px 15px rgba(20,184,166,0.1) !important;
 }
 
 .dietary-section h3 {
-  margin-top: 0;
-  color: #2c3e50;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  background: #14b8a6 !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 .dietary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 15px;
-  margin-top: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 18px;
+  margin-top: 25px;
 }
 
 .dietary-item {
-  padding: 12px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  transition: all 0.3s;
+  padding: 16px !important;
+  background: #f0fdfa !important;
+  border-radius: 12px !important;
+  border: 2px solid #ccfbf1 !important;
+  transition: all 0.3s ease !important;
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(20,184,166,0.1) !important;
+}
+
+.dietary-item:hover {
+  border-color: #14b8a6 !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 20px rgba(20,184,166,0.2) !important;
 }
 
 .dietary-item.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%) !important;
+  color: white !important;
+  border-color: #0d9488 !important;
 }
 
 .dietary-item label {
@@ -458,59 +568,81 @@
   font-weight: 500;
 }
 
-/* Equipment Section */
+/* Equipment Section - Modern Red Design */
 .equipment-section {
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #ef4444 !important;
+  box-shadow: 0 5px 15px rgba(239,68,68,0.1) !important;
 }
 
 .equipment-section h3 {
-  margin-top: 0;
-  color: #2c3e50;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  background: #ef4444 !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 .equipment-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin: 20px 0;
+  gap: 15px;
+  margin: 25px 0;
 }
 
 .equipment-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 15px;
-  background: #f8f9fa;
-  border-radius: 8px;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 14px 20px !important;
+  background: #fef2f2 !important;
+  border-radius: 12px !important;
+  border-left: 4px solid #ef4444 !important;
+  box-shadow: 0 2px 8px rgba(239,68,68,0.1) !important;
   position: relative;
+  transition: all 0.3s ease !important;
+}
+
+.equipment-item:hover {
+  background: #fee2e2 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 15px rgba(239,68,68,0.2) !important;
 }
 
 .equipment-item i {
-  color: #667eea;
+  color: #ef4444 !important;
+  font-size: 1.2rem !important;
 }
 
-/* Tags Section */
+/* Tags Section - Modern Pink Design */
 .tags-section {
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #ec4899 !important;
+  box-shadow: 0 5px 15px rgba(236,72,153,0.1) !important;
 }
 
 .tags-section h3 {
-  margin-top: 0;
-  color: #2c3e50;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  background: #ec4899 !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 .tags-grid {
@@ -535,33 +667,48 @@
 }
 
 .tag {
-  padding: 6px 12px;
-  background: #e3f2fd;
-  color: #1976d2;
-  border-radius: 16px;
-  font-size: 14px;
+  padding: 8px 16px !important;
+  background: #fdf2f8 !important;
+  color: #ec4899 !important;
+  border-radius: 20px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  border: 2px solid #fce7f3 !important;
+  transition: all 0.3s ease !important;
+}
+
+.tag:hover {
+  background: #fce7f3 !important;
+  transform: scale(1.05) !important;
 }
 
 .tag.allergen {
-  background: #ffebee;
-  color: #c62828;
+  background: #fef2f2 !important;
+  color: #dc2626 !important;
+  border-color: #fee2e2 !important;
 }
 
-/* Metadata Section */
+/* Metadata Section - Modern Gray Design */
 .metadata-section {
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: white !important;
+  border-radius: 15px !important;
+  padding: 25px !important;
+  margin-bottom: 25px !important;
+  border: 3px solid #6b7280 !important;
+  box-shadow: 0 5px 15px rgba(107,114,128,0.1) !important;
 }
 
 .metadata-section h3 {
-  margin-top: 0;
-  color: #2c3e50;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  background: #6b7280 !important;
+  color: white !important;
+  padding: 15px !important;
+  border-radius: 10px !important;
+  margin: -25px -25px 20px -25px !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 .metadata-grid {
@@ -590,50 +737,55 @@
   color: #e91e63;
 }
 
-/* Add/Remove Buttons */
+/* Add/Remove Buttons - Modern Design */
 .btn-add {
-  padding: 10px 20px;
-  background: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 8px;
+  padding: 14px 28px !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 12px !important;
   cursor: pointer;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 15px;
-  transition: all 0.3s;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-top: 20px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
 }
 
 .btn-add:hover {
-  background: #45a049;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4) !important;
 }
 
 .btn-remove {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
-  background: #f44336;
-  color: white;
-  border: none;
-  border-radius: 50%;
+  position: absolute !important;
+  right: 12px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 28px !important;
+  height: 28px !important;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 50% !important;
   cursor: pointer;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
 }
 
 .btn-remove:hover {
-  background: #d32f2f;
-  transform: translateY(-50%) scale(1.1);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+  transform: translateY(-50%) scale(1.15) !important;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.5) !important;
 }
 
 /* Notifications */
