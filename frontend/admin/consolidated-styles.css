@@ -1301,6 +1301,12 @@ body {
   border: 1px solid var(--color-success-200, #BBF7D0);
 }
 
+.dishtype-badge-table {
+  background: var(--color-warning-100, #FEF3C7);
+  color: var(--color-warning-700, #B45309);
+  border: 1px solid var(--color-warning-200, #FDE68A);
+}
+
 .status-badge-table {
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-pill);

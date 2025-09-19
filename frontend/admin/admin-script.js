@@ -1267,6 +1267,9 @@ class AdminPanel {
         <td class="col-category">
           <span class="badge-table category-badge-table">${recipe.strCategory || 'Uncategorized'}</span>
         </td>
+        <td class="col-dishtype">
+          <span class="badge-table dishtype-badge-table">${recipe.dishType || 'Main Course'}</span>
+        </td>
         <td class="col-cuisine">
           <span class="badge-table cuisine-badge-table">${recipe.strArea || 'Unknown'}</span>
         </td>

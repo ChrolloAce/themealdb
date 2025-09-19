@@ -57,19 +57,23 @@
 }
 
 .col-category {
-  width: 15%;
+  width: 12%;
+}
+
+.col-dishtype {
+  width: 13%;
 }
 
 .col-cuisine {
-  width: 15%;
+  width: 12%;
 }
 
 .col-date {
-  width: 15%;
+  width: 12%;
 }
 
 .col-status {
-  width: 10%;
+  width: 8%;
 }
 
 .col-actions {
@@ -118,7 +122,7 @@
 }
 
 
-.category-badge, .cuisine-badge {
+.category-badge, .cuisine-badge, .dishtype-badge {
   display: inline-block;
   padding: 4px 8px;
   border-radius: 6px;
@@ -138,6 +142,12 @@
   background: #f3e5f5;
   color: #7b1fa2;
   border: 1px solid #e1bee7;
+}
+
+.dishtype-badge {
+  background: #fff3e0;
+  color: #f57c00;
+  border: 1px solid #ffcc02;
 }
 
 
