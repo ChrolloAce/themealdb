@@ -21,6 +21,65 @@ class OpenAIManager {
       this.isAvailable = false;
       console.log('⚠️ OpenAI Manager initialized without API key - AI features disabled');
     }
+    
+    // Cache for equipment and ingredients lists
+    this.equipmentList = null;
+    this.ingredientsList = null;
+  }
+
+  // Read equipment list from Equipment.txt
+  async getEquipmentList() {
+    if (this.equipmentList) {
+      return this.equipmentList;
+    }
+    
+    try {
+      const equipmentPath = path.join(__dirname, '../../Equipment.txt');
+      const equipmentData = await fs.readFile(equipmentPath, 'utf8');
+      this.equipmentList = equipmentData
+        .split('\n')
+        .map(item => item.trim())
+        .filter(item => item.length > 0);
+      
+      console.log(`🔧 Loaded ${this.equipmentList.length} equipment items from Equipment.txt`);
+      return this.equipmentList;
+    } catch (error) {
+      console.error('❌ Error reading Equipment.txt:', error.message);
+      // Fallback to a basic equipment list
+      this.equipmentList = [
+        'Chef\'s knife', 'Cutting board', 'Frying pan', 'Saucepan', 'Mixing bowl',
+        'Measuring cups', 'Measuring spoons', 'Spatula', 'Whisk', 'Tongs'
+      ];
+      return this.equipmentList;
+    }
+  }
+
+  // Read ingredients list from clean_ingredients.txt
+  async getIngredientsList() {
+    if (this.ingredientsList) {
+      return this.ingredientsList;
+    }
+    
+    try {
+      const ingredientsPath = path.join(__dirname, '../../clean_ingredients.txt');
+      const ingredientsData = await fs.readFile(ingredientsPath, 'utf8');
+      this.ingredientsList = ingredientsData
+        .split('\n')
+        .map(item => item.trim())
+        .filter(item => item.length > 0);
+      
+      console.log(`🥕 Loaded ${this.ingredientsList.length} ingredients from clean_ingredients.txt`);
+      return this.ingredientsList;
+    } catch (error) {
+      console.error('❌ Error reading clean_ingredients.txt:', error.message);
+      // Fallback to a basic ingredients list
+      this.ingredientsList = [
+        'chicken', 'beef', 'pork', 'fish', 'eggs', 'milk', 'cheese', 'butter',
+        'onion', 'garlic', 'tomato', 'carrot', 'potato', 'rice', 'pasta', 'bread',
+        'salt', 'pepper', 'olive oil', 'flour'
+      ];
+      return this.ingredientsList;
+    }
   }
 
   // Check if OpenAI is available
@@ -1538,64 +1597,15 @@ Return as JSON array.`;
   }
 
   // Helper methods - COMPREHENSIVE RECIPE DATA GENERATION
-  buildRecipePrompt(params) {
+  async buildRecipePrompt(params) {
     const restrictionsText = params.dietaryRestrictions.length > 0 
       ? ` The recipe must accommodate these dietary restrictions: ${params.dietaryRestrictions.join(', ')}.`
       : '';
 
     // 🚨 CRITICAL: ONLY USE INGREDIENTS FROM THIS EXACT LIST - MATCH NAMES PRECISELY
-    const allowedIngredients = [
-      "abalone", "acai berry", "ackee", "acorn squash", "active dry yeast", "adzuki beans", "agar agar", "agave nectar", "aioli", "aleppo pepper",
-      "alfalfa sprouts", "alfredo sauce", "all-purpose flour", "allspice", "almond butter", "almond extract", "almond flour", "almond milk", "almond paste", "almonds",
-      "anchovies", "Anchovy Paste", "andouille sausage", "anise seeds", "annatto", "apple", "apple butter", "applesauce", "apricot", "apricot jam",
-      "arborio rice", "Arrowroot powder", "artichoke", "asafoetida", "asiago cheese", "Asian Pear", "asparagus", "avocado", "bacon", "Baguette",
-      "baking powder", "baking soda", "balsamic vinegar", "banana", "banana blossom", "barbecue sauce", "barley", "barley flour", "basil", "basil seeds",
-      "Basmati Rice", "Bay Leaf", "beef", "Beef Bourguignon", "beef brisket", "beef broth", "Beef Ribs", "beef stock", "beef tenderloin", "beets",
-      "Belacan (shrimp paste)", "bell pepper", "bell peppers", "besan (chickpea flour)", "black beans", "black cardamom", "black fungus (cloud ear)", "Black Garlic", "Black Pepper", "Black Peppercorns",
-      "black salt (kala namak)", "Black Tea", "black truffle", "Black-Eyed Peas", "Blood Sausage", "blue cheese", "blue cheese dressing", "blueberry", "bok choy", "Bonito Flakes",
-      "bourbon", "Brandy", "Bread", "bread flour", "Breadcrumbs", "Breakfast Sausage", "Brie", "Broccoli", "Broccolini", "Brown Mustard Seeds",
-      "brown rice", "brown sugar", "brownie mix", "brussels sprouts", "buckwheat", "buckwheat flour", "bulgur", "burdock root", "butter", "butter lettuce",
-      "buttermilk", "buttermilk powder", "butternut squash", "cabbage", "Cacao Nibs", "Cactus Pear (Prickly Pear)", "Cajun Seasoning", "Calamari (Squid)", "camembert", "candied ginger",
-      "candied orange peel", "candlenut", "cane vinegar", "canned salmon", "canned tomatoes", "canned tuna", "cannellini beans", "Caper Berries", "Capers", "Caramel Sauce",
-      "caraway seeds", "carne asada", "carolina reaper", "carrot", "cashew butter", "cashew milk", "cashews", "cassava", "catfish", "cauliflower",
-      "cayenne pepper", "celery", "celery root (celeriac)", "champagne vinegar", "chana dal", "chanterelle mushrooms", "char siu sauce", "cheddar cheese", "cheese", "cheese curds",
-      "cherry", "cherry tomato", "chervil", "chickpeas", "chili oil", "chili paste", "chili powder", "chili sauce", "Chinese five-spice", "chipotle chili powder",
-      "chives", "chocolate chips", "chocolate hazelnut spread", "chocolate syrup", "cider", "cilantro", "cinnamon", "cinnamon stick", "clam juice", "clams",
-      "clarified butter", "clotted cream", "cloves", "cocoa powder", "coconut", "coconut aminos", "coconut cream", "coconut milk", "coconut oil", "coconut sugar",
-      "coconut vinegar", "cod", "coffee", "cognac", "collard greens", "condensed milk", "coriander seeds", "corn", "corn flakes", "corn oil",
-      "corn syrup", "corn tortillas", "corned beef", "cornmeal", "cotija cheese", "cottage cheese", "crab", "crab meat", "cranberries", "cream cheese",
-      "cream of coconut", "cream of tartar", "crème fraîche", "cremebrule", "cremini mushrooms", "cucumber", "cumin seeds", "curly parsley", "currants", "curry leaves",
-      "curry paste", "curry powder", "daikon radish", "dashi", "dates", "demi-glace", "diced tomatoes", "dijon mustard", "dill", "dill seeds",
-      "dried apricots", "dried cranberries", "dried figs", "dried hibiscus", "dried shrimp", "dried thyme", "dry mustard powder", "duck", "duck eggs", "duck fat",
-      "duck sauce", "dulce de leche", "edam cheese", "edamame", "egg noodles", "egg whites", "egg yolks", "eggplant", "eggs", "egusi seeds",
-      "elderberry", "empanadas", "enoki mushrooms", "espresso powder", "evaporated milk", "extra virgin olive oil", "fava beans", "fennel bulb", "fennel seeds", "fenugreek leaves",
-      "fenugreek seeds", "fermented black beans", "filé powder", "fish maw", "fish sauce", "five-spice powder", "flaxseeds", "flour tortillas", "fontina cheese", "forbidden rice (black rice)",
-      "freekeh", "freeze-dried fruit", "french dressing", "fried onions", "frosting", "fruit cocktail (canned)", "garam masala", "garlic", "garlic chives", "garlic powder",
-      "garlic scapes", "gelatin", "gin", "ginger", "ginger paste", "ginger powder", "gingersnaps (crushed)", "glucose syrup", "glutinous rice (sticky rice)", "goat",
-      "goat cheese", "gochugaru (Korean chili flakes)", "gochujang", "salmon", "salt", "spaghetti", "Spaghetti Carbonara", "spinach", "sugar", "sushi", "tiramisu"
-    ];
+    const allowedIngredients = await this.getIngredientsList();
 
-    const allowedEquipment = [
-      "Air fryer", "Broiler pan", "Dutch oven", "Grill", "Grill pan", "Microwave", "Oven", 
-      "Pressure cooker", "Rice cooker", "Saucepan", "Baking sheet", "Frying pan", "Slow cooker", 
-      "Small pot", "Medium pot", "Large pot", "Stovetop", "Wok", "Bench scraper", "Chef's knife", 
-      "Citrus juicer", "Citrus zester", "Cutting board", "Dough scraper", "Egg separator", 
-      "Fish spatula", "Food tweezers", "Garlic press", "Jar opener", "Kitchen scissors", "Ladle", 
-      "Mandoline slicer", "Meat tenderizer", "Spray bottle", "Paring knife", "Pastry blender", 
-      "Pastry brush", "Pasta spoon", "Peeler", "Pizza cutter", "Rolling pin", "Spatula (rubber)", 
-      "Spatula (metal)", "Tongs", "Vegetable peeler", "Whisk", "Zester", "Glass measuring cup", 
-      "Kitchen scale", "Large mixing bowl", "Medium mixing bowl", "Small mixing bowl", 
-      "Measuring cups", "Measuring spoons", "Mortar and pestle", "Piping bag", "Plate", "Bowl", 
-      "Salad bowl", "Serving bowl", "Tamper (for blender)", "Timer", "Toothpicks", 
-      "Tweezers (plating)", "Fork", "Spoon", "Knife (table)", "Serving spoon", "Slotted spoon", 
-      "Baking dish", "Baking ramekin", "Cake pan", "Cooling rack", "Cookie cutters", "Loaf pan", 
-      "Muffin tin", "Parchment paper", "Pie dish", "Silicone baking mat", "Springform pan", 
-      "Stand mixer", "Whipped cream siphon", "Can opener", "Colander", "Funnel", "Salad spinner", 
-      "Sieve", "Skewers", "Strainer", "Storage container", "Bottle opener", "Corkscrew", 
-      "Ice cube mold", "Ice cream scoop", "Cocktail shaker", "Aluminum foil", "Apron", 
-      "Dish towel", "Oven mitts", "Paper towels", "Plastic wrap", "Trivet", "Chopsticks", 
-      "Food processor", "Hand mixer", "Sous vide wand"
-    ];
+        const allowedEquipment = await this.getEquipmentList();
 
     return `Create an extremely detailed, comprehensive recipe with the following specifications:
 - Cuisine: ${params.cuisine}
@@ -1610,7 +1620,7 @@ Return as JSON array.`;
 1. 🚫 NEVER EVER use "N/A", "TBD", "Unknown", or any placeholder text
 2. 🚫 ALL fields must have REAL, SPECIFIC values - no generic descriptions
 3. 🍳 EQUIPMENT SELECTION: Choose 4-8 items from this comprehensive equipment list based on cooking methods and ingredients used:
-   Air fryer, Broiler pan, Dutch oven, Grill, Grill pan, Microwave, Oven, Pressure cooker, Rice cooker, Saucepan, Baking sheet, Frying pan, Slow cooker, Small pot, Medium pot, Large pot, Stovetop, Wok, Bench scraper, Chef's knife, Citrus juicer, Citrus zester, Cutting board, Dough scraper, Egg separator, Fish spatula, Food tweezers, Garlic press, Jar opener, Kitchen scissors, Ladle, Mandoline slicer, Meat tenderizer, Spray bottle, Paring knife, Pastry blender, Pastry brush, Pasta spoon, Peeler, Pizza cutter, Rolling pin, Spatula (rubber), Spatula (metal), Tongs, Vegetable peeler, Whisk, Zester, Glass measuring cup, Kitchen scale, Large mixing bowl, Medium mixing bowl, Small mixing bowl, Measuring cups, Measuring spoons, Mortar and pestle, Piping bag, Plate, Bowl, Salad bowl, Serving bowl, Tamper (for blender), Timer, Toothpicks, Tweezers (plating), Fork, Spoon, Knife (table), Serving spoon, Slotted spoon, Baking dish, Baking ramekin, Cake pan, Cooling rack, Cookie cutters, Loaf pan, Muffin tin, Parchment paper, Pie dish, Silicone baking mat, Springform pan, Stand mixer, Whipped cream siphon, Can opener, Colander, Funnel, Salad spinner, Sieve, Skewers, Strainer, Storage container, Bottle opener, Corkscrew, Ice cube mold, Ice cream scoop, Cocktail shaker, Aluminum foil, Apron, Dish towel, Oven mitts, Paper towels, Plastic wrap, Trivet, Chopsticks, Food processor, Hand mixer, Sous vide wand
+   ${allowedEquipment.join(', ')}
 4. 🚨 CRITICAL: ONLY use ingredients from this EXACT list - match names PRECISELY: ${allowedIngredients.join(', ')}
 5. 🥗 DIETARY ANALYSIS: Analyze ingredients and set dietary flags appropriately:
    - vegetarian: true if no meat, fish, or animal products (except dairy/eggs)
