@@ -178,9 +178,9 @@ class DatabaseManager {
     const count = await this.get('SELECT COUNT(*) as count FROM categories');
     if (count.count > 0) return;
 
+    // Seed categories (meal types)
     const categories = [
-      'Beef', 'Chicken', 'Dessert', 'Lamb', 'Miscellaneous', 'Pasta', 
-      'Pork', 'Seafood', 'Side', 'Starter', 'Vegan', 'Vegetarian', 'Breakfast', 'Goat'
+      'Breakfast', 'Brunch', 'Lunch', 'Dinner', 'Snack', 'Dessert'
     ];
 
     const areas = [

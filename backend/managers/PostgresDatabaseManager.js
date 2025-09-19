@@ -163,10 +163,9 @@ class PostgresDatabaseManager {
 
     console.log('🌱 Seeding initial data...');
     
-    // Seed categories
+    // Seed categories (meal types)
     const categories = [
-      'Beef', 'Chicken', 'Dessert', 'Lamb', 'Miscellaneous', 'Pasta', 'Pork', 
-      'Seafood', 'Side', 'Starter', 'Vegan', 'Vegetarian', 'Breakfast', 'Goat'
+      'Breakfast', 'Brunch', 'Lunch', 'Dinner', 'Snack', 'Dessert'
     ];
     
     for (const category of categories) {

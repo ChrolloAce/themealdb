@@ -1,7 +1,7 @@
 const sampleRecipes = [
   {
     strMeal: "Spicy Arrabiata Penne",
-    strCategory: "Vegetarian", 
+    strCategory: "Lunch", 
     strArea: "Italian",
     strInstructions: "Bring a large pot of water to a boil. Add kosher salt to the boiling water, then add the pasta. Cook according to the package instructions, about 10 to 12 minutes. Reserve a cup of the pasta water and drain the pasta. Add the pasta back to the pot and add a splash of the reserved pasta water. Next, add the red chile flakes, salt, and a few turns of pepper and stir. Add the oil, basil, and garlic and stir. Finally, add the tomatoes and mix well. Remove from heat and serve with grated Parmigiano-Reggiano cheese.",
     strMealThumb: "/images/meals/arrabiata.jpg",
@@ -19,7 +19,7 @@ const sampleRecipes = [
   },
   {
     strMeal: "Classic Beef Tacos",
-    strCategory: "Beef",
+    strCategory: "Dinner",
     strArea: "Mexican", 
     strInstructions: "Heat oil in a large skillet over medium-high heat. Add ground beef and cook, breaking it up with a spoon, until browned and cooked through, about 8 minutes. Add onion and cook until softened, about 3 minutes. Add garlic, chili powder, cumin, and paprika and cook until fragrant, about 1 minute. Season with salt and pepper. Warm tortillas according to package directions. Fill each tortilla with beef mixture and desired toppings.",
     strMealThumb: "/images/meals/beef-tacos.jpg",
@@ -37,7 +37,7 @@ const sampleRecipes = [
   },
   {
     strMeal: "Chicken Teriyaki Bowl",
-    strCategory: "Chicken",
+    strCategory: "Dinner",
     strArea: "Japanese",
     strInstructions: "Cut chicken into bite-sized pieces and season with salt and pepper. Heat oil in a large skillet over medium-high heat. Add chicken and cook until golden brown and cooked through, about 6-8 minutes. In a small bowl, whisk together soy sauce, brown sugar, rice vinegar, garlic, and ginger. Pour sauce over chicken and simmer until thickened, about 2-3 minutes. Serve over steamed rice with vegetables.",
     strMealThumb: "/images/meals/teriyaki-chicken.jpg", 
@@ -55,7 +55,7 @@ const sampleRecipes = [
   },
   {
     strMeal: "Mediterranean Salmon",
-    strCategory: "Seafood", 
+    strCategory: "Dinner", 
     strArea: "Greek",
     strInstructions: "Preheat oven to 400°F (200°C). Line a baking sheet with parchment paper. Place salmon fillets on the prepared baking sheet. In a small bowl, combine olive oil, lemon juice, garlic, oregano, salt, and pepper. Brush the mixture over the salmon fillets. Top with cherry tomatoes, olives, and feta cheese. Bake for 12-15 minutes, or until salmon flakes easily with a fork.",
     strMealThumb: "/images/meals/mediterranean-salmon.jpg",

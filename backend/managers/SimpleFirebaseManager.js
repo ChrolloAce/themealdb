@@ -299,10 +299,9 @@ class SimpleFirebaseManager {
     try {
       console.log('🔥 Simple Firebase database ready - seeding basic data');
       
-      // Seed essential categories
+      // Seed essential categories (meal types)
       const categories = [
-        'Beef', 'Chicken', 'Dessert', 'Lamb', 'Miscellaneous', 'Pasta', 'Pork', 
-        'Seafood', 'Side', 'Starter', 'Vegan', 'Vegetarian', 'Breakfast', 'Goat'
+        'Breakfast', 'Brunch', 'Lunch', 'Dinner', 'Snack', 'Dessert'
       ];
       
       const categoriesRef = collection(this.db, this.collections.categories);
@@ -312,7 +311,7 @@ class SimpleFirebaseManager {
         for (const category of categories) {
           await addDoc(categoriesRef, {
             strCategory: category,
-            strCategoryDescription: `${category} recipes`
+            strCategoryDescription: `Delicious ${category.toLowerCase()} recipes and meals`
           });
         }
         console.log('✅ Categories seeded');

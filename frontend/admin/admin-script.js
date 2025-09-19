@@ -584,7 +584,7 @@ class AdminPanel {
     
     const recipes = [];
     const cuisines = ['Italian', 'Mexican', 'Chinese', 'Japanese', 'Indian', 'French', 'American', 'Mediterranean'];
-    const categories = ['Beef', 'Chicken', 'Seafood', 'Vegetarian', 'Vegan', 'Dessert'];
+    const categories = ['Breakfast', 'Brunch', 'Lunch', 'Dinner', 'Snack', 'Dessert'];
     const difficulties = ['Easy', 'Medium', 'Hard'];
     
     for (let i = 0; i < batchCount; i++) {

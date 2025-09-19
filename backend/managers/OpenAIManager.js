@@ -153,7 +153,7 @@ ${existingContext ? 'IMPORTANT: Create something different from the existing rec
 Return ONLY this comprehensive JSON format with NO extra text:
 {
   "strMeal": "Creative Recipe Name",
-  "strCategory": "Main category (Beef, Chicken, Seafood, Vegetarian, etc)",
+  "strCategory": "Meal type (Breakfast, Brunch, Lunch, Dinner, Snack, Dessert)",
   "strArea": "Cuisine type (Italian, Mexican, Asian, etc)",
   "strInstructions": "Step 1: Begin by gathering all ingredients and equipment. Preheat your oven to the required temperature if needed. Step 2: Prepare all vegetables by washing, peeling, and cutting them into the specified sizes. Step 3: Heat your pan over medium-high heat with oil until shimmering. Step 4: Add ingredients in the proper order, explaining cooking techniques and timing. Step 5: Continue with very detailed steps explaining exactly what to look for (golden brown, fragrant, tender, etc). Step 6: Include specific temperatures, cooking times, and visual/sensory cues. Step 7: Explain plating and garnishing in detail. Each step should be thorough and educational.",
   "strMealThumb": "",
@@ -177,7 +177,7 @@ Return ONLY this comprehensive JSON format with NO extra text:
         console.log('🎲 Using RANDOM mode with variety');
         
         const cuisines = ['Italian', 'Mexican', 'Asian', 'Mediterranean', 'Indian', 'French', 'American', 'Japanese', 'Thai', 'Greek', 'Chinese', 'Korean', 'Vietnamese', 'Middle Eastern', 'British', 'German', 'Brazilian', 'Moroccan'];
-        const categories = ['Beef', 'Chicken', 'Seafood', 'Vegetarian', 'Vegan', 'Pasta', 'Dessert', 'Breakfast'];
+        const categories = ['Breakfast', 'Brunch', 'Lunch', 'Dinner', 'Snack', 'Dessert'];
         const themes = ['healthy', 'comfort food', 'spicy', 'fresh', 'hearty', 'light', 'creative fusion', 'traditional', 'modern twist'];
         const mealTypes = ['Breakfast', 'Brunch', 'Lunch', 'Dinner', 'Snack', 'Dessert'];
         const dishTypes = ['Appetizers', 'Side Dishes', 'Main Courses', 'Soups', 'Salads', 'Sandwiches & Wraps', 'Burgers', 'Pizza & Flatbreads', 'Pasta & Noodles', 'Rice Dishes', 'Tacos, Burritos & Quesadillas', 'Stir-Fries', 'Curries', 'Stews & Casseroles', 'Skillet & One-Pan Meals', 'Slow Cooker / Instant Pot', 'Grilling / BBQ', 'Baked Goods', 'Pastries', 'Cookies & Bars', 'Pies & Cobblers', 'Frozen Treats'];
@@ -556,7 +556,7 @@ Return ONLY this JSON:`;
     } else {
       // Random recipe
       const cuisines = ['Italian', 'Mexican', 'Asian', 'Mediterranean', 'Indian', 'French'];
-      const categories = ['Beef', 'Chicken', 'Seafood', 'Vegetarian', 'Pasta', 'Dessert'];
+      const categories = ['Breakfast', 'Brunch', 'Lunch', 'Dinner', 'Snack', 'Dessert'];
       const randomCuisine = cuisines[Math.floor(Math.random() * cuisines.length)];
       const randomCategory = categories[Math.floor(Math.random() * categories.length)];
       
@@ -682,7 +682,7 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
       basicPrompt = `Create a ${customPrompt} recipe. Return ONLY this JSON format:
 {
   "strMeal": "Recipe Name",
-  "strCategory": "Category (Beef, Chicken, Seafood, Vegetarian, etc)",
+  "strCategory": "Meal type (Breakfast, Brunch, Lunch, Dinner, Snack, Dessert)",
   "strArea": "Cuisine (Italian, Mexican, Asian, etc)",
   "strDescription": "Brief appetizing description (2-3 sentences)",
   "instructions": [
@@ -705,7 +705,7 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
     } else {
       // Random recipe
       const cuisines = ['Italian', 'Mexican', 'Asian', 'Mediterranean', 'Indian', 'French', 'American'];
-      const categories = ['Beef', 'Chicken', 'Seafood', 'Vegetarian', 'Pasta', 'Dessert'];
+      const categories = ['Breakfast', 'Brunch', 'Lunch', 'Dinner', 'Snack', 'Dessert'];
       const themes = ['healthy', 'comfort food', 'spicy', 'fresh', 'hearty'];
       
       const randomCuisine = cuisines[Math.floor(Math.random() * cuisines.length)];
@@ -1700,7 +1700,7 @@ Return ONLY valid JSON with this COMPLETE structure:
       // Core recipe data
       strMeal: recipeData.strMeal || `Delicious ${params.cuisine || 'International'} ${params.category || 'Dish'}`,
       strDescription: recipeData.strDescription || `A delicious ${params.cuisine || 'international'} ${params.category || 'dish'} that's perfect for any occasion.`,
-      strCategory: recipeData.strCategory || params.category || 'Main Dish',
+      strCategory: recipeData.strCategory || params.mealType || 'Dinner',
       strArea: recipeData.strArea || params.cuisine || 'International', 
       strInstructions: strInstructions,
       instructions: instructionsArray,
