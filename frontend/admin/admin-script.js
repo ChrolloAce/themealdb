@@ -894,6 +894,16 @@ class AdminPanel {
             <div style="font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Level</div>
             <div style="font-size: 16px; font-weight: bold; color: #333;">${recipe.difficulty || 'Medium'}</div>
           </div>
+          <div style="text-align: center; padding: 20px; background: white; border-radius: 12px; border: 2px solid #e5e5e5; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+            <div style="font-size: 2.5em; margin-bottom: 8px;">🍳</div>
+            <div style="font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Dish Type</div>
+            <div style="font-size: 16px; font-weight: bold; color: #333;">${recipe.dishType || 'Main Course'}</div>
+          </div>
+          <div style="text-align: center; padding: 20px; background: white; border-radius: 12px; border: 2px solid #e5e5e5; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+            <div style="font-size: 2.5em; margin-bottom: 8px;">🥗</div>
+            <div style="font-size: 11px; color: #666; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">Dietary</div>
+            <div style="font-size: 12px; font-weight: bold; color: #333;">${this.formatDietaryInfo(recipe.dietary)}</div>
+          </div>
         </div>
         
         ${recipe.strDescription ? `
@@ -1365,6 +1375,52 @@ class AdminPanel {
       'mediterraneanDiet': 'Mediterranean Diet'
     };
     return labels[diet] || diet;
+  }
+  
+  // Format dietary info for recipe display
+  formatDietaryInfo(dietary) {
+    if (!dietary || typeof dietary !== 'object') {
+      return 'None';
+    }
+    
+    const dietaryEmojis = {
+      'vegetarian': '🥗',
+      'vegan': '🌱',
+      'pescatarian': '🐟',
+      'keto': '🥑',
+      'lowCarb': '🥩',
+      'highProtein': '💪',
+      'glutenFree': '🌾',
+      'dairyFree': '🥛',
+      'nutFree': '🥜',
+      'lowSodium': '🧂',
+      'lowSugar': '🍯',
+      'mediterraneanDiet': '🫒'
+    };
+    
+    const activeDietary = Object.entries(dietary)
+      .filter(([key, value]) => value === true)
+      .map(([key]) => key);
+    
+    if (activeDietary.length === 0) {
+      return 'None';
+    }
+    
+    // Show max 2 dietary items with emojis
+    const displayItems = activeDietary.slice(0, 2);
+    const remainingCount = activeDietary.length - displayItems.length;
+    
+    let result = displayItems.map(diet => {
+      const emoji = dietaryEmojis[diet] || '🍽️';
+      const label = this.formatDietaryLabel(diet);
+      return `${emoji} ${label}`;
+    }).join('<br>');
+    
+    if (remainingCount > 0) {
+      result += `<br>+${remainingCount} more`;
+    }
+    
+    return result;
   }
   
   // Setup event listeners for recipe action buttons (dynamically created)
