@@ -1448,71 +1448,119 @@ class AdminPanel {
       .filter(step => step.length > 10);
     
     container.innerHTML = `
-      <div class="recipe-editor-content">
-        <div class="recipe-editor-header">
-          <h1 class="recipe-editor-title">${recipe.strMeal || 'Unnamed Recipe'}</h1>
-          <div class="recipe-editor-actions">
-            <button class="btn btn-primary" onclick="adminPanel.switchSection('allRecipes')">
+      <div class="recipe-editor-content" style="background: var(--color-surface); padding: var(--space-6); border-radius: var(--radius-card); box-shadow: var(--shadow-lg); border: 2px solid var(--color-divider);">
+        
+        <!-- RECIPE HEADER WITH VISUAL EMPHASIS -->
+        <div class="recipe-editor-header" style="background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-600, #4F46E5) 100%); color: white; padding: var(--space-6); border-radius: var(--radius-card); margin-bottom: var(--space-6); box-shadow: var(--shadow-md);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h1 style="font-size: 2.5rem; font-weight: 700; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">🍽️ ${recipe.strMeal || 'Unnamed Recipe'}</h1>
+              <p style="margin: var(--space-2) 0 0 0; font-size: 1.1rem; opacity: 0.9;">Professional Recipe Editor</p>
+            </div>
+            <button class="btn btn-secondary" onclick="adminPanel.switchSection('allRecipes')" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: var(--space-3) var(--space-5); border-radius: var(--radius-lg); font-weight: 600; backdrop-filter: blur(10px);">
               <i class="fas fa-arrow-left"></i> Back to Recipes
             </button>
           </div>
         </div>
         
-        <div class="recipe-details-grid" style="display: grid; gap: var(--space-6); grid-template-columns: 1fr 1fr;">
-          <div class="recipe-info-card" style="background: var(--color-input-bg); padding: var(--space-4); border-radius: var(--radius-card);">
-            <h3 style="margin-bottom: var(--space-3); color: var(--color-text);">📊 Recipe Information</h3>
-            <div style="display: grid; gap: var(--space-2);">
-              <div><strong>Category:</strong> ${recipe.strCategory || 'Not specified'}</div>
-              <div><strong>Cuisine:</strong> ${recipe.strArea || 'Not specified'}</div>
-              <div><strong>Prep Time:</strong> ${recipe.prepTime || 'Not specified'}</div>
-              <div><strong>Cook Time:</strong> ${recipe.cookTime || 'Not specified'}</div>
-              <div><strong>Servings:</strong> ${recipe.servings || 'Not specified'}</div>
+        <!-- VISUAL GRID LAYOUT WITH ENHANCED BOXES -->
+        <div class="recipe-details-grid" style="display: grid; gap: var(--space-6); grid-template-columns: 1fr 1fr; margin-bottom: var(--space-6);">
+          
+          <!-- RECIPE INFO BOX -->
+          <div class="recipe-info-card" style="background: var(--color-surface); padding: var(--space-6); border-radius: var(--radius-card); border: 2px solid var(--color-primary); box-shadow: var(--shadow-lg); position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-600, #4F46E5) 100%);"></div>
+            <h3 style="margin: 0 0 var(--space-4) 0; color: var(--color-text); display: flex; align-items: center; gap: var(--space-2); font-size: 1.5rem; font-weight: 600;">
+              📊 Recipe Information
+            </h3>
+            <div style="display: grid; gap: var(--space-3);">
+              <div style="display: flex; justify-content: space-between; padding: var(--space-2); background: var(--color-input-bg); border-radius: var(--radius-lg); border-left: 4px solid var(--color-primary);">
+                <strong style="color: var(--color-text);">Category:</strong> 
+                <span style="color: var(--color-muted); font-weight: 500;">${recipe.strCategory || 'Not specified'}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: var(--space-2); background: var(--color-input-bg); border-radius: var(--radius-lg); border-left: 4px solid var(--color-primary);">
+                <strong style="color: var(--color-text);">Cuisine:</strong> 
+                <span style="color: var(--color-muted); font-weight: 500;">${recipe.strArea || 'Not specified'}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: var(--space-2); background: var(--color-input-bg); border-radius: var(--radius-lg); border-left: 4px solid var(--color-primary);">
+                <strong style="color: var(--color-text);">Prep Time:</strong> 
+                <span style="color: var(--color-muted); font-weight: 500;">${recipe.prepTime || 'Not specified'}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: var(--space-2); background: var(--color-input-bg); border-radius: var(--radius-lg); border-left: 4px solid var(--color-primary);">
+                <strong style="color: var(--color-text);">Cook Time:</strong> 
+                <span style="color: var(--color-muted); font-weight: 500;">${recipe.cookTime || 'Not specified'}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: var(--space-2); background: var(--color-input-bg); border-radius: var(--radius-lg); border-left: 4px solid var(--color-primary);">
+                <strong style="color: var(--color-text);">Servings:</strong> 
+                <span style="color: var(--color-muted); font-weight: 500;">${recipe.servings || 'Not specified'}</span>
+              </div>
             </div>
           </div>
           
-          <div class="recipe-image-card" style="background: var(--color-input-bg); padding: var(--space-4); border-radius: var(--radius-card); text-align: center;">
+          <!-- RECIPE IMAGE BOX -->
+          <div class="recipe-image-card" style="background: var(--color-surface); padding: var(--space-6); border-radius: var(--radius-card); border: 2px solid var(--color-divider); box-shadow: var(--shadow-lg); text-align: center; position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--color-success, #10B981) 0%, var(--color-success-600, #059669) 100%);"></div>
+            <h3 style="margin: 0 0 var(--space-4) 0; color: var(--color-text); font-size: 1.5rem; font-weight: 600;">🖼️ Recipe Image</h3>
             ${recipe.strMealThumb ? 
-              `<img src="${recipe.strMealThumb}" alt="${recipe.strMeal}" style="width: 100%; max-width: 300px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">` :
-              `<div style="width: 100%; height: 200px; background: var(--color-divider); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 3rem;">🍽️</div>`
+              `<img src="${recipe.strMealThumb}" alt="${recipe.strMeal}" style="width: 100%; max-width: 300px; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); border: 3px solid var(--color-divider);">` :
+              `<div style="width: 100%; height: 200px; background: linear-gradient(135deg, var(--color-input-bg) 0%, var(--color-divider) 100%); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 4rem; border: 2px dashed var(--color-divider);">🍽️</div>`
             }
           </div>
         </div>
         
-        <div class="ingredients-card" style="background: var(--color-input-bg); padding: var(--space-4); border-radius: var(--radius-card);">
-          <h3 style="margin-bottom: var(--space-3); color: var(--color-text);">🥄 Ingredients</h3>
-          <div class="ingredients-list" style="display: grid; gap: var(--space-2);">
-            ${ingredients.map(ingredient => `
-              <div style="display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2); background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-divider);">
-                <span style="color: var(--color-primary); font-weight: bold;">•</span>
-                <span>${ingredient}</span>
+        <!-- INGREDIENTS BOX WITH ENHANCED VISUAL STYLING -->
+        <div class="ingredients-card" style="background: var(--color-surface); padding: var(--space-6); border-radius: var(--radius-card); border: 2px solid var(--color-success, #10B981); box-shadow: var(--shadow-lg); margin-bottom: var(--space-6); position: relative; overflow: hidden;">
+          <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--color-success, #10B981) 0%, var(--color-success-600, #059669) 100%);"></div>
+          <h3 style="margin: 0 0 var(--space-4) 0; color: var(--color-text); display: flex; align-items: center; gap: var(--space-2); font-size: 1.5rem; font-weight: 600;">
+            🥄 Ingredients (${ingredients.length} items)
+          </h3>
+          <div class="ingredients-list" style="display: grid; gap: var(--space-3);">
+            ${ingredients.map((ingredient, index) => `
+              <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4); background: var(--color-input-bg); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm); transition: transform 0.2s ease;" onmouseover="this.style.transform='translateX(4px)'" onmouseout="this.style.transform='translateX(0)'">
+                <span style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: var(--color-success, #10B981); color: white; border-radius: 50%; font-size: 14px; font-weight: 600; flex-shrink: 0;">${index + 1}</span>
+                <span style="flex: 1; color: var(--color-text); font-weight: 500; font-size: 1.1rem;">${ingredient}</span>
               </div>
             `).join('')}
           </div>
         </div>
         
-        <div class="instructions-card" style="background: var(--color-input-bg); padding: var(--space-4); border-radius: var(--radius-card);">
-          <h3 style="margin-bottom: var(--space-3); color: var(--color-text);">📝 Instructions</h3>
-          <div class="instructions-list" style="display: grid; gap: var(--space-3);">
+        <!-- INSTRUCTIONS BOX WITH ENHANCED VISUAL STYLING -->
+        <div class="instructions-card" style="background: var(--color-surface); padding: var(--space-6); border-radius: var(--radius-card); border: 2px solid var(--color-warning, #F59E0B); box-shadow: var(--shadow-lg); margin-bottom: var(--space-6); position: relative; overflow: hidden;">
+          <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--color-warning, #F59E0B) 0%, var(--color-warning-600, #D97706) 100%);"></div>
+          <h3 style="margin: 0 0 var(--space-4) 0; color: var(--color-text); display: flex; align-items: center; gap: var(--space-2); font-size: 1.5rem; font-weight: 600;">
+            📝 Instructions (${steps.length > 0 ? steps.length : 1} steps)
+          </h3>
+          <div class="instructions-list" style="display: grid; gap: var(--space-4);">
             ${steps.length > 0 ? 
               steps.map((step, index) => `
-                <div style="display: flex; gap: var(--space-3); padding: var(--space-3); background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--color-divider);">
-                  <span style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: var(--color-primary); color: white; border-radius: 50%; font-size: 12px; font-weight: 600; flex-shrink: 0;">${index + 1}</span>
-                  <span style="flex: 1; line-height: 1.5;">${step}</span>
+                <div style="display: flex; gap: var(--space-4); padding: var(--space-4); background: var(--color-input-bg); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); box-shadow: var(--shadow-sm); transition: transform 0.2s ease;" onmouseover="this.style.transform='translateX(4px)'" onmouseout="this.style.transform='translateX(0)'">
+                  <span style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: var(--color-warning, #F59E0B); color: white; border-radius: 50%; font-size: 16px; font-weight: 700; flex-shrink: 0; box-shadow: var(--shadow-md);">${index + 1}</span>
+                  <span style="flex: 1; line-height: 1.6; color: var(--color-text); font-size: 1.1rem; padding-top: 8px;">${step}</span>
                 </div>
               `).join('') :
-              `<div style="padding: var(--space-4); text-align: center; color: var(--color-muted);">
-                <p>${instructions}</p>
+              `<div style="padding: var(--space-6); text-align: center; background: var(--color-input-bg); border-radius: var(--radius-lg); border: 2px dashed var(--color-divider);">
+                <p style="color: var(--color-muted); font-size: 1.1rem; margin: 0;">${instructions}</p>
               </div>`
             }
           </div>
         </div>
         
         ${recipe.strDescription ? `
-          <div class="description-card" style="background: var(--color-input-bg); padding: var(--space-4); border-radius: var(--radius-card);">
-            <h3 style="margin-bottom: var(--space-3); color: var(--color-text);">📖 Description</h3>
-            <p style="line-height: 1.6; color: var(--color-text);">${recipe.strDescription}</p>
+          <!-- DESCRIPTION BOX -->
+          <div class="description-card" style="background: var(--color-surface); padding: var(--space-6); border-radius: var(--radius-card); border: 2px solid var(--color-info, #3B82F6); box-shadow: var(--shadow-lg); position: relative; overflow: hidden;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--color-info, #3B82F6) 0%, var(--color-info-600, #2563EB) 100%);"></div>
+            <h3 style="margin: 0 0 var(--space-4) 0; color: var(--color-text); display: flex; align-items: center; gap: var(--space-2); font-size: 1.5rem; font-weight: 600;">📖 Description</h3>
+            <p style="line-height: 1.8; color: var(--color-text); font-size: 1.1rem; margin: 0; padding: var(--space-4); background: var(--color-input-bg); border-radius: var(--radius-lg); border-left: 4px solid var(--color-info, #3B82F6);">${recipe.strDescription}</p>
           </div>
         ` : ''}
+        
+        <!-- FOOTER WITH METADATA -->
+        <div style="margin-top: var(--space-8); padding: var(--space-4); background: var(--color-input-bg); border-radius: var(--radius-lg); border: 1px solid var(--color-divider); text-align: center;">
+          <p style="color: var(--color-muted); margin: 0; font-size: 0.9rem;">
+            <strong>Recipe ID:</strong> ${recipe.idMeal || 'Generated'} | 
+            <strong>Source:</strong> ${recipe.strSource || 'AI Generated'} | 
+            <strong>Loaded:</strong> ${new Date().toLocaleString()}
+          </p>
+        </div>
       </div>
     `;
   }

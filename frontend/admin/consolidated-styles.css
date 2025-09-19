@@ -1922,12 +1922,103 @@ body {
 
 /* Ensure comprehensive recipe display has proper styling */
 #comprehensiveRecipeDisplayContainer .recipe-display,
-#comprehensiveRecipeDisplayContainer .comprehensive-recipe-display {
+#comprehensiveRecipeDisplayContainer .comprehensive-recipe-display,
+#comprehensiveRecipeDisplayContainer > div,
+#comprehensiveRecipeDisplayContainer {
   background: var(--color-surface);
   border-radius: var(--radius-card);
   padding: var(--space-6);
   box-shadow: var(--shadow-card);
   border: 1px solid var(--color-divider);
+}
+
+/* Force styling on ANY content inside the recipe editor container */
+#comprehensiveRecipeDisplayContainer * {
+  color: var(--color-text) !important;
+}
+
+#comprehensiveRecipeDisplayContainer h1,
+#comprehensiveRecipeDisplayContainer h2,
+#comprehensiveRecipeDisplayContainer h3,
+#comprehensiveRecipeDisplayContainer h4,
+#comprehensiveRecipeDisplayContainer h5 {
+  color: var(--color-text) !important;
+  font-weight: 600 !important;
+  margin-bottom: var(--space-3) !important;
+  padding: var(--space-2) 0 !important;
+}
+
+#comprehensiveRecipeDisplayContainer button {
+  background: var(--color-primary) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: var(--radius-lg) !important;
+  padding: var(--space-2) var(--space-4) !important;
+  cursor: pointer !important;
+  font-weight: 500 !important;
+  margin: var(--space-1) !important;
+  transition: all 0.2s ease !important;
+}
+
+#comprehensiveRecipeDisplayContainer button:hover {
+  background: var(--color-primary-600, #4F46E5) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Style all divs inside recipe editor as cards */
+#comprehensiveRecipeDisplayContainer > div > div,
+#comprehensiveRecipeDisplayContainer .section,
+#comprehensiveRecipeDisplayContainer .card {
+  background: var(--color-input-bg) !important;
+  border: 1px solid var(--color-divider) !important;
+  border-radius: var(--radius-card) !important;
+  padding: var(--space-4) !important;
+  margin-bottom: var(--space-4) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+/* Force visual styling on text elements */
+#comprehensiveRecipeDisplayContainer strong {
+  color: var(--color-text) !important;
+  font-weight: 600 !important;
+}
+
+#comprehensiveRecipeDisplayContainer p {
+  color: var(--color-muted) !important;
+  line-height: 1.6 !important;
+  margin-bottom: var(--space-2) !important;
+}
+
+#comprehensiveRecipeDisplayContainer ul,
+#comprehensiveRecipeDisplayContainer ol {
+  padding-left: var(--space-4) !important;
+  margin-bottom: var(--space-3) !important;
+}
+
+#comprehensiveRecipeDisplayContainer li {
+  color: var(--color-text) !important;
+  margin-bottom: var(--space-1) !important;
+  padding: var(--space-1) 0 !important;
+}
+
+/* Create visual boxes for any content */
+#comprehensiveRecipeDisplayContainer div[class*="info"],
+#comprehensiveRecipeDisplayContainer div[class*="section"],
+#comprehensiveRecipeDisplayContainer div[class*="timing"],
+#comprehensiveRecipeDisplayContainer div[class*="serving"],
+#comprehensiveRecipeDisplayContainer div[class*="ingredient"],
+#comprehensiveRecipeDisplayContainer div[class*="instruction"],
+#comprehensiveRecipeDisplayContainer div[class*="nutrition"],
+#comprehensiveRecipeDisplayContainer div[class*="dietary"],
+#comprehensiveRecipeDisplayContainer div[class*="equipment"],
+#comprehensiveRecipeDisplayContainer div[class*="tag"],
+#comprehensiveRecipeDisplayContainer div[class*="metadata"] {
+  background: var(--color-surface) !important;
+  border: 2px solid var(--color-divider) !important;
+  border-radius: var(--radius-card) !important;
+  padding: var(--space-5) !important;
+  margin: var(--space-4) 0 !important;
+  box-shadow: var(--shadow-card) !important;
 }
 
 /* Recipe editor specific styling */
