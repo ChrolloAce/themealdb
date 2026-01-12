@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodDB Admin Dashboard</title>
+    <link rel="stylesheet" href="/admin-assets/admin.css?v=7.4">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal active">
+        <div class="modal-content">
+            <h2>🍽️ FoodDB Admin</h2>
+            <p>Access the recipe management dashboard</p>
+            
+            <button type="button" id="anonymousAuthBtn" class="btn btn-primary">
+                <i class="fas fa-rocket"></i>
+                Enter Dashboard
+            </button>
+            
+            <div id="loginError" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- App Shell -->
+    <div id="adminPanel" class="app-shell" style="display: none;">
+        <!-- Left Rail Navigation -->
+        <aside class="left-rail" id="leftRail">
+            <div class="rail-header">
+                <div class="rail-logo">🍴</div>
+                <div class="rail-brand">FoodDB</div>
+            </div>
+            
+            <nav class="rail-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-section="allRecipes">
+                            <span class="nav-icon">
+                                <i class="fas fa-utensils"></i>
+                            </span>
+                            <span class="nav-text">All Recipes</span>
+                            <div class="nav-tooltip">All Recipes</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="generate">
+                            <span class="nav-icon">
+                    <i class="fas fa-magic"></i>
+                            </span>
+                            <span class="nav-text">AI Generate</span>
+                            <div class="nav-tooltip">AI Generate</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="jsonViewer">
+                            <span class="nav-icon">
+                                <i class="fas fa-code"></i>
+                            </span>
+                            <span class="nav-text">JSON Viewer</span>
+                            <div class="nav-tooltip">JSON Viewer</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="coverageMatrix">
+                            <span class="nav-icon">
+                                <i class="fas fa-table-cells"></i>
+                            </span>
+                            <span class="nav-text">Coverage Matrix</span>
+                            <div class="nav-tooltip">Coverage Matrix</div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-section="recipeEditor" style="display: none;">
+                            <span class="nav-icon">
+                                <i class="fas fa-edit"></i>
+                            </span>
+                            <span class="nav-text">Recipe Editor</span>
+                            <div class="nav-tooltip">Recipe Editor</div>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="rail-footer">
+                <a href="#" class="logout-link" id="logoutBtn">
+                    <span class="nav-icon">
+                    <i class="fas fa-sign-out-alt"></i>
+                    </span>
+                    <span class="nav-text">Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Layout -->
+        <div class="main-layout" id="mainLayout">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                    <nav class="breadcrumb" id="breadcrumb" style="display: none;">
+                        <div class="breadcrumb-item">
+                            <a href="#" class="breadcrumb-link">Recipes</a>
+                </div>
+                        <span class="breadcrumb-separator">
+                            <i class="fas fa-chevron-right"></i>
+                        </span>
+                        <div class="breadcrumb-item">
+                            <span>Recipe Name</span>
+                        </div>
+                    </nav>
+                </div>
+                
+                <div class="top-bar-right">
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    
+                    <div class="topbar-search">
+                        <i class="fas fa-search topbar-search-icon"></i>
+                        <input type="text" class="topbar-search-input" placeholder="Search recipes...">
+                    </div>
+                    
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <div class="notification-badge"></div>
+                    </button>
+                    
+                        <div class="user-info">
+                        <div class="user-avatar">SA</div>
+                        <div class="user-details">
+                            <div class="user-name">System Administrator</div>
+                            <div class="user-role">Admin</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="content-area">
+                <!-- AI Generate Section -->
+                <section id="generate" class="admin-section">
+                    <div class="card" style="max-width: 800px; margin: 0 auto; max-height: calc(100vh - 180px); overflow-y: auto;">
+                            <div class="card-header">
+                            <h2 class="card-title">AI Recipe Generator</h2>
+                            <p class="card-subtitle">Generate creative recipes using artificial intelligence</p>
+                            </div>
+                        
+                        <form id="generateForm">
+                            <div class="form-group">
+                                <label class="form-label">Generation Mode</label>
+                                <div class="switch">
+                                    <input type="checkbox" id="randomMode" class="switch-input" checked>
+                                    <div class="switch-slider"></div>
+                                    <span class="switch-label">Random Generation</span>
+                                </div>
+                                <p class="form-helper">Generate completely random recipes with creative combinations</p>
+                            </div>
+
+                            <!-- Custom Filters Section (hidden by default when random mode is on) -->
+                            <div id="customFiltersSection" class="custom-filters-section" style="display: none;">
+                                <h3 class="filter-section-title">Customize Your Recipe</h3>
+                                <p class="filter-section-subtitle">Select preferences to guide AI generation</p>
+                                
+                                <div class="filter-grid">
+                                    <div class="filter-group">
+                                        <label class="filter-label">Categories</label>
+                                        <div class="filter-buttons" id="categoryFilters">
+                                            <button type="button" class="filter-btn" data-category="Breakfast">🌅 Breakfast</button>
+                                            <button type="button" class="filter-btn" data-category="Brunch">🥐 Brunch</button>
+                                            <button type="button" class="filter-btn" data-category="Lunch">🌞 Lunch</button>
+                                            <button type="button" class="filter-btn" data-category="Dinner">🌙 Dinner</button>
+                                            <button type="button" class="filter-btn" data-category="Snack">🥨 Snack</button>
+                                            <button type="button" class="filter-btn" data-category="Dessert">🍰 Dessert</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="filter-group">
+                                        <label class="filter-label">Dish Types</label>
+                                        <div class="filter-buttons" id="dishTypeFilters">
+                                            <button type="button" class="filter-btn" data-dishtype="Appetizers">🍤 Appetizers</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Side Dishes">🥗 Side Dishes</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Main Courses">🍽️ Main Courses</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Soups">🍲 Soups</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Salads">🥙 Salads</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Sandwiches & Wraps">🥪 Sandwiches & Wraps</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Burgers">🍔 Burgers</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Pizza & Flatbreads">🍕 Pizza & Flatbreads</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Pasta & Noodles">🍝 Pasta & Noodles</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Rice Dishes">🍚 Rice Dishes</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Tacos, Burritos & Quesadillas">🌮 Tacos, Burritos & Quesadillas</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Stir-Fries">🥘 Stir-Fries</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Curries">🍛 Curries</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Stews & Casseroles">🍯 Stews & Casseroles</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Skillet & One-Pan Meals">🍳 Skillet & One-Pan Meals</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Slow Cooker / Instant Pot">⏲️ Slow Cooker / Instant Pot</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Grilling / BBQ">🔥 Grilling / BBQ</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Baked Goods">🥖 Baked Goods</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Pastries">🥐 Pastries</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Cookies & Bars">🍪 Cookies & Bars</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Pies & Cobblers">🥧 Pies & Cobblers</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Frozen Treats">🍦 Frozen Treats</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Pancakes & Waffles">🥞 Pancakes & Waffles</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Dips & Spreads">🧆 Dips & Spreads</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Bowls">🥣 Bowls</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Drinks & Smoothies">🍹 Drinks & Smoothies</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Breads">🍞 Breads</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Meal Prep">🍱 Meal Prep</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Boards & Platters">🧀 Boards & Platters</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Protein Dishes">🥩 Protein Dishes</button>
+                                            <button type="button" class="filter-btn" data-dishtype="Cakes & Cupcakes">🍰 Cakes & Cupcakes</button>
+                                    </div>
+                                </div>
+                                
+                                    <div class="filter-group">
+                                        <label class="filter-label">Dietary</label>
+                                        <div class="filter-buttons" id="dietaryFilters">
+                                            <button type="button" class="filter-btn" data-dietary="Vegetarian">🥗 Vegetarian</button>
+                                            <button type="button" class="filter-btn" data-dietary="Vegan">🌱 Vegan</button>
+                                            <button type="button" class="filter-btn" data-dietary="Pescatarian">🐟 Pescatarian</button>
+                                            <button type="button" class="filter-btn" data-dietary="Keto">🥑 Keto</button>
+                                            <button type="button" class="filter-btn" data-dietary="Low-Carb">🥩 Low-Carb</button>
+                                            <button type="button" class="filter-btn" data-dietary="High-Protein">💪 High-Protein</button>
+                                            <button type="button" class="filter-btn" data-dietary="Gluten-Free">🌾 Gluten-Free</button>
+                                            <button type="button" class="filter-btn" data-dietary="Dairy-Free">🥛 Dairy-Free</button>
+                                            <button type="button" class="filter-btn" data-dietary="Nut-Free">🥜 Nut-Free</button>
+                                            <button type="button" class="filter-btn" data-dietary="Low-Sodium">🧂 Low-Sodium</button>
+                                            <button type="button" class="filter-btn" data-dietary="Low-Sugar">🍯 Low-Sugar</button>
+                                            <button type="button" class="filter-btn" data-dietary="Mediterranean Diet">🫒 Mediterranean Diet</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="filter-group">
+                                        <label class="filter-label">Difficulty</label>
+                                        <div class="filter-buttons" id="difficultyFilters">
+                                            <button type="button" class="filter-btn difficulty-filter" data-difficulty="Easy">😊 Easy</button>
+                                            <button type="button" class="filter-btn difficulty-filter" data-difficulty="Medium">🤔 Medium</button>
+                                            <button type="button" class="filter-btn difficulty-filter" data-difficulty="Hard">💪 Hard</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="filter-group">
+                                        <label class="filter-label">Cuisines</label>
+                                        <div class="filter-buttons" id="cuisineFilters">
+                                            <button type="button" class="filter-btn" data-cuisine="Italian">🍝 Italian</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Mexican">🌮 Mexican</button>
+                                            <button type="button" class="filter-btn" data-cuisine="American">🍔 American</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Chinese">🥢 Chinese</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Japanese">🍱 Japanese</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Indian">🍛 Indian</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Thai">🍜 Thai</button>
+                                            <button type="button" class="filter-btn" data-cuisine="French">🥖 French</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Mediterranean">🫒 Mediterranean</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Greek">🇬🇷 Greek</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Spanish">🥘 Spanish</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Korean">🍲 Korean</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Vietnamese">🍲 Vietnamese</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Middle Eastern">🧆 Middle Eastern</button>
+                                            <button type="button" class="filter-btn" data-cuisine="British">🇬🇧 British</button>
+                                            <button type="button" class="filter-btn" data-cuisine="German">🥨 German</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Brazilian">🇧🇷 Brazilian</button>
+                                            <button type="button" class="filter-btn" data-cuisine="Moroccan">🇲🇦 Moroccan</button>
+                                            <button type="button" class="filter-btn" data-cuisine="International">🌍 International</button>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            <div class="grid" style="grid-template-columns: 1fr 1fr; gap: var(--space-6);">
+                                <div class="form-group">
+                                    <label class="form-label">Number of Recipes</label>
+                                    <div class="stepper-input">
+                                        <button type="button" class="stepper-btn" data-action="decrease" data-target="generateRecipeCount">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <input type="number" id="generateRecipeCount" class="stepper-value" value="1" min="1" max="50">
+                                        <button type="button" class="stepper-btn" data-action="increase" data-target="generateRecipeCount">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Images per Recipe</label>
+                                    <div class="stepper-input">
+                                        <button type="button" class="stepper-btn" data-action="decrease" data-target="imageCount">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <input type="number" id="imageCount" class="stepper-value" value="1" min="1" max="3">
+                                        <button type="button" class="stepper-btn" data-action="increase" data-target="imageCount">
+                                            <i class="fas fa-plus"></i>
+                                    </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="switch">
+                                    <input type="checkbox" id="generateImage" class="switch-input" checked>
+                                    <div class="switch-slider"></div>
+                                    <span class="switch-label">
+                                        <i class="fas fa-camera"></i>
+                                        Generate Images
+                                    </span>
+                        </div>
+                    </div>
+                
+                            <button type="submit" class="btn btn-primary btn-full btn-lg">
+                                <i class="fas fa-magic"></i>
+                                Generate Recipe
+                            </button>
+                        </form>
+                        
+                        <div id="generateResult" class="mt-6" style="margin-top: var(--space-6);"></div>
+                    </div>
+                </section>
+
+                <!-- All Recipes Section -->
+                <section id="allRecipes" class="admin-section active">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">All Recipes <span id="recipeCount" style="color: #666; font-weight: 400; font-size: 1rem;">(0)</span></h2>
+                            <p class="card-subtitle">Manage your recipe collection</p>
+                        </div>
+                        
+                        <!-- Toolbar -->
+                        <div class="toolbar">
+                            <div class="search-filter-group">
+                                <div class="search-input-wrapper">
+                                    <i class="fas fa-search search-icon"></i>
+                                    <input type="text" id="recipeSearch" placeholder="Search recipes..." class="search-input">
+                                </div>
+                                <div class="filter-dropdowns">
+                                    <select id="categoryFilter" class="filter-select">
+                                        <option value="">All Categories</option>
+                                    </select>
+                                    <select id="dishTypeFilter" class="filter-select">
+                                        <option value="">All Dish Types</option>
+                                    </select>
+                                    <select id="cuisineFilter" class="filter-select">
+                                        <option value="">All Cuisines</option>
+                                    </select>
+                                    <select id="dietaryFilter" class="filter-select">
+                                        <option value="">All Dietary</option>
+                                    </select>
+                                    <select id="difficultyFilter" class="filter-select">
+                                        <option value="">All Difficulty</option>
+                                        <option value="Easy">😊 Easy</option>
+                                        <option value="Medium">🤔 Medium</option>
+                                        <option value="Hard">💪 Hard</option>
+                                    </select>
+                        </div>
+                    </div>
+                            <div class="toolbar-actions">
+                                <button id="clearFiltersBtn" class="btn btn-ghost">
+                                    <i class="fas fa-times"></i> Clear Filters
+                                </button>
+                                <button id="deleteAllRecipesBtn" class="btn btn-destructive" style="background: #dc2626; border-color: #dc2626; color: white;">
+                                    <i class="fas fa-trash-alt"></i> Delete All Recipes
+                                </button>
+                        </div>
+                        </div>
+                        
+                        <!-- Active Filters Display -->
+                        <div id="activeFiltersDisplay" class="active-filters-display" style="display: none;"></div>
+                        
+                        <!-- Recipes Table Container -->
+                        <div id="recipesTableContainer" class="recipes-table-container">
+                            <table class="recipes-table" id="recipesTable">
+                                <thead>
+                                    <tr>
+                                        <th class="col-image">Image</th>
+                                        <th class="col-name sortable" data-sort="name">
+                                            Recipe Name 
+                                            <i class="fas fa-sort sort-icon"></i>
+                                        </th>
+                                        <th class="col-category sortable" data-sort="category">
+                                            Category
+                                            <i class="fas fa-sort sort-icon"></i>
+                                        </th>
+                                        <th class="col-dishtype sortable" data-sort="dishtype">
+                                            Dish Type
+                                            <i class="fas fa-sort sort-icon"></i>
+                                        </th>
+                                        <th class="col-cuisine sortable" data-sort="cuisine">
+                                            Cuisine
+                                            <i class="fas fa-sort sort-icon"></i>
+                                        </th>
+                                        <th class="col-dietary sortable" data-sort="dietary">
+                                            Dietary
+                                            <i class="fas fa-sort sort-icon"></i>
+                                        </th>
+                                        <th class="col-date sortable" data-sort="date">
+                                            Date Added
+                                            <i class="fas fa-sort sort-icon"></i>
+                                        </th>
+                                        <th class="col-status sortable" data-sort="status">
+                                            Status
+                                            <i class="fas fa-sort sort-icon"></i>
+                                        </th>
+                                        <th class="col-actions">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recipesTableBody">
+                                    <!-- Recipes will be populated here -->
+                                </tbody>
+                            </table>
+                    </div>
+                    
+                        <!-- Empty State -->
+                        <div id="emptyState" class="empty-state" style="display: none;">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-utensils"></i>
+                </div>
+                            <h3 class="empty-state-title">No recipes found</h3>
+                            <p class="empty-state-text">Start by generating some recipes with AI!</p>
+                            <button class="btn btn-primary" onclick="adminPanel.switchSection('generate')">
+                                <i class="fas fa-magic"></i> Generate First Recipe
+                            </button>
+            </div>
+                        
+                        <!-- Pagination Controls -->
+                        <div id="paginationControls" class="pagination-controls" style="display: none;">
+                            <span class="pagination-info">Loading...</span>
+                            <div class="pagination-buttons">
+                                <!-- Buttons dynamically generated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- JSON Viewer Section -->
+                <section id="jsonViewer" class="admin-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">JSON Viewer</h2>
+                            <p class="card-subtitle">View raw JSON structure of your recipes</p>
+                        </div>
+                        
+                        <div style="padding: 1.5rem;">
+                            <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                                <button id="randomJsonBtn" class="btn btn-primary">
+                                    <i class="fas fa-random"></i> Show Random Recipe JSON
+                                </button>
+                                <select id="recipeSelectJson" class="filter-select" style="flex: 1; min-width: 200px;">
+                                    <option value="">Select a specific recipe...</option>
+                                </select>
+                                <button id="copyJsonBtn" class="btn btn-ghost">
+                                    <i class="fas fa-copy"></i> Copy JSON
+                                </button>
+                            </div>
+                            
+                            <div id="jsonDisplay" style="background: #1a1a1a; color: #d4d4d4; padding: 1.5rem; border-radius: 8px; max-height: calc(100vh - 300px); overflow: auto; font-family: 'Monaco', 'Menlo', monospace; font-size: 0.875rem; line-height: 1.6;">
+                                <pre style="margin: 0; white-space: pre-wrap; word-wrap: break-word;"><code id="jsonCode">Click "Show Random Recipe JSON" or select a recipe to view its structure</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Coverage Matrix Section -->
+                <section id="coverageMatrix" class="admin-section">
+                    <div class="section-header" style="padding: 2rem 2rem 1rem;">
+                        <h2 style="font-size: 1.875rem; font-weight: 700; margin-bottom: 0.5rem;">Recipe Coverage Matrix</h2>
+                        <p style="color: #6b7280; font-size: 1rem;">Identify recipe gaps across different filter combinations</p>
+                    </div>
+                    
+                    <!-- Category x Dietary Matrix -->
+                    <div class="matrix-container">
+                        <h3>Categories × Dietary Options</h3>
+                        <div class="matrix-legend">
+                            <span class="legend-item"><span class="color-box red"></span> None (0)</span>
+                            <span class="legend-item"><span class="color-box yellow"></span> Low (1-5)</span>
+                            <span class="legend-item"><span class="color-box green"></span> Good (6+)</span>
+                        </div>
+                        <div id="categoryDietaryMatrix" class="matrix-grid"></div>
+                    </div>
+                    
+                    <!-- Category x Difficulty Matrix -->
+                    <div class="matrix-container">
+                        <h3>Categories × Difficulty</h3>
+                        <div class="matrix-legend">
+                            <span class="legend-item"><span class="color-box red"></span> None (0)</span>
+                            <span class="legend-item"><span class="color-box yellow"></span> Low (1-5)</span>
+                            <span class="legend-item"><span class="color-box green"></span> Good (6+)</span>
+                        </div>
+                        <div id="categoryDifficultyMatrix" class="matrix-grid"></div>
+                    </div>
+                    
+                    <!-- Category x Cuisine Matrix -->
+                    <div class="matrix-container">
+                        <h3>Categories × Cuisines</h3>
+                        <div class="matrix-legend">
+                            <span class="legend-item"><span class="color-box red"></span> None (0)</span>
+                            <span class="legend-item"><span class="color-box yellow"></span> Low (1-5)</span>
+                            <span class="legend-item"><span class="color-box green"></span> Good (6+)</span>
+                        </div>
+                        <div id="categoryCuisineMatrix" class="matrix-grid"></div>
+                    </div>
+                    
+                    <!-- Dietary x Cuisine Matrix -->
+                    <div class="matrix-container">
+                        <h3>Dietary Options × Cuisines</h3>
+                        <div class="matrix-legend">
+                            <span class="legend-item"><span class="color-box red"></span> None (0)</span>
+                            <span class="legend-item"><span class="color-box yellow"></span> Low (1-5)</span>
+                            <span class="legend-item"><span class="color-box green"></span> Good (6+)</span>
+                        </div>
+                        <div id="dietaryCuisineMatrix" class="matrix-grid"></div>
+                    </div>
+                    
+                    <!-- Dish Type x Category Matrix -->
+                    <div class="matrix-container">
+                        <h3>Dish Types × Categories</h3>
+                        <div class="matrix-legend">
+                            <span class="legend-item"><span class="color-box red"></span> None (0)</span>
+                            <span class="legend-item"><span class="color-box yellow"></span> Low (1-5)</span>
+                            <span class="legend-item"><span class="color-box green"></span> Good (6+)</span>
+                        </div>
+                        <div id="dishTypeCategoryMatrix" class="matrix-grid"></div>
+                    </div>
+                </section>
+
+                <!-- Recipe Editor Section (for comprehensive view) -->
+                <section id="recipeEditor" class="admin-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Recipe Editor</h2>
+                            <p class="card-subtitle">View and edit recipe details</p>
+                        </div>
+                        <div id="comprehensiveRecipeDisplayContainer">
+                            <!-- Comprehensive recipe display will be loaded here -->
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Matrix Detail Modal -->
+    <div id="matrixModal" class="modal" style="display: none;">
+        <div class="modal-content matrix-modal-content">
+            <span class="close-modal" style="position: absolute; right: 1.5rem; top: 1.5rem; font-size: 1.5rem; cursor: pointer; color: #9ca3af;">&times;</span>
+            <h3 id="matrixModalTitle" style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;"></h3>
+            <div id="matrixModalRecipes" class="matrix-recipes-list"></div>
+            <button id="generateForCombo" class="btn btn-primary">
+                <i class="fas fa-wand-magic-sparkles"></i> Generate Recipe for this Combo
+            </button>
+        </div>
+    </div>
+
+    <script src="/admin-assets/admin-script.js?v=7.4"></script>
+    <script src="/admin-assets/comprehensive-recipe-display.js?v=7.4"></script>
+</body>
+</html>

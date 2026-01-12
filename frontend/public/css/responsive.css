@@ -1,0 +1,221 @@
+/**
+ * Responsive Styles - Mobile-first, minimal breakpoints
+ * Single Responsibility: Responsive design adjustments
+ */
+
+/* Tablet (768px and below) */
+@media (max-width: 768px) {
+    /* Typography */
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-description {
+        font-size: 1rem;
+    }
+
+    h2 {
+        font-size: 1.75rem;
+    }
+
+    /* Layout */
+    .container {
+        padding: 0 1rem;
+    }
+
+    .header .container {
+        padding: 1rem;
+    }
+
+    .hero,
+    .features,
+    .api-section,
+    .examples-section,
+    .test-section,
+    .recipe-explorer {
+        padding: 3rem 0;
+    }
+
+    /* Navigation */
+    .nav {
+        gap: 1.5rem;
+    }
+
+    .nav a {
+        font-size: 0.875rem;
+    }
+
+    /* Recipe Grid - Single column on mobile */
+    .recipe-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    /* Filter Grids - Adjust for mobile */
+    .categories-grid,
+    .cuisines-grid,
+    .dietary-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+
+    .dish-types-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    /* Filter Buttons - Smaller on mobile */
+    .filter-btn {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+        min-height: 44px;
+    }
+
+    /* Filter Actions - Stack vertically */
+    .filter-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .active-filters {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .filter-buttons {
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .action-btn {
+        flex: 1;
+        min-width: auto;
+    }
+
+    /* Test Controls - Stack on mobile */
+    .tester-controls {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .tester-controls button {
+        width: 100%;
+    }
+
+    /* Example buttons - Wrap */
+    .example-container {
+        gap: 0.5rem;
+    }
+
+    .example-btn {
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    /* Recipe Cards - Mobile friendly */
+    .recipe-card,
+    .recipe-result-card {
+        margin-bottom: 1rem;
+    }
+
+    .recipe-details {
+        padding: 1rem;
+    }
+
+    .recipe-image {
+        max-height: 300px;
+    }
+
+    .api-results-header {
+        padding: 1rem;
+    }
+
+    .api-results-header h3 {
+        font-size: 1.125rem;
+    }
+
+    /* Nutrition Grid - 2 columns on mobile */
+    .nutrition-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        padding: 0.75rem;
+    }
+
+    /* Equipment/Ingredient Tags - Smaller */
+    .ingredient-tag,
+    .equipment-tag {
+        font-size: 0.8125rem;
+        padding: 0.375rem 0.625rem;
+    }
+
+    /* Method Header - Stack */
+    .method-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    /* Feature Grid - 2 columns */
+    .feature-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+/* Mobile (480px and below) */
+@media (max-width: 480px) {
+    /* All grids single column */
+    .categories-grid,
+    .dish-types-grid,
+    .cuisines-grid,
+    .dietary-grid,
+    .feature-grid,
+    .nutrition-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Typography - Smaller */
+    .hero-title {
+        font-size: 1.75rem;
+    }
+
+    .hero-description {
+        font-size: 0.9375rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    /* Spacing - Tighter */
+    .hero,
+    .features,
+    .api-section,
+    .examples-section,
+    .test-section,
+    .recipe-explorer {
+        padding: 2rem 0;
+    }
+
+    .filter-group {
+        padding: 1rem;
+    }
+
+    /* Buttons - Full width */
+    .action-btn,
+    .test-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Nav - Smaller */
+    .nav {
+        gap: 1rem;
+    }
+
+    .nav a {
+        font-size: 0.8125rem;
+    }
+}

@@ -1,0 +1,101 @@
+/**
+ * Nutrition & Equipment Styles - Clean, minimal display
+ * Single Responsibility: Nutrition and equipment presentation
+ */
+
+/* Equipment Section - Simple */
+.equipment-section {
+    margin-bottom: 1.5rem;
+}
+
+.equipment-text {
+    background: #f8f8f8;
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 3px solid #0066cc;
+    color: #4a4a4a;
+    line-height: 1.6;
+}
+
+.equipment-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.equipment-tag {
+    background: #0066cc;
+    color: #ffffff;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.equipment-quick {
+    margin: 0.75rem 0;
+    padding: 0.75rem 0;
+    border-top: 1px solid #f0f0f0;
+    font-size: 0.875rem;
+    color: #666;
+}
+
+/* Nutrition Section - Clean grid */
+.nutrition-section {
+    margin-bottom: 1.5rem;
+}
+
+.nutrition-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 0.75rem;
+    background: #f8f8f8;
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 3px solid #059669;
+}
+
+.nutrition-item {
+    text-align: center;
+    padding: 0.75rem 0.5rem;
+    background: #ffffff;
+    border-radius: 4px;
+}
+
+.nutrition-label {
+    font-size: 0.6875rem;
+    color: #999;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.nutrition-value {
+    font-size: 1rem;
+    color: #059669;
+    font-weight: 600;
+}
+
+/* Nutrition Quick - Preview bar */
+.nutrition-quick {
+    display: flex;
+    gap: 1rem;
+    margin: 0.75rem 0;
+    padding: 0.75rem;
+    background: #f0fdf4;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    border: 1px solid #d1fae5;
+}
+
+.nutrition-quick-item {
+    color: #059669;
+}
+
+.nutrition-quick-item strong {
+    color: #047857;
+    font-weight: 600;
+}

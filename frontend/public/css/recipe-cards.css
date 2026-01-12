@@ -1,0 +1,232 @@
+/**
+ * Recipe Card Styles - Minimal, clean recipe display
+ * Single Responsibility: Recipe card presentation
+ */
+
+/* Recipe Grid - Simple and responsive */
+.recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.recipes-display {
+    display: grid;
+    gap: 1.5rem;
+}
+
+/* Recipe Result Card - Minimal preview */
+.recipe-result-card {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.recipe-result-card:hover {
+    border-color: #cccccc;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+}
+
+.recipe-result-image {
+    height: 200px;
+    overflow: hidden;
+    background: #f5f5f5;
+}
+
+.recipe-result-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.recipe-result-card:hover .recipe-result-image img {
+    transform: scale(1.03);
+}
+
+.recipe-result-content {
+    padding: 1.25rem;
+}
+
+.recipe-result-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+}
+
+.recipe-result-meta {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.recipe-result-description {
+    color: #666;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    margin: 0.75rem 0;
+}
+
+.recipe-result-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.recipe-result-tag {
+    background: #f5f5f5;
+    color: #666;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+/* Recipe Card - Detailed view */
+.recipe-card {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.recipe-header {
+    background: #1a1a1a;
+    color: #ffffff;
+    padding: 1.5rem;
+}
+
+.recipe-header h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.recipe-meta {
+    font-size: 0.9375rem;
+    opacity: 0.85;
+}
+
+.recipe-image {
+    height: auto;
+    max-height: 500px;
+    width: 100%;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.recipe-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-error {
+    color: #999;
+    padding: 3rem;
+}
+
+.recipe-details {
+    padding: 1.5rem;
+}
+
+.recipe-details h5 {
+    margin: 0 0 1rem 0;
+    color: #1a1a1a;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Ingredients - Clean tags */
+.ingredients-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.ingredient-tag {
+    background: #1a1a1a;
+    color: #ffffff;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.ingredients-section {
+    margin-bottom: 1.5rem;
+}
+
+/* Tags - Minimal style */
+.tags-section {
+    margin-bottom: 1.5rem;
+}
+
+.tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag {
+    background: #f5f5f5;
+    color: #666;
+    padding: 0.375rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8125rem;
+    border: 1px solid #e5e5e5;
+}
+
+/* Instructions - Clean and readable */
+.instructions-section {
+    margin-bottom: 1.5rem;
+}
+
+.instructions-text {
+    color: #4a4a4a;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* Recipe Results Container - Clean */
+.recipe-results {
+    margin-top: 2rem;
+}
+
+.recipe-results.loading {
+    text-align: center;
+    padding: 3rem;
+    color: #999;
+}
+
+.recipe-results.empty {
+    text-align: center;
+    padding: 3rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.recipe-results.empty h3 {
+    font-size: 1.25rem;
+    color: #666;
+    margin-bottom: 0.75rem;
+}
+
+.recipe-results.empty p {
+    color: #999;
+    margin-bottom: 1.5rem;
+}

@@ -1,0 +1,1050 @@
+<<<<<<< HEAD
+/* BALANCED DARK THEME WITH PROPER CONTRAST */
+=======
+/* PROFESSIONAL DARK THEME - SERIOUS & ELEGANT */
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+<<<<<<< HEAD
+    background: #0f1419 !important;
+    min-height: 100vh;
+    color: #f7f8f9 !important;
+    line-height: 1.6;
+}
+
+/* READABLE DARK THEME WITH GOOD CONTRAST */
+.admin-panel,
+.admin-main,
+.admin-section {
+    background: #0f1419 !important;
+    color: #f7f8f9 !important;
+}
+
+/* Cards and Forms - Slightly lighter for contrast */
+.generate-form,
+.ideas-form,
+.batch-form,
+.result-section,
+.recipe-preview,
+.modal-content,
+.stat-card,
+.recent-activity,
+.idea-card,
+.recipe-item,
+.batch-progress,
+.quick-generate-section,
+.custom-generate-section,
+.batch-recipe-card {
+    background: #1e2329 !important;
+    color: #f7f8f9 !important;
+    border: 1px solid #3d434b !important;
+}
+
+/* Navigation - Medium dark */
+.admin-nav {
+    background: #161b22 !important;
+    border-bottom: 1px solid #30363d !important;
+}
+
+/* Lists - Transparent backgrounds */
+.recipes-list,
+.ideas-grid,
+.batch-results,
+.batch-recipes-grid,
+.activity-list,
+.ingredients-list,
+.stats-grid {
+    background: transparent !important;
+}
+
+=======
+    background: #0a0a0a;
+    min-height: 100vh;
+    color: #e5e7eb;
+    line-height: 1.6;
+}
+
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+/* Modal Styles - Dark Professional */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: #1a1a1a;
+    padding: 3rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    border: 1px solid #333;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+.modal-content h2 {
+    margin-bottom: 2rem;
+    color: #f9fafb;
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.modal-content p {
+    color: #9ca3af;
+    margin-bottom: 2rem;
+}
+
+<<<<<<< HEAD
+/* Form Styles - Better Contrast */
+=======
+/* Form Styles - Professional */
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+<<<<<<< HEAD
+    color: #ffffff !important;
+=======
+    color: #d1d5db;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.875rem 1rem;
+<<<<<<< HEAD
+    border: 1px solid #4a5568 !important;
+    border-radius: 6px;
+    background: #2d3748 !important;
+    color: #ffffff !important;
+=======
+    border: 1px solid #374151;
+    border-radius: 6px;
+    background: #111827;
+    color: #f9fafb;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+<<<<<<< HEAD
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3) !important;
+    background: #1a202c !important;
+}
+
+.form-group input::placeholder {
+    color: #a0aec0 !important;
+=======
+    border-color: #6b7280;
+    box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1);
+    background: #1f2937;
+}
+
+.form-group input::placeholder {
+    color: #6b7280;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+}
+
+/* Button Styles - Professional & Serious */
+.btn {
+    padding: 0.875rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: #1f2937;
+    color: #f9fafb;
+    border: 1px solid #374151;
+}
+
+.btn-primary:hover {
+    background: #374151;
+    border-color: #4b5563;
+    transform: translateY(-1px);
+}
+
+.btn-outline {
+    background: transparent;
+    color: #9ca3af;
+    border: 1px solid #4b5563;
+}
+
+.btn-outline:hover {
+    background: #1f2937;
+    color: #f9fafb;
+    border-color: #6b7280;
+}
+
+.btn-success {
+    background: #065f46;
+    color: #f0fdf4;
+    border: 1px solid #047857;
+}
+
+.btn-success:hover {
+    background: #047857;
+    border-color: #059669;
+}
+
+.btn-danger {
+    background: #7f1d1d;
+    color: #fef2f2;
+    border: 1px solid #991b1b;
+}
+
+.btn-danger:hover {
+    background: #991b1b;
+    border-color: #b91c1c;
+}
+
+/* Admin Panel - Dark Professional */
+.admin-panel {
+    display: none;
+    min-height: 100vh;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background: #0a0a0a;
+}
+
+.admin-panel.active {
+    display: block;
+    opacity: 1;
+}
+
+<<<<<<< HEAD
+/* Header - Improved Contrast */
+.admin-header {
+    background: #161b22 !important;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #30363d;
+=======
+/* Header - Professional Dark */
+.admin-header {
+    background: #111827;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #1f2937;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left h1 {
+<<<<<<< HEAD
+    color: #ffffff !important;
+=======
+    color: #f9fafb;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.user-info {
+<<<<<<< HEAD
+    color: #c9d1d9 !important;
+=======
+    color: #9ca3af;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+    font-size: 0.9rem;
+}
+
+/* Navigation - Clean & Professional */
+.admin-nav {
+<<<<<<< HEAD
+    background: #1a1a1a !important;
+=======
+    background: #1a1a1a;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+    padding: 0;
+    border-bottom: 1px solid #2d2d2d;
+    display: flex;
+    overflow-x: auto;
+}
+
+<<<<<<< HEAD
+/* COMPREHENSIVE OVERRIDES FOR ALL COMPONENTS */
+
+/* Forms and Inputs - Dark Theme */
+.generate-form,
+.ideas-form, 
+.batch-form,
+.quick-generate-section,
+.custom-generate-section {
+    background: #1a1a1a !important;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid #2d2d2d !important;
+    margin-bottom: 2rem;
+    color: #e5e7eb !important;
+}
+
+/* All Card Components */
+.stat-card,
+.idea-card,
+.recipe-item,
+.batch-recipe-card,
+.recent-activity,
+.batch-progress {
+    background: #1a1a1a !important;
+    border: 1px solid #2d2d2d !important;
+    color: #e5e7eb !important;
+}
+
+/* Progress and Activity Items */
+.progress-item,
+.activity-item {
+    background: #111827 !important;
+    color: #e5e7eb !important;
+    border-color: #2d2d2d !important;
+}
+
+.progress-item.success {
+    background: #065f46 !important;
+    color: #f0fdf4 !important;
+    border-left-color: #10b981 !important;
+}
+
+.progress-item.error {
+    background: #7f1d1d !important;
+    color: #fef2f2 !important;
+    border-left-color: #ef4444 !important;
+}
+
+/* Recipe Lists and Items */
+.recipes-list {
+    background: transparent !important;
+}
+
+.recipe-item {
+    background: #1a1a1a !important;
+    border: 1px solid #2d2d2d !important;
+}
+
+.recipe-item h4,
+.recipe-item p,
+.batch-recipe-card h4,
+.batch-recipe-card p {
+    color: #e5e7eb !important;
+}
+
+/* Recipe Preview Components */
+.recipe-preview,
+.result-section {
+    background: #1a1a1a !important;
+    border: 1px solid #2d2d2d !important;
+    color: #e5e7eb !important;
+}
+
+.recipe-preview h3 {
+    color: #f9fafb !important;
+}
+
+/* Ingredient Lists */
+.ingredients-list li {
+    background: #111827 !important;
+    color: #e5e7eb !important;
+    border: 1px solid #374151 !important;
+}
+
+/* Form Controls */
+.recipes-controls input {
+    background: #111827 !important;
+    border: 1px solid #374151 !important;
+    color: #f9fafb !important;
+}
+
+.recipes-controls input::placeholder {
+    color: #6b7280 !important;
+}
+
+/* Thumbnails and Placeholders */
+.recipe-thumb,
+.batch-recipe-thumb {
+    border: 2px solid #374151 !important;
+}
+
+.recipe-thumb-placeholder {
+    background: #111827 !important;
+    border: 2px solid #374151 !important;
+    color: #6b7280 !important;
+}
+
+/* All Headers and Text */
+.admin-section h2,
+.recipe-preview h3,
+.idea-card h4,
+.batch-recipe-card h4,
+.recipe-item h4 {
+    color: #f9fafb !important;
+}
+
+/* Meta Information */
+.recipe-meta,
+.idea-meta,
+.recipe-info p {
+    color: #9ca3af !important;
+}
+
+/* Instructions and Content */
+.instructions,
+.instructions-content {
+    background: #111827 !important;
+    color: #e5e7eb !important;
+    border-left: 3px solid #6b7280 !important;
+}
+
+/* Ingredient Tags and Elements */
+.ingredient-tag,
+.equipment-tag,
+.keyword-tag {
+    background: #1f2937 !important;
+    color: #d1d5db !important;
+    border: 1px solid #374151 !important;
+}
+
+/* Empty States */
+.empty-state {
+    background: linear-gradient(135deg, #1a1a1a 0%, #111827 100%) !important;
+    border: 2px dashed #374151 !important;
+    color: #9ca3af !important;
+}
+
+.empty-state h3 {
+    color: #d1d5db !important;
+}
+
+.empty-state p {
+    color: #9ca3af !important;
+}
+
+.nav-btn {
+    background: transparent !important;
+    border: none;
+    padding: 1.25rem 1.75rem;
+    color: #c9d1d9 !important;
+=======
+.nav-btn {
+    background: transparent;
+    border: none;
+    padding: 1.25rem 1.75rem;
+    color: #9ca3af;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    font-family: inherit;
+}
+
+.nav-btn:hover {
+<<<<<<< HEAD
+    background: #21262d !important;
+    color: #ffffff !important;
+}
+
+.nav-btn.active {
+    background: #21262d !important;
+    color: #ffffff !important;
+    border-bottom-color: #667eea !important;
+=======
+    background: #2d2d2d;
+    color: #d1d5db;
+}
+
+.nav-btn.active {
+    background: #2d2d2d;
+    color: #f9fafb;
+    border-bottom-color: #6b7280;
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+}
+
+/* Main Content - Professional Spacing */
+.admin-main {
+    padding: 3rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.admin-section {
+    display: none;
+}
+
+.admin-section.active {
+    display: block;
+}
+
+.admin-section h2 {
+    color: #f9fafb;
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #2d2d2d;
+}
+
+/* Stats Grid - Professional */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: #1a1a1a;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid #2d2d2d;
+    text-align: center;
+}
+
+.stat-card h3 {
+    color: #9ca3af;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-number {
+    color: #f9fafb;
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* Form Layouts - Better Spacing */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #2d2d2d;
+}
+
+/* Recipe Preview - Professional */
+.recipe-preview {
+    background: #1a1a1a;
+    padding: 2.5rem;
+    border-radius: 8px;
+    border: 1px solid #2d2d2d;
+    margin-top: 2rem;
+}
+
+.recipe-preview h3 {
+    color: #f9fafb;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+<<<<<<< HEAD
+/* Loading States - Professional Dark */
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: #9ca3af !important;
+    background: #111827 !important;
+    border: 2px dashed #374151 !important;
+    border-radius: 8px;
+}
+
+.loading-spinner,
+.spinner {
+=======
+/* Loading States - Professional */
+.loading {
+    text-align: center;
+    padding: 3rem;
+    color: #9ca3af;
+}
+
+.loading-spinner {
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+    width: 32px;
+    height: 32px;
+    border: 3px solid #2d2d2d;
+    border-top: 3px solid #6b7280;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+<<<<<<< HEAD
+.loading.small {
+    padding: 1rem !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+.loading.inline {
+    background: transparent !important;
+    border: none !important;
+}
+
+=======
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+<<<<<<< HEAD
+/* ADDITIONAL COMPREHENSIVE OVERRIDES */
+
+/* Form Elements */
+.form-row,
+.form-grid,
+.form-actions,
+.form-actions-compact,
+.generation-options,
+.batch-options {
+    background: transparent !important;
+}
+
+.form-group {
+    background: transparent !important;
+}
+
+/* Checkbox and Input Labels */
+.checkbox-group,
+.checkbox-label,
+.checkbox-label-simple {
+    background: transparent !important;
+    color: #e5e7eb !important;
+}
+
+/* Template Buttons and Controls */
+.template-buttons,
+.quick-buttons,
+.recipes-controls {
+    background: transparent !important;
+}
+
+/* Batch Results */
+.batch-results,
+.batch-recipes-grid {
+    background: transparent !important;
+}
+
+/* Ideas Grid */
+.ideas-grid {
+    background: transparent !important;
+}
+
+/* Modal Overrides */
+.modal-content.large {
+    background: #1a1a1a !important;
+    color: #e5e7eb !important;
+    border: 1px solid #2d2d2d !important;
+}
+
+.modal-header {
+    background: transparent !important;
+    color: #f9fafb !important;
+    border-bottom: 2px solid #2d2d2d !important;
+}
+
+/* Edit Modal Specific Elements */
+.ingredients-section,
+.ingredient-row {
+    background: transparent !important;
+    color: #e5e7eb !important;
+}
+
+.ingredients-section h3 {
+    color: #f9fafb !important;
+}
+
+/* Recipe Stats and Grids */
+.recipe-stats-grid,
+.stats-grid {
+    background: transparent !important;
+}
+
+/* All List Elements */
+.activity-list,
+.ingredients-list,
+.ingredients-list ul {
+    background: transparent !important;
+}
+
+/* Any remaining headings */
+h1, h2, h3, h4, h5, h6 {
+    color: #f9fafb !important;
+}
+
+/* Any remaining paragraphs in cards */
+.stat-card h3,
+.recent-activity h3,
+.quick-generate-section h3,
+.custom-generate-section h3,
+.batch-progress h3 {
+    color: #f9fafb !important;
+}
+
+/* Override any remaining white/light backgrounds */
+.admin-panel *,
+.modal-content *,
+.result-section *,
+.recipe-preview * {
+    background-color: inherit;
+}
+
+/* Ensure proper text colors throughout */
+.admin-panel,
+.admin-panel *:not(.btn):not(.nav-btn) {
+    color: #e5e7eb;
+}
+
+=======
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+/* Error/Success Messages - Professional */
+.error-message {
+    background: #7f1d1d;
+    color: #fef2f2;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-top: 1rem;
+    border: 1px solid #991b1b;
+}
+
+.success-message {
+    background: #065f46;
+    color: #f0fdf4;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-top: 1rem;
+    border: 1px solid #047857;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .admin-header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .admin-main {
+        padding: 2rem 1rem;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+/* Remove Login Info Text */
+.login-info {
+    display: none !important;
+<<<<<<< HEAD
+}
+
+/* ======================================= */
+/* HIGH CONTRAST FIXES - FINAL OVERRIDES */
+/* ======================================= */
+
+/* HEADERS - BRIGHT WHITE FOR MAX READABILITY */
+.admin-section h2,
+h1, h2, h3, h4, h5, h6,
+.recipe-preview h3,
+.idea-card h4,
+.batch-recipe-card h4,
+.recipe-item h4,
+.stat-card h3,
+.recent-activity h3,
+.quick-generate-section h3,
+.custom-generate-section h3,
+.batch-progress h3 {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+/* BODY TEXT - MAXIMUM CONTRAST - PURE WHITE */
+.recipe-info p,
+.batch-recipe-card p,
+.idea-card p,
+.admin-section p,
+.recipe-preview p,
+p, span, div,
+.recipe-item p,
+.stat-card p,
+.activity-item,
+.progress-item,
+.loading,
+.empty-state p,
+.modal-content p {
+    color: #ffffff !important;
+}
+
+/* FORM LABELS - BRIGHT WHITE */
+.form-group label,
+.checkbox-label,
+.checkbox-label-simple {
+    color: #ffffff !important;
+    font-weight: 500 !important;
+}
+
+/* FORM INPUTS - BETTER CONTRAST */
+.form-group input,
+.form-group select,
+.form-group textarea,
+.recipes-controls input {
+    background: #2d3748 !important;
+    border: 1px solid #4a5568 !important;
+    color: #ffffff !important;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3) !important;
+    background: #1a202c !important;
+}
+
+.form-group input::placeholder,
+.recipes-controls input::placeholder {
+    color: #a0aec0 !important;
+}
+
+/* META INFORMATION - BRIGHT WHITE FOR READABILITY */
+.recipe-meta,
+.idea-meta,
+.user-info,
+.activity-item small,
+.recipe-preview,
+.stat-card .stat-number,
+.batch-recipe-preview,
+.idea-description,
+.recipe-description {
+    color: #ffffff !important;
+}
+
+/* STAT NUMBERS */
+.stat-number {
+    color: #667eea !important;
+    font-weight: 700;
+}
+
+/* INSTRUCTIONS AND CONTENT */
+.instructions,
+.instructions-content {
+    background: #2d3748 !important;
+    color: #ffffff !important;
+    border-left: 3px solid #667eea !important;
+}
+
+/* TAGS AND SMALL ELEMENTS */
+.ingredient-tag,
+.equipment-tag,
+.keyword-tag,
+.ingredients-list li {
+    background: #4a5568 !important;
+    color: #ffffff !important;
+    border: 1px solid #718096 !important;
+}
+
+/* PROGRESS STATES */
+.progress-item {
+    background: #2d3748 !important;
+    color: #ffffff !important;
+    border-left: 4px solid #4a5568 !important;
+}
+
+.progress-item.success {
+    background: #065f46 !important;
+    color: #ffffff !important;
+    border-left-color: #10b981 !important;
+}
+
+.progress-item.error {
+    background: #7f1d1d !important;
+    color: #ffffff !important;
+    border-left-color: #ef4444 !important;
+}
+
+/* EMPTY STATES */
+.empty-state {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%) !important;
+    border: 2px dashed #4a5568 !important;
+    color: #e2e8f0 !important;
+}
+
+.empty-state h3 {
+    color: #ffffff !important;
+}
+
+.empty-state p {
+    color: #cbd5e0 !important;
+}
+
+/* LOADING STATES */
+.loading {
+    background: #2d3748 !important;
+    border: 2px dashed #4a5568 !important;
+    color: #e2e8f0 !important;
+}
+
+/* THUMBNAILS */
+.recipe-thumb,
+.batch-recipe-thumb {
+    border: 2px solid #4a5568 !important;
+}
+
+.recipe-thumb-placeholder {
+    background: #2d3748 !important;
+    border: 2px solid #4a5568 !important;
+    color: #a0aec0 !important;
+}
+
+/* ERROR AND SUCCESS MESSAGES */
+.error-message {
+    background: #c53030 !important;
+    color: #ffffff !important;
+    border: 1px solid #e53e3e !important;
+}
+
+.success-message {
+    background: #38a169 !important;
+    color: #ffffff !important;
+    border: 1px solid #48bb78 !important;
+=======
+>>>>>>> 0e9521eb7e9988345107ac1b9314eeab33e562d4
+}
+/* ======================================= */
+/* SIMPLIFIED FORM STYLES */
+/* ======================================= */
+
+.simple-generate-section {
+    background: #1e2329 !important;
+    color: #ffffff !important;
+    border: 1px solid #3d434b !important;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.generate-form-simple {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.generation-mode {
+    text-align: center;
+    padding: 1.5rem;
+    background: #2d3748 !important;
+    border-radius: 8px;
+    border: 1px solid #4a5568 !important;
+}
+
+.mode-description {
+    color: #a0aec0 !important;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+.custom-prompt-section {
+    background: #2d3748 !important;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #4a5568 !important;
+}
+
+.custom-prompt-section textarea {
+    min-height: 120px;
+    resize: vertical;
+    background: #1a202c !important;
+    border: 1px solid #4a5568 !important;
+    color: #ffffff !important;
+}
+
+.custom-prompt-section textarea::placeholder {
+    color: #a0aec0 !important;
+}
+
+.simple-options {
+    text-align: center;
+    padding: 1rem;
+    background: #2d3748 !important;
+    border-radius: 8px;
+    border: 1px solid #4a5568 !important;
+}
+
+.form-actions-simple {
+    text-align: center;
+    padding-top: 1rem;
+}
+
+.form-actions-simple .btn {
+    min-width: 200px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}

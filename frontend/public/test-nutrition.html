@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nutrition Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .recipe { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .nutrition { background: #f0fdf4; padding: 10px; margin: 10px 0; border-radius: 6px; }
+        .equipment { background: #eff6ff; padding: 10px; margin: 10px 0; border-radius: 6px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 6px; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Nutrition & Equipment Test</h1>
+    <button id="test-btn">🎲 Get Random Recipe & Check Data</button>
+    <div id="results"></div>
+    
+    <script>
+    document.getElementById('test-btn').addEventListener('click', testRecipe);
+    
+    async function testRecipe() {
+        const results = document.getElementById('results');
+        results.innerHTML = '<p>Loading...</p>';
+        
+        try {
+            const response = await fetch('/api/json/v1/1/random.php?t=' + Date.now());
+            const data = await response.json();
+            const recipe = data.meals[0];
+            
+            console.log('Full recipe object:', recipe);
+            
+            let html = `
+                <div class="recipe">
+                    <h2>${recipe.strMeal}</h2>
+                    <p><strong>Category:</strong> ${recipe.strCategory} | <strong>Cuisine:</strong> ${recipe.strArea}</p>
+                    
+                    <h3>🔍 Data Check:</h3>
+                    <p><strong>Has nutrition object:</strong> ${!!recipe.nutrition ? '✅ YES' : '❌ NO'}</p>
+                    <p><strong>Has strEquipment:</strong> ${!!recipe.strEquipment ? '✅ YES' : '❌ NO'}</p>
+                    <p><strong>Has equipmentRequired:</strong> ${!!recipe.equipmentRequired ? '✅ YES' : '❌ NO'}</p>
+                    
+                    ${recipe.nutrition && recipe.nutrition.caloriesPerServing ? `
+                        <div class="nutrition">
+                            <h3>💪 Nutrition Data (FOUND!):</h3>
+                            <p>Calories: <strong>${recipe.nutrition.caloriesPerServing} kcal</strong></p>
+                            <p>Protein: <strong>${recipe.nutrition.protein}g</strong></p>
+                            <p>Carbs: <strong>${recipe.nutrition.carbs}g</strong></p>
+                            <p>Fat: <strong>${recipe.nutrition.fat}g</strong></p>
+                            <p>Fiber: <strong>${recipe.nutrition.fiber}g</strong></p>
+                            <p>Sodium: <strong>${recipe.nutrition.sodium}mg</strong></p>
+                        </div>
+                    ` : '<div class="nutrition"><p>❌ NO NUTRITION DATA FOUND</p></div>'}
+                    
+                    ${recipe.strEquipment || recipe.equipmentRequired ? `
+                        <div class="equipment">
+                            <h3>🍳 Equipment Data (FOUND!):</h3>
+                            ${recipe.strEquipment ? `<p><strong>strEquipment:</strong> ${recipe.strEquipment}</p>` : ''}
+                            ${recipe.equipmentRequired && recipe.equipmentRequired.length > 0 ? `
+                                <p><strong>equipmentRequired array:</strong></p>
+                                <ul>${recipe.equipmentRequired.map(eq => `<li>${eq}</li>`).join('')}</ul>
+                            ` : ''}
+                        </div>
+                    ` : '<div class="equipment"><p>❌ NO EQUIPMENT DATA FOUND</p></div>'}
+                    
+                    <h3>📄 Raw JSON:</h3>
+                    <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 12px;">${JSON.stringify(recipe, null, 2)}</pre>
+                </div>
+            `;
+            
+            results.innerHTML = html;
+            
+        } catch (error) {
+            results.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+        }
+    }
+    </script>
+</body>
+</html>

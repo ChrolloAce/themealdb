@@ -1,0 +1,48 @@
+/**
+ * Animation Styles - Subtle, minimal animations
+ * Single Responsibility: UI animations and transitions
+ */
+
+/* Keyframe Animations - Subtle */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Apply animations - Subtle and smooth */
+.recipe-result-card,
+.recipe-card,
+.filter-group,
+.api-method {
+    animation: fadeIn 0.3s ease;
+}
+
+.active-filter-tag {
+    animation: slideIn 0.2s ease;
+}
+
+/* Transitions - Smooth and minimal */
+* {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}

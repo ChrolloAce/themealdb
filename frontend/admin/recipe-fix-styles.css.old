@@ -1,0 +1,95 @@
+/* RECIPE TEXT COLOR FIXES - ENSURE ALL TEXT IS VISIBLE */
+
+/* Force all recipe preview text to be white */
+.recipe-preview *,
+.comprehensive-recipe * {
+    color: #ffffff !important;
+}
+
+/* Recipe headers */
+.recipe-preview h1,
+.recipe-preview h2,
+.recipe-preview h3,
+.recipe-preview h4,
+.comprehensive-recipe h1,
+.comprehensive-recipe h2,
+.comprehensive-recipe h3,
+.comprehensive-recipe h4 {
+    color: #ffffff !important;
+}
+
+/* All stat items */
+.stat-item,
+.stat-item *,
+.stat-item strong {
+    color: #ffffff !important;
+}
+
+/* Equipment Section */
+.equipment-section {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #1a2332 !important;
+    border-radius: 8px;
+    border: 1px solid #2d3a4f !important;
+}
+
+.equipment-section h4 {
+    color: #ffffff !important;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.equipment-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.equipment-item {
+    color: #ffffff !important;
+    padding: 0.5rem;
+    background: #0f1823 !important;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+/* Ingredients list */
+.ingredients-list li {
+    color: #ffffff !important;
+}
+
+/* Instructions */
+.instructions-section p,
+.instructions-section li {
+    color: #ffffff !important;
+}
+
+/* All paragraphs in recipe */
+.recipe-preview p,
+.comprehensive-recipe p {
+    color: #ffffff !important;
+}
+
+/* Category info */
+.recipe-categories span {
+    color: #ffffff !important;
+}
+
+/* Nutrition panel */
+.nutrition-panel,
+.nutrition-panel * {
+    color: #ffffff !important;
+}
+
+/* Recipe details grid */
+.recipe-details-grid,
+.recipe-details-grid * {
+    color: #ffffff !important;
+}
+
+/* Fix for any remaining N/A text */
+.stat-item:contains("N/A") {
+    display: none;
+}

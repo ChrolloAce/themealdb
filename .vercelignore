@@ -1,0 +1,10 @@
+# Ignore files that might trigger security checks
+*.log
+node_modules
+.env
+.env.local
+.git
+.DS_Store
+
+# Keep API routes accessible
+!api/

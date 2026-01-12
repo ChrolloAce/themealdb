@@ -1,0 +1,267 @@
+/**
+ * Component Styles - Minimal, clean UI components
+ * Single Responsibility: Reusable component styling
+ */
+
+/* Buttons - Simple and clean */
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.test-btn,
+.action-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.test-btn {
+    background: #1a1a1a;
+    color: #ffffff;
+}
+
+.test-btn:hover:not(:disabled) {
+    background: #333333;
+}
+
+.example-btn {
+    background: #f5f5f5;
+    color: #666;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+}
+
+.example-btn.active,
+.example-btn:hover {
+    background: #1a1a1a;
+    color: #ffffff;
+}
+
+/* Action Buttons - Minimal style */
+.clear-btn {
+    background: #f5f5f5;
+    color: #666;
+    border: 1px solid #e5e5e5;
+}
+
+.clear-btn:hover {
+    background: #e85d75;
+    color: #ffffff;
+    border-color: #e85d75;
+}
+
+.search-btn {
+    background: #0066cc;
+    color: #ffffff;
+}
+
+.search-btn:hover {
+    background: #0052a3;
+}
+
+.random-btn {
+    background: #1a1a1a;
+    color: #ffffff;
+}
+
+.random-btn:hover {
+    background: #333333;
+}
+
+.toggle-btn {
+    background: #f5f5f5;
+    color: #666;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.toggle-btn:hover {
+    background: #e5e5e5;
+}
+
+/* Badges - Clean and minimal */
+.recipe-result-badge {
+    background: #f5f5f5;
+    color: #666;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.calories-badge {
+    background: #1a1a1a !important;
+    color: #ffffff !important;
+}
+
+.premium-badge {
+    background: #0066cc;
+    color: #ffffff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* API Method Cards - Minimal */
+.api-method {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.api-method:hover {
+    border-color: #cccccc;
+}
+
+.api-method.premium {
+    border-left: 3px solid #0066cc;
+    background: #fafafa;
+}
+
+.method-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.method-name {
+    font-weight: 500;
+    color: #1a1a1a;
+}
+
+.method-url {
+    background: #1a1a1a;
+    color: #a0a0a0;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 0.8125rem;
+    display: block;
+    overflow-x: auto;
+    margin-top: 0.5rem;
+}
+
+/* API Results - Clean */
+.api-results-header {
+    background: #1a1a1a;
+    color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.api-results-header h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.api-results-header code {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+/* JSON Display - Clean monospace */
+.json-toggle,
+.full-json-toggle {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e5e5;
+}
+
+.json-data {
+    background: #1a1a1a;
+    color: #d4d4d4;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-top: 1rem;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Test Section - Minimal */
+.tester-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+#api-url {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: 'Monaco', 'Menlo', monospace;
+}
+
+#api-url:focus {
+    outline: none;
+    border-color: #0066cc;
+}
+
+.test-results {
+    background: transparent;
+}
+
+.test-results pre {
+    background: #1a1a1a;
+    color: #d4d4d4;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.test-results .loading {
+    background: #f5f5f5;
+    color: #666;
+    padding: 2rem;
+    border-radius: 8px;
+}
+
+.test-results .error {
+    color: #dc2626;
+}
+
+/* Example Section - Clean */
+.example-container {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.example-content {
+    background: #1a1a1a;
+    border-radius: 8px;
+    padding: 1.5rem;
+    overflow-x: auto;
+}
+
+#example-json {
+    color: #d4d4d4;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    margin: 0;
+}
