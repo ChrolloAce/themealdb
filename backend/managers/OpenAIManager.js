@@ -2415,11 +2415,13 @@ Return ONLY valid JSON with this COMPLETE structure:
       }
       
       // Convert vague measurements to exact measurements
+      // Check both unit and quantity fields for vague terms
       const vaguePatterns = ['to taste', 'to garnish', 'to serve', 'as needed', 'for garnish', 'for serving'];
-      const hasVagueMeasurement = vaguePatterns.some(pattern => 
-        ing.unit === pattern || 
-        (ing.unit && ing.unit.includes(pattern))
-      );
+      const hasVagueMeasurement = vaguePatterns.some(pattern => {
+        const unitMatch = ing.unit && (ing.unit === pattern || ing.unit.includes(pattern));
+        const quantityMatch = ing.quantity && (ing.quantity === pattern || ing.quantity.includes(pattern));
+        return unitMatch || quantityMatch;
+      });
       
       if (hasVagueMeasurement) {
         // Convert "to taste" / "to garnish" / "to serve" to exact measurements
@@ -2429,16 +2431,17 @@ Return ONLY valid JSON with this COMPLETE structure:
         if (ingredientName.includes('salt')) {
           ing.quantity = '1/2';
           ing.unit = 'tsp';
-          console.log(`   ✅ FIXED: "${ing.name}" - converted "to taste" to "1/2 tsp"`);
+          console.log(`   ✅ FIXED: "${ing.name}" - converted vague measurement to "1/2 tsp"`);
         } else if (ingredientName.includes('pepper') || ingredientName.includes('black pepper')) {
           ing.quantity = '1/4';
           ing.unit = 'tsp';
-          console.log(`   ✅ FIXED: "${ing.name}" - converted "to taste" to "1/4 tsp"`);
+          console.log(`   ✅ FIXED: "${ing.name}" - converted vague measurement to "1/4 tsp"`);
         } else if (ingredientName.includes('cilantro') || ingredientName.includes('parsley') || 
-                   ingredientName.includes('basil') || ingredientName.includes('herb')) {
+                   ingredientName.includes('basil') || ingredientName.includes('herb') ||
+                   ingredientName.includes('olive') || ingredientName.includes('garnish')) {
           ing.quantity = '2';
           ing.unit = 'tbsp';
-          console.log(`   ✅ FIXED: "${ing.name}" - converted "to garnish" to "2 tbsp"`);
+          console.log(`   ✅ FIXED: "${ing.name}" - converted vague measurement to "2 tbsp"`);
         } else {
           // Generic fallback: use reasonable defaults
           ing.quantity = '1';
