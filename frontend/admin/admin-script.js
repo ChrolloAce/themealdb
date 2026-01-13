@@ -572,7 +572,92 @@ class AdminPanel {
           body: JSON.stringify(params)
         });
         
-        const data = await response.json();
+        // Try to parse as JSON, but if it fails, try to extract logs from text
+        let data;
+        let logs = [];
+        let errorMessage = null;
+        
+        try {
+          const responseText = await response.text();
+          
+          // Try to parse as JSON
+          try {
+            data = JSON.parse(responseText);
+            logs = data.logs || [];
+          } catch (jsonError) {
+            // JSON parsing failed - try to extract logs from the error response
+            errorMessage = `JSON parsing error: ${jsonError.message}`;
+            
+            console.error('Failed to parse JSON response:', responseText);
+            
+            // Show the error message
+            this.showError(this.generateResult, errorMessage);
+            
+            // Try multiple strategies to extract logs from malformed JSON
+            // Strategy 1: Look for "logs" array in the response
+            const logsPatterns = [
+              /"logs"\s*:\s*\[([\s\S]*?)\]/g,  // Standard JSON format
+              /logs["\s]*:[\s]*\[([\s\S]*?)\]/g,  // Without quotes
+              /"logs"\s*:\s*\[([^\[\]]*(?:\[[^\[\]]*\][^\[\]]*)*)\]/g  // Nested arrays
+            ];
+            
+            for (const pattern of logsPatterns) {
+              const matches = [...responseText.matchAll(pattern)];
+              if (matches.length > 0) {
+                for (const match of matches) {
+                  try {
+                    // Try to parse the logs array content
+                    const logsContent = '[' + match[1] + ']';
+                    const parsedLogs = JSON.parse(logsContent);
+                    if (Array.isArray(parsedLogs) && parsedLogs.length > 0) {
+                      logs = parsedLogs;
+                      console.log(`✅ Extracted ${logs.length} logs from error response`);
+                      break;
+                    }
+                  } catch (e) {
+                    // Try next pattern
+                    continue;
+                  }
+                }
+                if (logs.length > 0) break;
+              }
+            }
+            
+            // Strategy 2: If no logs found, try to find any JSON-like structure
+            if (logs.length === 0) {
+              // Look for any array-like structure that might contain log objects
+              const arrayMatch = responseText.match(/\[[\s\S]*?\{[\s\S]*?"timestamp"[\s\S]*?\}[\s\S]*?\]/);
+              if (arrayMatch) {
+                try {
+                  const potentialLogs = JSON.parse(arrayMatch[0]);
+                  if (Array.isArray(potentialLogs) && potentialLogs.length > 0 && potentialLogs[0].timestamp) {
+                    logs = potentialLogs;
+                    console.log(`✅ Extracted ${logs.length} logs using fallback method`);
+                  }
+                } catch (e) {
+                  // Not valid logs
+                }
+              }
+            }
+            
+            // Always show logs if we found any
+            if (logs && logs.length > 0) {
+              this.displayGenerationLogs(logs);
+            } else {
+              // Show raw response snippet for debugging if no logs found
+              const errorDetails = document.createElement('div');
+              errorDetails.style.cssText = 'margin-top: 20px; padding: 15px; background: #fee; border: 1px solid #fcc; border-radius: 5px; font-family: monospace; font-size: 12px; max-height: 300px; overflow: auto;';
+              errorDetails.innerHTML = `<strong>Raw response (first 2000 chars):</strong><br><pre>${this.escapeHtml(responseText.substring(0, 2000))}</pre>`;
+              this.generateResult.appendChild(errorDetails);
+            }
+            
+            return; // Exit early since we can't parse the response
+          }
+        } catch (textError) {
+          // Even reading as text failed
+          this.showError(this.generateResult, `Failed to read response: ${textError.message}`);
+          return;
+        }
         
         if (data.success) {
           // Pass all image URLs to display function
@@ -600,7 +685,9 @@ class AdminPanel {
           }
         }
       } catch (error) {
+        // Network or other errors
         this.showError(this.generateResult, `Network error: ${error.message}`);
+        console.error('Full error details:', error);
       }
     }
   }
