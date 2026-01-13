@@ -576,14 +576,30 @@ class AdminRoutes {
     
     // Override console.log to capture logs
     console.log = (...args) => {
-      const logMessage = args.map(arg => 
-        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-      ).join(' ');
-      generationLogs.push({
-        timestamp: new Date().toISOString(),
-        level: 'log',
-        message: logMessage
+      const logMessage = args.map(arg => {
+        if (typeof arg === 'object' && arg !== null) {
+          // For objects, stringify with indentation to preserve structure
+          try {
+            return JSON.stringify(arg, null, 2);
+          } catch (e) {
+            return String(arg);
+          }
+        }
+        return String(arg);
+      }).join(' ');
+      
+      // Split multi-line messages into separate log entries for better readability
+      const lines = logMessage.split('\n');
+      lines.forEach(line => {
+        if (line.trim()) { // Only log non-empty lines
+          generationLogs.push({
+            timestamp: new Date().toISOString(),
+            level: 'log',
+            message: line
+          });
+        }
       });
+      
       originalConsoleLog.apply(console, args);
     };
     

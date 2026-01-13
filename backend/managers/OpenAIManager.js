@@ -1160,8 +1160,35 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
       max_tokens: 4000 // Increased for ultra-detailed instructions with 25-40 steps
     });
 
-    const recipeData = this.parseAIResponse(completion.choices[0].message.content);
-    return await this.quickFormatRecipe(recipeData, params);
+    // Log the raw AI response (FULL response)
+    const rawResponse = completion.choices[0].message.content;
+    console.log('\n📥 ═══════════════════════════════════════════');
+    console.log('📥 RAW AI RESPONSE (FULL)');
+    console.log('═══════════════════════════════════════════');
+    console.log(`📏 Total length: ${rawResponse.length} characters`);
+    console.log('═══════════════════════════════════════════');
+    console.log(rawResponse);
+    console.log('═══════════════════════════════════════════\n');
+
+    const recipeData = this.parseAIResponse(rawResponse);
+    
+    // Log the parsed recipe (after JSON parsing)
+    console.log('\n📦 ═══════════════════════════════════════════');
+    console.log('📦 PARSED RECIPE (After JSON Parsing)');
+    console.log('═══════════════════════════════════════════');
+    console.log(JSON.stringify(recipeData, null, 2));
+    console.log('═══════════════════════════════════════════\n');
+    
+    const formattedRecipe = await this.quickFormatRecipe(recipeData, params);
+    
+    // Log the formatted recipe (after quickFormatRecipe)
+    console.log('\n✨ ═══════════════════════════════════════════');
+    console.log('✨ FORMATTED RECIPE (After quickFormatRecipe)');
+    console.log('═══════════════════════════════════════════');
+    console.log(JSON.stringify(formattedRecipe, null, 2));
+    console.log('═══════════════════════════════════════════\n');
+    
+    return formattedRecipe;
   }
 
   // STEP 1: Generate basic recipe with simple prompt
