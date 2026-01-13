@@ -169,10 +169,37 @@ class RecipeValidator {
   
   /**
    * Extract listed ingredients from recipe
+   * Checks BOTH formats: ingredientsDetailed (modern) first, then strIngredient1-20 (legacy)
    */
   static extractListedIngredients(recipe) {
     const ingredients = [];
+    const seen = new Set(); // Track duplicates to avoid counting same ingredient twice
     
+    // ✅ FIRST: Check ingredientsDetailed array (modern format - PRIORITY)
+    if (recipe.ingredientsDetailed && Array.isArray(recipe.ingredientsDetailed)) {
+      recipe.ingredientsDetailed.forEach(item => {
+        if (item && item.name && item.name.trim()) {
+          const normalized = this.normalizeIngredient(item.name);
+          
+          // Skip duplicates
+          if (!seen.has(normalized)) {
+            // Build measure string from quantity and unit
+            const measure = item.quantity && item.unit ? 
+              `${item.quantity} ${item.unit}`.trim() : 
+              (item.quantity || item.measure || '').trim();
+            
+            ingredients.push({
+              name: item.name.trim(),
+              measure: measure,
+              normalized: normalized
+            });
+            seen.add(normalized);
+          }
+        }
+      });
+    }
+    
+    // ✅ SECOND: Check strIngredient1-20 format (legacy format - for backward compatibility)
     for (let i = 1; i <= 20; i++) {
       const ingredient = recipe[`strIngredient${i}`];
       const measure = recipe[`strMeasure${i}`];
@@ -180,11 +207,18 @@ class RecipeValidator {
       if (ingredient && ingredient.trim() && 
           ingredient.toLowerCase() !== 'n/a' &&
           !ingredient.includes('FALLBACK')) {
-        ingredients.push({
-          name: ingredient.trim(),
-          measure: measure ? measure.trim() : '',
-          normalized: this.normalizeIngredient(ingredient)
-        });
+        
+        const normalized = this.normalizeIngredient(ingredient);
+        
+        // Skip if already found in ingredientsDetailed (avoid duplicates)
+        if (!seen.has(normalized)) {
+          ingredients.push({
+            name: ingredient.trim(),
+            measure: measure ? measure.trim() : '',
+            normalized: normalized
+          });
+          seen.add(normalized);
+        }
       }
     }
     

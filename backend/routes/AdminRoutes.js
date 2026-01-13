@@ -569,6 +569,36 @@ class AdminRoutes {
     const imageCount = parseInt(req.body.imageCount) || 1;
     const useMultiStep = req.body.useMultiStep === true; // Default: false (single-step)
     
+    // Capture logs during generation
+    const generationLogs = [];
+    const originalConsoleLog = console.log;
+    const originalConsoleError = console.error;
+    
+    // Override console.log to capture logs
+    console.log = (...args) => {
+      const logMessage = args.map(arg => 
+        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+      ).join(' ');
+      generationLogs.push({
+        timestamp: new Date().toISOString(),
+        level: 'log',
+        message: logMessage
+      });
+      originalConsoleLog.apply(console, args);
+    };
+    
+    console.error = (...args) => {
+      const logMessage = args.map(arg => 
+        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+      ).join(' ');
+      generationLogs.push({
+        timestamp: new Date().toISOString(),
+        level: 'error',
+        message: logMessage
+      });
+      originalConsoleError.apply(console, args);
+    };
+    
     try {
       console.log('🎨 Creating recipe with AI');
       console.log(`   Generation mode: ${useMultiStep ? 'MULTI-STEP (4 calls)' : 'SINGLE-STEP (1 call)'}`);
@@ -740,6 +770,10 @@ class AdminRoutes {
         }
       }
       
+      // Restore original console functions
+      console.log = originalConsoleLog;
+      console.error = originalConsoleError;
+      
       res.json({
         success: true,
         recipe: savedRecipe.meals[0],
@@ -751,16 +785,29 @@ class AdminRoutes {
         images: savedRecipe.meals[0].images || [],
         imageGallery: savedRecipe.meals[0].imageGallery || [],
         message: message,
-        warning: warning
+        warning: warning,
+        logs: generationLogs // Include generation logs
       });
     } catch (error) {
+      // Restore original console functions even on error
+      console.log = originalConsoleLog;
+      console.error = originalConsoleError;
+      
       console.error('❌ Recipe generation error in route:', error.message);
       console.error('❌ Full error stack:', error.stack);
+      
+      // Add error to logs
+      generationLogs.push({
+        timestamp: new Date().toISOString(),
+        level: 'error',
+        message: `❌ Recipe generation error: ${error.message}`
+      });
       
       res.status(500).json({
         success: false,
         message: error.message || 'An unexpected error occurred. Please try again later.',
-        error: 'RECIPE_GENERATION_FAILED'
+        error: 'RECIPE_GENERATION_FAILED',
+        logs: generationLogs // Include logs even on error
       });
     }
   }

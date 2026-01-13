@@ -580,7 +580,7 @@ class AdminPanel {
           if (data.imageUrls && data.imageUrls.length > 0) {
             recipe.additionalImages = data.imageUrls;
           }
-          this.displayRecipeResult(recipe, data.imageUrl);
+          this.displayRecipeResult(recipe, data.imageUrl, false, null, data.logs);
           
           // Show warning if image generation failed
           if (data.warning) {
@@ -594,6 +594,10 @@ class AdminPanel {
           this.updateGenerationFilterCounts();
         } else {
           this.showError(this.generateResult, data.message || 'Generation failed');
+          // Show logs even on failure
+          if (data.logs && data.logs.length > 0) {
+            this.displayGenerationLogs(data.logs);
+          }
         }
       } catch (error) {
         this.showError(this.generateResult, `Network error: ${error.message}`);
@@ -774,10 +778,13 @@ class AdminPanel {
       const data = await response.json();
 
       if (data.success) {
-        this.displayRecipeResult(data.recipe, data.imageUrl);
+        this.displayRecipeResult(data.recipe, data.imageUrl, false, null, data.logs);
         this.showSuccess(this.generateResult, `🎉 ${preset.charAt(0).toUpperCase() + preset.slice(1)} recipe generated!`);
       } else {
         this.showError(this.generateResult, data.message || 'Generation failed');
+        if (data.logs && data.logs.length > 0) {
+          this.displayGenerationLogs(data.logs);
+        }
       }
     } catch (error) {
       this.showError(this.generateResult, `Failed to generate ${preset} recipe`);
@@ -828,7 +835,7 @@ class AdminPanel {
     }
   }
 
-  displayRecipeResult(recipe, imageUrl = null, isPreview = false, imageQuality = null) {
+  displayRecipeResult(recipe, imageUrl = null, isPreview = false, imageQuality = null, logs = null) {
     const ingredients = this.getRecipeIngredients(recipe);
     
     // Parse instructions into steps
@@ -986,7 +993,74 @@ class AdminPanel {
       `;
       
       document.getElementById('saveRecipeBtn').addEventListener('click', () => this.saveGeneratedRecipe(recipe));
+      
+      // Add generation logs section if logs are available
+      if (logs && logs.length > 0) {
+        this.displayGenerationLogs(logs);
+      }
     }
+  }
+
+  displayGenerationLogs(logs) {
+    if (!logs || logs.length === 0) return;
+    
+    const logsHtml = `
+      <!-- GENERATION LOGS -->
+      <div style="margin-top: 40px; padding-top: 30px; border-top: 3px solid #e5e5e5;">
+        <div style="background: #1a1a1a; border-radius: 15px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <h3 style="margin: 0; color: #fff; font-size: 20px; font-weight: bold;">
+                📋 Generation Log
+              </h3>
+              <span style="background: #3b82f6; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold;">
+                ${logs.length} entries
+              </span>
+            </div>
+            <button id="toggleLogsBtn" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold;">
+              <span id="logsToggleText">▼ Expand</span>
+            </button>
+          </div>
+          
+          <div id="logsContent" style="display: none; max-height: 600px; overflow-y: auto; font-family: 'Monaco', 'Menlo', 'Courier New', monospace; font-size: 13px; line-height: 1.6;">
+            ${logs.map((log, index) => {
+              const time = new Date(log.timestamp).toLocaleTimeString();
+              const levelColor = log.level === 'error' ? '#ef4444' : '#10b981';
+              const levelIcon = log.level === 'error' ? '❌' : 'ℹ️';
+              
+              return `
+                <div style="padding: 8px 0; border-bottom: 1px solid #333; color: #d4d4d4;">
+                  <span style="color: #6b7280; font-size: 11px; margin-right: 10px;">[${time}]</span>
+                  <span style="color: ${levelColor}; margin-right: 8px;">${levelIcon}</span>
+                  <span style="white-space: pre-wrap; word-wrap: break-word;">${this.escapeHtml(log.message)}</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+    
+    this.generateResult.innerHTML += logsHtml;
+    
+    // Add toggle functionality
+    const toggleBtn = document.getElementById('toggleLogsBtn');
+    const logsContent = document.getElementById('logsContent');
+    const toggleText = document.getElementById('logsToggleText');
+    
+    if (toggleBtn && logsContent) {
+      toggleBtn.addEventListener('click', () => {
+        const isExpanded = logsContent.style.display !== 'none';
+        logsContent.style.display = isExpanded ? 'none' : 'block';
+        toggleText.textContent = isExpanded ? '▼ Expand' : '▲ Collapse';
+      });
+    }
+  }
+
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   getRecipeIngredients(recipe) {
@@ -1108,10 +1182,13 @@ class AdminPanel {
       const data = await response.json();
       
       if (data.success) {
-        this.displayRecipeResult(data.recipe, data.imageUrl);
+        this.displayRecipeResult(data.recipe, data.imageUrl, false, null, data.logs);
         this.showSuccess(this.generateResult, `Recipe "${name}" created successfully!`);
       } else {
         this.showError(this.generateResult, data.message || 'Recipe creation failed');
+        if (data.logs && data.logs.length > 0) {
+          this.displayGenerationLogs(data.logs);
+        }
       }
     } catch (error) {
       this.showError(this.generateResult, 'Failed to create recipe from idea');
