@@ -222,15 +222,23 @@ Generate 25-40 EXTREMELY DETAILED instruction steps. Each step must:
 - Explain WHY each step matters
 - Include professional chef tips
 
+🚨 CRITICAL FORMAT REQUIREMENTS:
+- Instructions MUST be an ARRAY with 25-40 separate items
+- Each array item is ONE complete step (do NOT combine multiple steps into one string)
+- Do NOT include "Step 1:", "Step 2:", etc. in the instruction text - the array index already indicates the step number
+- Example: ["Begin by washing vegetables", "Heat skillet over medium heat", "Add oil to pan"] NOT ["Step 1: Begin... Step 2: Heat..."]
+
 Return JSON:
 {
   "recipeName": "Creative recipe name",
   "description": "2-3 appetizing sentences",
   "instructions": [
-    "[Start with the FIRST actual cooking/prep step needed - only include washing/prep if actually required for this recipe]",
-    "[Continue with next logical step - ONLY preheat oven if recipe actually uses oven/baking]",
-    "[Continue with ultra-detailed steps]",
-    ... (25-40 total steps)
+    "Begin by preparing the ingredients - wash and chop vegetables as needed",
+    "Heat a large skillet over medium heat for 3-4 minutes until hot",
+    "Add oil to the heated skillet and swirl to coat evenly",
+    "Continue with 25-40 more ultra-detailed steps, each as a separate array item",
+    "Each instruction should be a complete, detailed step without 'Step X:' prefix",
+    "...continue with remaining steps..."
   ],
   "prepTime": number (realistic minutes),
   "cookTime": number (realistic minutes),

@@ -362,7 +362,9 @@ ${existingContext ? 'IMPORTANT: Create something different from the existing rec
 - Mention equipment positioning, ingredient preparation sequence, and workspace management
 - Include safety precautions, proper handling techniques, and storage instructions where needed
 - Add sensory descriptions (what to smell, hear, see, feel) at each critical stage
-- Instructions: MUST be comprehensive array format with 25+ detailed steps ["ultra-detailed instruction with temperatures, times, visual cues, techniques, professional tips, and safety notes", "continue with same comprehensive level of detail covering every micro-action", "break down all prep work separately", "each step must be extremely granular with specific temperatures, exact times, visual indicators, troubleshooting tips, and professional techniques"]
+- Instructions: MUST be an ARRAY with 25+ separate items, each item is ONE complete step ["ultra-detailed first instruction with temperatures, times, visual cues, techniques, professional tips, and safety notes", "ultra-detailed second instruction continuing with same comprehensive level of detail", "ultra-detailed third instruction breaking down prep work separately", "each subsequent instruction must be extremely granular with specific temperatures, exact times, visual indicators, troubleshooting tips, and professional techniques"]
+- CRITICAL: Each array item is a SEPARATE step - do NOT combine multiple steps into one string
+- CRITICAL: Do NOT include "Step 1:", "Step 2:", etc. in the instruction text - the array index already indicates the step number
 
 🚨 CRITICAL: INSTRUCTION LOGIC RULES - FOLLOW THESE EXACTLY:
 - ONLY include steps that are ACTUALLY NEEDED for this specific recipe
@@ -413,9 +415,11 @@ Return ONLY this CLEAN JSON format with NO extra text (MODERN ARRAYS ONLY):
   "servingSize": "1 serving",
   "difficulty": "Easy/Medium/Hard",
   "instructions": [
-    "Ultra-detailed first step with specific temperatures, times, and visual cues",
-    "Ultra-detailed second step with exact measurements and techniques",
-    "Continue with 25-40 comprehensive steps..."
+    "Begin by preparing all ingredients - wash, chop, and measure everything needed",
+    "Heat your cooking vessel over medium heat for 3-4 minutes until properly heated",
+    "Add oil and ingredients, cooking with specific temperatures and timing",
+    "Continue with 25-40 comprehensive steps, each as a separate array item",
+    "Each step should be detailed and complete without 'Step X:' prefix"
   ],
   "ingredientsDetailed": [
     {"name": "Ingredient name", "quantity": "2", "unit": "cups", "optional": false, "required": true},
@@ -488,7 +492,9 @@ Make it innovative and delicious. Use unexpected flavor combinations or techniqu
 - Mention equipment positioning, ingredient preparation sequence, and workspace management
 - Include safety precautions, proper handling techniques, and storage instructions where needed
 - Add sensory descriptions (what to smell, hear, see, feel) at each critical stage
-- Instructions: MUST be comprehensive array format with 25+ detailed steps ["ultra-detailed instruction with temperatures, times, visual cues, techniques, professional tips, and safety notes", "continue with same comprehensive level of detail covering every micro-action", "break down all prep work separately", "each step must be extremely granular with specific temperatures, exact times, visual indicators, troubleshooting tips, and professional techniques"]
+- Instructions: MUST be an ARRAY with 25+ separate items, each item is ONE complete step ["ultra-detailed first instruction with temperatures, times, visual cues, techniques, professional tips, and safety notes", "ultra-detailed second instruction continuing with same comprehensive level of detail", "ultra-detailed third instruction breaking down prep work separately", "each subsequent instruction must be extremely granular with specific temperatures, exact times, visual indicators, troubleshooting tips, and professional techniques"]
+- CRITICAL: Each array item is a SEPARATE step - do NOT combine multiple steps into one string
+- CRITICAL: Do NOT include "Step 1:", "Step 2:", etc. in the instruction text - the array index already indicates the step number
 
 🚨 CRITICAL: INSTRUCTION LOGIC RULES - FOLLOW THESE EXACTLY:
 - ONLY include steps that are ACTUALLY NEEDED for this specific recipe
@@ -1037,11 +1043,13 @@ Return ONLY this JSON:`;
   "strArea": "${templateCuisine}",
   "strDescription": "2-3 sentence description",
   "instructions": [
-    "[Start with the FIRST actual step needed - only wash/prep ingredients if required for this specific recipe]",
-    "[ONLY preheat oven if recipe actually uses oven/baking - if stovetop only, skip this and start with actual cooking steps]",
-    "[Continue with logical sequence - prep work, then cooking steps in order]",
-    "[Each step must be ultra-detailed with specific temperatures, exact times, visual cues, techniques, and professional tips]",
-    "...Steps 5-25+: Continue with extremely detailed cooking steps, including specific temperatures, exact times, visual cues, sounds to listen for, aromas to notice, and professional techniques. Each step must be ultra-detailed with timing, visual indicators, troubleshooting tips, and professional cooking techniques..."
+    "Begin by preparing the ingredients - wash and chop vegetables as needed for this specific recipe",
+    "Heat a large skillet over medium heat for 3-4 minutes until a drop of water sizzles on contact",
+    "Add 2 tablespoons of oil to the heated skillet and swirl to coat evenly, waiting until oil shimmers",
+    "Continue with 25-40 more ultra-detailed steps, each as a separate array item",
+    "Each instruction should be a complete, detailed step without 'Step X:' prefix",
+    "Include specific temperatures, exact times, visual cues, sounds, aromas, and professional techniques",
+    "...continue with remaining steps, ensuring each is a separate array item..."
   ],
   "ingredientsDetailed": [
     {"name": "ingredient name", "quantity": "2", "unit": "cups", "optional": false, "required": true},
@@ -1158,11 +1166,13 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
   "strArea": "Cuisine (Italian, Mexican, Asian, etc)",
   "strDescription": "Brief appetizing description (2-3 sentences)",
   "instructions": [
-    "[Start with the FIRST actual step needed - only wash/prep ingredients if required for this specific recipe]",
-    "[ONLY preheat oven if recipe actually uses oven/baking - if stovetop only, skip this and start with actual cooking steps]",
-    "[Continue with logical sequence - prep work, then cooking steps in order]",
-    "[Each step must be ultra-detailed with specific temperatures, exact times, visual cues, techniques, and professional tips]",
-    "...Steps 5-25+: Continue with extremely detailed cooking steps, including specific temperatures, exact times, visual cues, sounds to listen for, aromas to notice, and professional techniques. Each step must be ultra-detailed with timing, visual indicators, troubleshooting tips, and professional cooking techniques..."
+    "Begin by preparing the ingredients - wash and chop vegetables as needed for this specific recipe",
+    "Heat a large skillet over medium heat for 3-4 minutes until a drop of water sizzles on contact",
+    "Add 2 tablespoons of oil to the heated skillet and swirl to coat evenly, waiting until oil shimmers",
+    "Continue with 25-40 more ultra-detailed steps, each as a separate array item",
+    "Each instruction should be a complete, detailed step without 'Step X:' prefix",
+    "Include specific temperatures, exact times, visual cues, sounds, aromas, and professional techniques",
+    "...continue with remaining steps, ensuring each is a separate array item..."
   ],
   "dietary": {
     "vegetarian": false,
@@ -1200,7 +1210,12 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
   "strCategory": "${randomCategory}",
   "strArea": "${randomCuisine}",
   "strDescription": "Brief appetizing description (2-3 sentences)",
-  "instructions": ["detailed instruction", "detailed instruction", "detailed instruction"],
+  "instructions": [
+    "First detailed instruction without step number prefix",
+    "Second detailed instruction without step number prefix",
+    "Third detailed instruction without step number prefix",
+    "...continue with 25-40 total steps, each as separate array items..."
+  ],
   "dietary": {
     "vegetarian": false,
     "vegan": false,
@@ -2024,11 +2039,13 @@ Return ONLY valid JSON with this COMPLETE structure:
   "dateModified": "${new Date().toISOString()}",
   
   "instructionsArray": [
-    "[Start with the FIRST actual step needed - only wash/prep ingredients if required for this specific recipe]",
-    "[ONLY preheat oven if recipe actually uses oven/baking - if stovetop only, skip this and start with actual cooking steps]",
-    "[Continue with logical sequence - prep work, then cooking steps in order]",
-    "[Each step must be ultra-detailed with specific temperatures, exact times, visual cues, techniques, and professional tips]",
-    "...Continue with 20+ more extremely detailed steps covering every single action, technique, temperature check, visual cue, timing, and professional tip needed for perfect results. ONLY include steps that are ACTUALLY NEEDED for this recipe..."
+    "Begin by preparing the ingredients - wash and chop vegetables as needed for this specific recipe",
+    "Heat your cooking vessel over medium heat for 3-4 minutes until properly heated",
+    "Add oil and ingredients, cooking with specific temperatures and timing",
+    "Continue with 20+ more extremely detailed steps, each as a separate array item",
+    "Each step must be ultra-detailed with specific temperatures, exact times, visual cues, techniques, and professional tips",
+    "ONLY include steps that are ACTUALLY NEEDED for this recipe - no unnecessary steps",
+    "...continue with remaining steps, ensuring each is a separate array item without 'Step X:' prefix..."
   ],
   
   "ingredientsArray": [
