@@ -839,10 +839,18 @@ class AdminPanel {
     const ingredients = this.getRecipeIngredients(recipe);
     
     // Parse instructions into steps
-    const instructions = recipe.strInstructions || '';
-    const steps = instructions.split(/Step \d+:|^\d+\.|^\d+\)/gm)
-      .filter(step => step.trim())
-      .map(step => step.replace(/^[:.]/, '').trim());
+    // Check if instructions is already an array (modern format)
+    let steps = [];
+    if (recipe.instructions && Array.isArray(recipe.instructions)) {
+      // Use the array directly - already split into steps
+      steps = recipe.instructions.filter(step => step && step.trim());
+    } else if (recipe.strInstructions) {
+      // Fallback: parse string instructions
+      const instructions = recipe.strInstructions;
+      steps = instructions.split(/Step \d+:|^\d+\.|^\d+\)/gm)
+        .filter(step => step.trim())
+        .map(step => step.replace(/^[:.]/, '').trim());
+    }
     
     // Parse equipment
     const equipment = recipe.equipment || recipe.strEquipment || '';
@@ -2165,15 +2173,18 @@ class AdminPanel {
     }
     
     // Parse instructions
-    let instructions = recipe.strInstructions || 'No instructions available';
-    if (Array.isArray(instructions)) {
-      instructions = instructions.join(' ');
+    // Check if instructions is already an array (modern format)
+    let steps = [];
+    if (recipe.instructions && Array.isArray(recipe.instructions)) {
+      // Use the array directly - already split into steps
+      steps = recipe.instructions.filter(step => step && step.trim() && step.length > 10);
+    } else if (recipe.strInstructions) {
+      // Fallback: parse string instructions
+      const instructions = recipe.strInstructions;
+      steps = instructions.split(/(?:\d+\.|Step \d+:|\n\n)/)
+        .map(step => step.trim())
+        .filter(step => step.length > 10);
     }
-    
-    // Split instructions into steps
-    const steps = instructions.split(/(?:\d+\.|Step \d+:|\n\n)/)
-      .map(step => step.trim())
-      .filter(step => step.length > 10);
     
     container.innerHTML = `
       <div class="recipe-editor-content" style="background: var(--color-surface); padding: var(--space-6); border-radius: var(--radius-card); box-shadow: var(--shadow-lg); border: 2px solid var(--color-divider);">
@@ -2266,7 +2277,7 @@ class AdminPanel {
                 </div>
               `).join('') :
               `<div style="padding: var(--space-6); text-align: center; background: var(--color-input-bg); border-radius: var(--radius-lg); border: 2px dashed var(--color-divider);">
-                <p style="color: var(--color-muted); font-size: 1.1rem; margin: 0;">${instructions}</p>
+                <p style="color: var(--color-muted); font-size: 1.1rem; margin: 0;">${recipe.strInstructions || (Array.isArray(recipe.instructions) ? recipe.instructions.join(' ') : 'No instructions available')}</p>
               </div>`
             }
           </div>
