@@ -46,6 +46,72 @@ class OpenAIManager {
   }
 
   /**
+   * Get smart defaults based on recipe category/type
+   */
+  getSmartDefaults(category = 'Dinner', dishType = 'Main Courses', difficulty = 'Medium', servings = null) {
+    // Smart defaults based on category
+    const categoryDefaults = {
+      'Breakfast': { prep: 10, cook: 15, total: 25, servings: 2 },
+      'Brunch': { prep: 15, cook: 20, total: 35, servings: 4 },
+      'Lunch': { prep: 15, cook: 20, total: 35, servings: 4 },
+      'Dinner': { prep: 20, cook: 30, total: 50, servings: 4 },
+      'Snack': { prep: 5, cook: 10, total: 15, servings: 2 },
+      'Dessert': { prep: 20, cook: 25, total: 45, servings: 6 }
+    };
+
+    // Adjust based on difficulty
+    const difficultyMultipliers = {
+      'Easy': { prep: 0.8, cook: 0.8, total: 0.8 },
+      'Medium': { prep: 1.0, cook: 1.0, total: 1.0 },
+      'Hard': { prep: 1.3, cook: 1.5, total: 1.4 }
+    };
+
+    // Adjust based on dish type
+    const dishTypeAdjustments = {
+      'Soups': { cook: 1.5 }, // Soups take longer
+      'Stews & Casseroles': { cook: 2.0 }, // Stews take much longer
+      'Slow Cooker / Instant Pot': { cook: 0.3, total: 0.5 }, // Instant pot is faster
+      'Raw/No-Cook': { cook: 0, total: 0.3 }, // No cooking time
+      'Salads': { cook: 0, total: 0.5 }, // No cooking
+      'Snacks': { prep: 0.5, cook: 0.5, total: 0.5 }, // Quick snacks
+      'Baked Goods': { cook: 1.5 }, // Baking takes longer
+      'Pastries': { prep: 1.5, cook: 1.2 } // Pastries need more prep
+    };
+
+    const defaults = categoryDefaults[category] || categoryDefaults['Dinner'];
+    const multiplier = difficultyMultipliers[difficulty] || difficultyMultipliers['Medium'];
+    const adjustment = dishTypeAdjustments[dishType] || {};
+
+    const prepTime = Math.round(defaults.prep * multiplier.prep * (adjustment.prep || 1));
+    const cookTime = Math.round(defaults.cook * multiplier.cook * (adjustment.cook || 1));
+    const totalTime = Math.round(defaults.total * multiplier.total * (adjustment.total || 1));
+    const numberOfServings = servings || defaults.servings;
+
+    // Smart equipment based on dish type
+    let equipment = ['Chef\'s knife', 'Cutting board', 'Measuring cups/spoons'];
+    if (dishType && dishType.includes('Baked') || dishType.includes('Pastries') || dishType.includes('Cookies')) {
+      equipment = ['Oven', 'Baking sheet', 'Mixing bowl', 'Chef\'s knife', 'Cutting board', 'Measuring cups/spoons'];
+    } else if (dishType && (dishType.includes('Slow Cooker') || dishType.includes('Stew') || dishType.includes('Casserole'))) {
+      equipment = ['Dutch oven or Slow cooker', 'Chef\'s knife', 'Cutting board', 'Measuring cups/spoons'];
+    } else if (dishType && (dishType.includes('Salad') || dishType.includes('Raw'))) {
+      equipment = ['Mixing bowl', 'Chef\'s knife', 'Cutting board', 'Measuring cups/spoons'];
+    } else if (dishType && dishType.includes('Grilling')) {
+      equipment = ['Grill', 'Tongs', 'Chef\'s knife', 'Cutting board', 'Measuring cups/spoons'];
+    } else {
+      // Default stovetop
+      equipment = ['Large skillet or saucepan', 'Chef\'s knife', 'Cutting board', 'Measuring cups/spoons'];
+    }
+
+    return {
+      prepTime,
+      cookTime,
+      totalTime: totalTime || (prepTime + cookTime),
+      numberOfServings,
+      equipment
+    };
+  }
+
+  /**
    * Set recipe manager (for lazy initialization)
    */
   setRecipeManager(recipeManager) {
@@ -348,7 +414,7 @@ ${existingContext ? 'IMPORTANT: Create something different from the existing rec
 - dishType: specify appropriate type based on the recipe (Appetizer, Soup, Salad, Main Course, Side Dish, Dessert, etc.)
 - Arrays: all must have at least 1-2 items
 
-🔥 INSTRUCTIONS MUST BE ULTRA-DETAILED (25-40 COMPREHENSIVE STEPS):
+🔥 INSTRUCTIONS MUST BE ULTRA-DETAILED (FLEXIBLE STEP COUNT BASED ON COMPLEXITY):
 - BREAK DOWN EVERY SINGLE ACTION into separate detailed steps (NEVER combine multiple actions)
 - EVERY step must include specific temperatures, exact times, and precise techniques
 - Include exact visual cues (golden brown, bubbling, tender when pierced)
@@ -362,11 +428,13 @@ ${existingContext ? 'IMPORTANT: Create something different from the existing rec
 - Mention equipment positioning, ingredient preparation sequence, and workspace management
 - Include safety precautions, proper handling techniques, and storage instructions where needed
 - Add sensory descriptions (what to smell, hear, see, feel) at each critical stage
-- Instructions: MUST be an ARRAY with 25+ separate items, each item is ONE complete step
+- Instructions: MUST be an ARRAY with 10-40 separate items (depending on complexity), each item is ONE complete step
 - CRITICAL: Return instructions as an ARRAY: ["Step 1: first step", "Step 2: second step", "Step 3: third step"] NOT as a string: "first step. second step. third step"
 - CRITICAL: Each array item is a SEPARATE step - do NOT combine multiple steps into one string
 - CRITICAL: Include "Step 1:", "Step 2:", etc. in each instruction text for clarity
-- Example CORRECT format: ["Step 1: Begin by washing vegetables", "Step 2: Heat skillet over medium heat", "Step 3: Add oil to pan"]
+- Example CORRECT format (stovetop): ["Step 1: Begin by washing vegetables", "Step 2: Heat cooking vessel over medium heat", "Step 3: Add oil to pan"]
+- Example CORRECT format (oven): ["Step 1: Begin by preparing ingredients", "Step 2: Preheat oven to 375°F", "Step 3: Prepare baking dish"]
+- Example CORRECT format (raw/no-cook): ["Step 1: Wash and prepare vegetables", "Step 2: Combine ingredients in bowl", "Step 3: Toss and season"]
 - Example WRONG format: "Begin by washing vegetables. Heat skillet. Add oil." (this is a string, not an array!)
 
 🚨 CRITICAL: INSTRUCTION LOGIC RULES - FOLLOW THESE EXACTLY:
@@ -411,24 +479,26 @@ Return ONLY this CLEAN JSON format with NO extra text (MODERN ARRAYS ONLY):
   "strDescription": "Brief appetizing 2-3 sentence description",
   "strTags": "tag1,tag2,tag3",
   "strMealThumb": "",
-  "prepTime": 15,
-  "cookTime": 25,
-  "totalTime": 40,
-  "numberOfServings": 4,
+  "prepTime": <realistic minutes based on recipe complexity>,
+  "cookTime": <realistic minutes based on recipe complexity>,
+  "totalTime": <prepTime + cookTime>,
+  "numberOfServings": <realistic number: 2 for snacks, 4 for meals, 6-8 for desserts>,
   "servingSize": "1 serving",
   "difficulty": "Easy/Medium/Hard",
   "instructions": [
     "Step 1: Begin by preparing all ingredients - wash, chop, and measure everything needed",
-    "Step 2: Heat your cooking vessel over medium heat for 3-4 minutes until properly heated",
-    "Step 3: Add oil and ingredients, cooking with specific temperatures and timing",
-    "Step 4: Continue with 25-40 comprehensive steps, each as a separate array item",
+    "Step 2: [CONDITIONAL - Only if stovetop cooking] Heat your cooking vessel over appropriate heat for 3-4 minutes until properly heated",
+    "Step 2: [CONDITIONAL - Only if oven baking] Preheat oven to specified temperature",
+    "Step 2: [CONDITIONAL - Only if raw/no-cook] Continue with prep steps - no heating needed",
+    "Step 3: Add oil/ingredients and cook with specific temperatures and timing, OR [if baking] prepare baking vessel, OR [if raw] combine ingredients",
+    "Step 4: Continue with remaining comprehensive steps appropriate for this recipe's complexity (8-40 steps total), each as a separate array item",
     "Step 5: Each step should be detailed and complete with 'Step X:' prefix"
   ],
   "ingredientsDetailed": [
     {"name": "Ingredient name", "quantity": "2", "unit": "cups", "optional": false, "required": true},
     {"name": "Second ingredient", "quantity": "1", "unit": "tsp", "optional": false, "required": true}
   ],
-  "equipmentRequired": ["Large skillet", "Mixing bowl", "Chef's knife", "Cutting board"],
+  "equipmentRequired": ["Appropriate cooking vessel (skillet/pan/oven/bowl based on recipe)", "Chef's knife", "Cutting board", "Measuring cups/spoons"],
   "dietary": {
     "vegetarian": false,
     "vegan": false,
@@ -481,7 +551,7 @@ Make it innovative and delicious. Use unexpected flavor combinations or techniqu
 - dietary: Set appropriate true/false values with emphasis on ${randomDietary} characteristics
 - Arrays: all must have at least 1-2 items
 
-🔥 INSTRUCTIONS MUST BE ULTRA-DETAILED (25-40 COMPREHENSIVE STEPS):
+🔥 INSTRUCTIONS MUST BE ULTRA-DETAILED (FLEXIBLE STEP COUNT BASED ON COMPLEXITY):
 - BREAK DOWN EVERY SINGLE ACTION into separate detailed steps (NEVER combine multiple actions)
 - EVERY step must include specific temperatures, exact times, and precise techniques
 - Include exact visual cues (golden brown, bubbling, tender when pierced)
@@ -495,11 +565,13 @@ Make it innovative and delicious. Use unexpected flavor combinations or techniqu
 - Mention equipment positioning, ingredient preparation sequence, and workspace management
 - Include safety precautions, proper handling techniques, and storage instructions where needed
 - Add sensory descriptions (what to smell, hear, see, feel) at each critical stage
-- Instructions: MUST be an ARRAY with 25+ separate items, each item is ONE complete step
+- Instructions: MUST be an ARRAY with 10-40 separate items (depending on complexity), each item is ONE complete step
 - CRITICAL: Return instructions as an ARRAY: ["Step 1: first step", "Step 2: second step", "Step 3: third step"] NOT as a string: "first step. second step. third step"
 - CRITICAL: Each array item is a SEPARATE step - do NOT combine multiple steps into one string
 - CRITICAL: Include "Step 1:", "Step 2:", etc. in each instruction text for clarity
-- Example CORRECT format: ["Step 1: Begin by washing vegetables", "Step 2: Heat skillet over medium heat", "Step 3: Add oil to pan"]
+- Example CORRECT format (stovetop): ["Step 1: Begin by washing vegetables", "Step 2: Heat cooking vessel over medium heat", "Step 3: Add oil to pan"]
+- Example CORRECT format (oven): ["Step 1: Begin by preparing ingredients", "Step 2: Preheat oven to 375°F", "Step 3: Prepare baking dish"]
+- Example CORRECT format (raw/no-cook): ["Step 1: Wash and prepare vegetables", "Step 2: Combine ingredients in bowl", "Step 3: Toss and season"]
 - Example WRONG format: "Begin by washing vegetables. Heat skillet. Add oil." (this is a string, not an array!)
 
 🚨 CRITICAL: INSTRUCTION LOGIC RULES - FOLLOW THESE EXACTLY:
@@ -820,7 +892,7 @@ Return ONLY this JSON format with NO extra text:
 
 Generate a recipe that matches these criteria with ultra-detailed, comprehensive instructions.
 
-🔥 INSTRUCTIONS MUST BE ULTRA-DETAILED (25-40 COMPREHENSIVE STEPS):
+🔥 INSTRUCTIONS MUST BE ULTRA-DETAILED (FLEXIBLE STEP COUNT BASED ON COMPLEXITY):
 - BREAK DOWN EVERY SINGLE ACTION into separate detailed steps (NEVER combine multiple actions)  
 - EVERY step must include specific temperatures, exact times, and precise techniques
 - Include exact visual cues (golden brown edges, vigorous bubbling, tender when pierced with fork)
@@ -944,7 +1016,7 @@ Return ONLY this JSON:`;
 - Difficulty: MUST be "${randomDifficulty}" EXACTLY - Easy, Medium, or Hard
 - Create a recipe that authentically matches ALL four of these criteria
 
-🔥 INSTRUCTIONS MUST BE ULTRA-DETAILED (25-40 COMPREHENSIVE STEPS):
+🔥 INSTRUCTIONS MUST BE ULTRA-DETAILED (FLEXIBLE STEP COUNT BASED ON COMPLEXITY):
 - BREAK DOWN EVERY SINGLE ACTION into separate detailed steps (NEVER combine multiple actions)  
 - EVERY step must include specific temperatures, exact times, and precise techniques
 - Include exact visual cues (golden brown edges, vigorous bubbling, tender when pierced with fork)
@@ -1060,9 +1132,13 @@ Return ONLY this JSON:`;
   "strDescription": "2-3 sentence description",
   "instructions": [
     "Step 1: Begin by preparing the ingredients - wash and chop vegetables as needed for this specific recipe",
-    "Step 2: Heat a large skillet over medium heat for 3-4 minutes until a drop of water sizzles on contact",
-    "Step 3: Add 2 tablespoons of oil to the heated skillet and swirl to coat evenly, waiting until oil shimmers",
-    "Step 4: Continue with 25-40 more ultra-detailed steps, each as a separate array item",
+    "Step 2: [CONDITIONAL - Only if stovetop cooking] Heat your cooking vessel over appropriate heat for 3-4 minutes until properly heated",
+    "Step 2: [CONDITIONAL - Only if oven baking] Preheat oven to specified temperature and position rack appropriately",
+    "Step 2: [CONDITIONAL - Only if raw/no-cook] Continue with prep steps - no heating needed",
+    "Step 3: [CONDITIONAL - Only if stovetop] Add oil/fat to heated vessel and swirl to coat evenly, waiting until oil shimmers",
+    "Step 3: [CONDITIONAL - Only if oven] Prepare baking vessel with appropriate preparation",
+    "Step 3: [CONDITIONAL - Only if raw/no-cook] Combine ingredients in mixing bowl",
+    "Step 4: Continue with remaining ultra-detailed steps appropriate for this recipe's complexity (10-40 steps total), each as a separate array item",
     "Step 5: Each instruction should be a complete, detailed step with 'Step X:' prefix",
     "Include specific temperatures, exact times, visual cues, sounds, aromas, and professional techniques",
     "...continue with remaining steps, ensuring each is a separate array item..."
@@ -1072,10 +1148,10 @@ Return ONLY this JSON:`;
     {"name": "ingredient name", "quantity": "1", "unit": "tsp", "optional": false, "required": true}
   ],
   "equipmentRequired": ["Equipment 1", "Equipment 2", "Equipment 3"],
-  "prepTime": 15,
-  "cookTime": 25,
-  "totalTime": 40,
-  "numberOfServings": 4,
+  "prepTime": <realistic minutes based on recipe complexity>,
+  "cookTime": <realistic minutes based on recipe complexity>,
+  "totalTime": <prepTime + cookTime>,
+  "numberOfServings": <realistic number: 2 for snacks, 4 for meals, 6-8 for desserts>,
   "servingSize": "1 serving",
   "difficulty": "${templateDifficulty}",
   "yield": "4 servings",
@@ -1127,7 +1203,7 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
       messages: [
         {
           role: 'system',
-          content: 'You are a professional chef and culinary instructor. Create ultra-detailed, comprehensive recipes with 25-40 step-by-step instructions. Break down EVERY single action into separate steps. Include specific temperatures, times, techniques, visual cues, sounds, aromas, and professional tips. Return only valid JSON with realistic data.'
+          content: 'You are a professional chef and culinary instructor. Create ultra-detailed, comprehensive recipes with 10-40 step-by-step instructions (match complexity: simple recipes 10-15 steps, moderate 15-25, complex 25-40). Break down EVERY single action into separate steps. Include specific temperatures, times, techniques, visual cues, sounds, aromas, and professional tips. Return only valid JSON with realistic data.'
         },
         {
           role: 'user',
@@ -1135,7 +1211,7 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
         }
       ],
       temperature: 0.8,
-      max_tokens: 4000 // Increased for ultra-detailed instructions with 25-40 steps
+      max_tokens: 4000 // Increased for ultra-detailed instructions (10-40 steps depending on complexity)
     });
 
     // Log the raw AI response (FULL response)
@@ -1183,9 +1259,13 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
   "strDescription": "Brief appetizing description (2-3 sentences)",
   "instructions": [
     "Step 1: Begin by preparing the ingredients - wash and chop vegetables as needed for this specific recipe",
-    "Step 2: Heat a large skillet over medium heat for 3-4 minutes until a drop of water sizzles on contact",
-    "Step 3: Add 2 tablespoons of oil to the heated skillet and swirl to coat evenly, waiting until oil shimmers",
-    "Step 4: Continue with 25-40 more ultra-detailed steps, each as a separate array item",
+    "Step 2: [CONDITIONAL - Only if stovetop cooking] Heat your cooking vessel over appropriate heat for 3-4 minutes until properly heated",
+    "Step 2: [CONDITIONAL - Only if oven baking] Preheat oven to specified temperature and position rack appropriately",
+    "Step 2: [CONDITIONAL - Only if raw/no-cook] Continue with prep steps - no heating needed",
+    "Step 3: [CONDITIONAL - Only if stovetop] Add oil/fat to heated vessel and swirl to coat evenly, waiting until oil shimmers",
+    "Step 3: [CONDITIONAL - Only if oven] Prepare baking vessel with appropriate preparation",
+    "Step 3: [CONDITIONAL - Only if raw/no-cook] Combine ingredients in mixing bowl",
+    "Step 4: Continue with remaining ultra-detailed steps appropriate for this recipe's complexity (10-40 steps total), each as a separate array item",
     "Step 5: Each instruction should be a complete, detailed step with 'Step X:' prefix",
     "Include specific temperatures, exact times, visual cues, sounds, aromas, and professional techniques",
     "...continue with remaining steps, ensuring each is a separate array item..."
@@ -1230,7 +1310,7 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
     "Step 1: First detailed instruction with step number prefix",
     "Step 2: Second detailed instruction with step number prefix",
     "Step 3: Third detailed instruction with step number prefix",
-    "...continue with 25-40 total steps, each as separate array items with Step X: prefix..."
+    "...continue with 10-40 total steps (match complexity), each as separate array items with Step X: prefix..."
   ],
   "dietary": {
     "vegetarian": false,
@@ -1292,14 +1372,14 @@ CRITICAL: Return ONLY valid JSON with ALL these fields filled with realistic num
   "strDescription": "${basicRecipe.strDescription}",
   "instructions": ${JSON.stringify(basicRecipe.instructions)},
   "ingredientsDetailed": ${JSON.stringify(basicRecipe.ingredientsDetailed || [])},
-  "prepTime": 15,
-  "cookTime": 25,
-  "totalTime": 40,
-  "numberOfServings": 4,
+  "prepTime": <realistic minutes based on recipe complexity>,
+  "cookTime": <realistic minutes based on recipe complexity>,
+  "totalTime": <prepTime + cookTime>,
+  "numberOfServings": <realistic number: 2 for snacks, 4 for meals, 6-8 for desserts>,
   "servingSize": "1 serving",
   "difficulty": "Medium",
   "yield": "4 servings",
-  "equipmentRequired": ["Large skillet", "Chef's knife", "Mixing bowl", "Measuring spoons"],
+  "equipmentRequired": ["Appropriate cooking vessel (skillet/pan/oven/bowl based on recipe)", "Chef's knife", "Cutting board", "Measuring cups/spoons"],
   "nutrition": {
     "caloriesPerServing": 420,
     "protein": 28,
@@ -1334,7 +1414,7 @@ CRITICAL: Return ONLY valid JSON with ALL these fields filled with realistic num
   "mainIngredient": "${basicRecipe.strIngredient1}",
   "occasion": ["Date Night", "Special Occasion"],
   "seasonality": ["All Season"],
-  "equipmentRequired": ["Large skillet (12-inch)", "Chef's knife (8-inch)", "Mixing bowl", "Measuring spoons"],
+  "equipmentRequired": ["Appropriate cooking vessel (skillet/pan/oven/bowl based on recipe)", "Chef's knife", "Cutting board", "Measuring cups/spoons"],
   "skillsRequired": ["Pan-frying", "Marinating", "Timing"],
   "keywords": ["seafood", "umami", "Japanese", "elegant"],
   "allergenFlags": ["fish"],
@@ -1369,11 +1449,22 @@ Replace the nutrition values with realistic numbers based on the actual ingredie
   addMinimalEnhancements(basicRecipe) {
     return {
       ...basicRecipe,
-      prepTime: 15,
-      cookTime: 25,
-      totalTime: 40,
-      numberOfServings: 4,
-      servingSize: "1 serving",
+      // Use smart defaults
+      ...(() => {
+        const smartDefaults = this.getSmartDefaults(
+          params.filters?.category || 'Dinner',
+          params.filters?.dishType || 'Main Courses',
+          params.difficulty || 'Medium',
+          params.servings
+        );
+        return {
+          prepTime: smartDefaults.prepTime,
+          cookTime: smartDefaults.cookTime,
+          totalTime: smartDefaults.totalTime,
+          numberOfServings: smartDefaults.numberOfServings,
+          servingSize: "1 serving"
+        };
+      })(),
       difficulty: "Medium",
       yield: "4 servings",
       strEquipment: "Basic cooking tools",
@@ -1411,7 +1502,7 @@ Replace the nutrition values with realistic numbers based on the actual ingredie
       mainIngredient: basicRecipe.strIngredient1 || "main ingredient",
       occasion: ["Weeknight"],
       seasonality: ["All Season"],
-      equipmentRequired: ["Skillet", "Knife", "Cutting board"],
+      equipmentRequired: ["Appropriate cooking vessel (skillet/pan/oven/bowl based on recipe)", "Chef's knife", "Cutting board", "Measuring cups/spoons"],
       skillsRequired: ["Basic cooking"],
       keywords: ["homemade", "delicious"],
       allergenFlags: [],
@@ -2235,7 +2326,7 @@ Return ONLY valid JSON with this COMPLETE structure:
         // Convert old string format to array if present
         equipmentRequired = recipeData.strEquipment.split(',').map(e => e.trim()).filter(e => e);
       } else {
-        equipmentRequired = ['Skillet', 'Knife', 'Cutting Board', 'Measuring Cups'];
+        equipmentRequired = ['Appropriate cooking vessel (skillet/pan/oven/bowl based on recipe)', 'Chef\'s knife', 'Cutting Board', 'Measuring Cups'];
       }
     }
 
@@ -2262,10 +2353,21 @@ Return ONLY valid JSON with this COMPLETE structure:
       equipmentRequired: equipmentRequired,
       
       // ✅ TIME AND SERVING INFO
-      prepTime: parseInt(recipeData.prepTime) || 15,
-      cookTime: parseInt(recipeData.cookTime) || 25,
-      totalTime: parseInt(recipeData.totalTime) || parseInt(recipeData.prepTime) + parseInt(recipeData.cookTime) || 40,
-      numberOfServings: parseInt(recipeData.numberOfServings) || parseInt(recipeData.servings) || params.servings || 4,
+      // Use smart defaults based on recipe type
+      ...(() => {
+        const smartDefaults = this.getSmartDefaults(
+          recipeData.strCategory || params.filters?.category || 'Dinner',
+          recipeData.dishType || params.filters?.dishType || 'Main Courses',
+          recipeData.difficulty || params.difficulty || params.randomDifficulty || 'Medium',
+          params.servings || parseInt(recipeData.servings) || parseInt(recipeData.numberOfServings)
+        );
+        return {
+          prepTime: parseInt(recipeData.prepTime) || smartDefaults.prepTime,
+          cookTime: parseInt(recipeData.cookTime) || smartDefaults.cookTime,
+          totalTime: parseInt(recipeData.totalTime) || parseInt(recipeData.prepTime) + parseInt(recipeData.cookTime) || smartDefaults.totalTime,
+          numberOfServings: parseInt(recipeData.numberOfServings) || parseInt(recipeData.servings) || params.servings || smartDefaults.numberOfServings
+        };
+      })(),
       servingSize: recipeData.servingSize || '1 cup',
       difficulty: recipeData.difficulty || params.difficulty || params.randomDifficulty || 'Medium',
       yield: recipeData.yield || `${parseInt(recipeData.numberOfServings) || params.servings || 4} servings`,
@@ -2543,9 +2645,9 @@ Return ONLY valid JSON with this COMPLETE structure:
   // Get default value for any field
   getFieldDefault(fieldName, params) {
     const defaults = {
-      prepTime: '15 minutes',
-      cookTime: '25 minutes',
-      totalTime: '40 minutes',
+      prepTime: '<realistic minutes> minutes',
+      cookTime: '<realistic minutes> minutes',
+      totalTime: '<prepTime + cookTime> minutes',
       yield: `Serves ${params.servings || 4}`,
       mealType: params.category || 'Main Dish',
       dishType: params.category || 'Main Dish',
@@ -2623,9 +2725,9 @@ Return ONLY valid JSON with this COMPLETE structure:
     
     // Specific field replacements
     const fieldDefaults = {
-      prepTime: '15 minutes',
-      cookTime: '25 minutes',
-      totalTime: '40 minutes',
+      prepTime: '<realistic minutes> minutes',
+      cookTime: '<realistic minutes> minutes',
+      totalTime: '<prepTime + cookTime> minutes',
       yield: `Serves ${cleaned.cookingInfo?.servings || 4}`,
       mealType: 'dinner',
       dishType: 'main dish',

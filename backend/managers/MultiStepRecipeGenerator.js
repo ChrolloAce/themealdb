@@ -217,7 +217,7 @@ INGREDIENTS (USE THESE EXACTLY):
 EQUIPMENT AVAILABLE (USE THESE):
 ${equipment.map((eq, idx) => `${idx + 1}. ${eq}`).join('\n')}
 
-Generate 25-40 EXTREMELY DETAILED instruction steps. Each step must:
+Generate 10-40 EXTREMELY DETAILED instruction steps (match recipe complexity: simple 10-15, moderate 15-25, complex 25-40). Each step must:
 - Reference specific equipment from the list above
 - Use the exact ingredients listed
 - Include temperatures, times, and techniques
@@ -226,10 +226,13 @@ Generate 25-40 EXTREMELY DETAILED instruction steps. Each step must:
 - Include professional chef tips
 
 🚨 CRITICAL FORMAT REQUIREMENTS:
-- Instructions MUST be an ARRAY with 25-40 separate items
+- Instructions MUST be an ARRAY with 10-40 separate items (match recipe complexity)
 - Each array item is ONE complete step (do NOT combine multiple steps into one string)
 - Include "Step 1:", "Step 2:", etc. in each instruction text for clarity
-- Example: ["Step 1: Begin by washing vegetables", "Step 2: Heat skillet over medium heat", "Step 3: Add oil to pan"] NOT ["Begin... Heat... Add..."] (all in one string)
+- Example for stovetop: ["Step 1: Begin by washing vegetables", "Step 2: Heat cooking vessel over medium heat", "Step 3: Add oil to pan"]
+- Example for oven: ["Step 1: Begin by preparing ingredients", "Step 2: Preheat oven to 375°F", "Step 3: Prepare baking dish"]
+- Example for raw/no-cook: ["Step 1: Wash and prepare vegetables", "Step 2: Combine ingredients in bowl", "Step 3: Toss and season"]
+- NOT ["Begin... Heat... Add..."] (all in one string)
 
 Return JSON:
 {
@@ -237,9 +240,13 @@ Return JSON:
   "description": "2-3 appetizing sentences",
   "instructions": [
     "Step 1: Begin by preparing the ingredients - wash and chop vegetables as needed",
-    "Step 2: Heat a large skillet over medium heat for 3-4 minutes until hot",
-    "Step 3: Add oil to the heated skillet and swirl to coat evenly",
-    "Step 4: Continue with 25-40 more ultra-detailed steps, each as a separate array item",
+    "Step 2: [CONDITIONAL - Only if stovetop] Heat your cooking vessel over appropriate heat for 3-4 minutes until hot",
+    "Step 2: [CONDITIONAL - Only if oven] Preheat oven to specified temperature",
+    "Step 2: [CONDITIONAL - Only if raw/no-cook] Continue with prep - no heating needed",
+    "Step 3: [CONDITIONAL - Only if stovetop] Add oil to heated vessel and swirl to coat evenly",
+    "Step 3: [CONDITIONAL - Only if oven] Prepare baking vessel with appropriate preparation",
+    "Step 3: [CONDITIONAL - Only if raw/no-cook] Combine ingredients in mixing bowl",
+    "Step 4: Continue with remaining ultra-detailed steps appropriate for this recipe's complexity (10-40 steps total), each as a separate array item",
     "Step 5: Each instruction should be a complete, detailed step with 'Step X:' prefix",
     "...continue with remaining steps, numbering each as Step 6, Step 7, etc..."
   ],
@@ -394,9 +401,9 @@ Return JSON:
       totalTime: instructionsData.totalTime,
       
       // Servings
-      numberOfServings: params.numberOfServings || 4,
+      numberOfServings: params.numberOfServings || params.filters?.servings || 4,
       servingSize: '1 serving',
-      yield: `${params.numberOfServings || 4} servings`,
+      yield: `${params.numberOfServings || params.filters?.servings || 4} servings`,
       
       // Nutrition
       nutrition,

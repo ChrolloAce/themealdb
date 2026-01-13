@@ -52,6 +52,38 @@ class RecipeJSONHandler {
     const recipeName = originalContent.match(/"strMeal":\s*"([^"]+)"/)?.[1] || 'Generated Recipe';
     const category = originalContent.match(/"strCategory":\s*"([^"]+)"/)?.[1] || 'Dinner';
     const area = originalContent.match(/"strArea":\s*"([^"]+)"/)?.[1] || 'International';
+    const dishType = originalContent.match(/"dishType":\s*"([^"]+)"/)?.[1] || 'Main Courses';
+
+    // Smart defaults based on category
+    const getSmartDefaults = (cat, dish) => {
+      const defaults = {
+        'Breakfast': { prep: 10, cook: 15, total: 25, servings: 2 },
+        'Brunch': { prep: 15, cook: 20, total: 35, servings: 4 },
+        'Lunch': { prep: 15, cook: 20, total: 35, servings: 4 },
+        'Dinner': { prep: 20, cook: 30, total: 50, servings: 4 },
+        'Snack': { prep: 5, cook: 10, total: 15, servings: 2 },
+        'Dessert': { prep: 20, cook: 25, total: 45, servings: 6 }
+      };
+      return defaults[cat] || defaults['Dinner'];
+    };
+
+    // Smart equipment based on dish type
+    const getSmartEquipment = (dish) => {
+      if (dish && (dish.includes('Baked') || dish.includes('Pastries') || dish.includes('Cookies'))) {
+        return ['Oven', 'Baking sheet', 'Mixing bowl', 'Chef\'s knife', 'Cutting board', 'Measuring cups/spoons'];
+      } else if (dish && (dish.includes('Slow Cooker') || dish.includes('Stew') || dish.includes('Casserole'))) {
+        return ['Dutch oven or Slow cooker', 'Chef\'s knife', 'Cutting board', 'Measuring cups/spoons'];
+      } else if (dish && (dish.includes('Salad') || dish.includes('Raw'))) {
+        return ['Mixing bowl', 'Chef\'s knife', 'Cutting board', 'Measuring cups/spoons'];
+      } else if (dish && dish.includes('Grilling')) {
+        return ['Grill', 'Tongs', 'Chef\'s knife', 'Cutting board', 'Measuring cups/spoons'];
+      } else {
+        return ['Large skillet or saucepan', 'Chef\'s knife', 'Cutting board', 'Measuring cups/spoons'];
+      }
+    };
+
+    const smartDefaults = getSmartDefaults(category, dishType);
+    const smartEquipment = getSmartEquipment(dishType);
 
     return {
       strMeal: recipeName,
@@ -62,15 +94,15 @@ class RecipeJSONHandler {
       instructions: ["Prepare ingredients", "Cook according to recipe", "Serve hot"],
       strMealThumb: "",
       strTags: "FALLBACK,JSON_PARSING_FAILED",
-      strEquipment: "🚨 FALLBACK: Basic kitchen tools",
-      equipment: ["🚨 FALLBACK: Basic kitchen tools"],
-      prepTime: 15,
-      cookTime: 25,
-      totalTime: 40,
-      numberOfServings: 4,
+      strEquipment: smartEquipment.join(', '),
+      equipment: smartEquipment,
+      prepTime: smartDefaults.prep,
+      cookTime: smartDefaults.cook,
+      totalTime: smartDefaults.total,
+      numberOfServings: smartDefaults.servings,
       servingSize: "1 serving",
       difficulty: "Medium",
-      yield: "4 servings",
+      yield: `${smartDefaults.servings} servings`,
       nutrition: {
         caloriesPerServing: 350,
         protein: 25,
@@ -99,7 +131,7 @@ class RecipeJSONHandler {
       mainIngredient: "🚨 FALLBACK: Main ingredient",
       occasion: ["Weeknight"],
       seasonality: ["All Season"],
-      equipmentRequired: ["Skillet", "Knife", "Cutting Board", "Measuring Cups"],
+      equipmentRequired: smartEquipment,
       skillsRequired: ["Chopping", "Cooking"],
       keywords: ["international", "dish"],
       allergenFlags: [],

@@ -139,7 +139,7 @@ The recipe MUST match ALL specified criteria where possible. Be creative within 
    - lowSodium: true if under 600mg sodium per serving
    - lowSugar: true if under 10g sugar per serving
    - mediterraneanDiet: true if uses olive oil, fish, vegetables, herbs typical of Mediterranean cuisine
-7. ✅ Instructions must be COMPREHENSIVE cooking steps with 25-40 detailed actions (not descriptions)
+7. ✅ Instructions must be COMPREHENSIVE cooking steps with 10-40 detailed actions (match complexity: simple 10-15, moderate 15-25, complex 25-40) (not descriptions)
 8. ✅ All times must be specific numbers (15 min, 25 min, etc.)
 
 🚨🚨🚨 MEGA CRITICAL - INGREDIENT SYNC RULES 🚨🚨🚨
