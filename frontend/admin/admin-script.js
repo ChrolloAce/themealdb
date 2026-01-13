@@ -1004,6 +1004,12 @@ class AdminPanel {
   displayGenerationLogs(logs) {
     if (!logs || logs.length === 0) return;
     
+    // Use unique IDs to avoid conflicts
+    const uniqueId = `logs-${Date.now()}`;
+    const toggleBtnId = `toggleLogsBtn-${uniqueId}`;
+    const logsContentId = `logsContent-${uniqueId}`;
+    const toggleTextId = `logsToggleText-${uniqueId}`;
+    
     const logsHtml = `
       <!-- GENERATION LOGS -->
       <div style="margin-top: 40px; padding-top: 30px; border-top: 3px solid #e5e5e5;">
@@ -1017,12 +1023,12 @@ class AdminPanel {
                 ${logs.length} entries
               </span>
             </div>
-            <button id="toggleLogsBtn" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold;">
-              <span id="logsToggleText">▼ Expand</span>
+            <button id="${toggleBtnId}" type="button" data-target="${logsContentId}" data-text="${toggleTextId}" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold;">
+              <span id="${toggleTextId}">▼ Expand</span>
             </button>
           </div>
           
-          <div id="logsContent" style="display: none; max-height: 600px; overflow-y: auto; font-family: 'Monaco', 'Menlo', 'Courier New', monospace; font-size: 13px; line-height: 1.6;">
+          <div id="${logsContentId}" style="display: none; max-height: 600px; overflow-y: auto; font-family: 'Monaco', 'Menlo', 'Courier New', monospace; font-size: 13px; line-height: 1.6;">
             ${logs.map((log, index) => {
               const time = new Date(log.timestamp).toLocaleTimeString();
               const levelColor = log.level === 'error' ? '#ef4444' : '#10b981';
@@ -1043,18 +1049,55 @@ class AdminPanel {
     
     this.generateResult.innerHTML += logsHtml;
     
-    // Add toggle functionality
-    const toggleBtn = document.getElementById('toggleLogsBtn');
-    const logsContent = document.getElementById('logsContent');
-    const toggleText = document.getElementById('logsToggleText');
-    
-    if (toggleBtn && logsContent) {
-      toggleBtn.addEventListener('click', () => {
-        const isExpanded = logsContent.style.display !== 'none';
-        logsContent.style.display = isExpanded ? 'none' : 'block';
-        toggleText.textContent = isExpanded ? '▼ Expand' : '▲ Collapse';
-      });
-    }
+    // Add toggle functionality - use setTimeout to ensure DOM is ready
+    setTimeout(() => {
+      const toggleBtn = document.getElementById(toggleBtnId);
+      const logsContent = document.getElementById(logsContentId);
+      const toggleText = document.getElementById(toggleTextId);
+      
+      if (toggleBtn && logsContent && toggleText) {
+        // Use both addEventListener and onclick as fallback
+        const toggleHandler = (e) => {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          
+          // Check current state using computed style
+          const currentDisplay = window.getComputedStyle(logsContent).display;
+          const isExpanded = currentDisplay !== 'none';
+          
+          // Toggle
+          logsContent.style.display = isExpanded ? 'none' : 'block';
+          toggleText.textContent = isExpanded ? '▼ Expand' : '▲ Collapse';
+          
+          console.log('Logs toggled:', { wasExpanded: isExpanded, nowDisplay: logsContent.style.display });
+        };
+        
+        toggleBtn.addEventListener('click', toggleHandler);
+        
+        // Also add onclick as fallback
+        toggleBtn.onclick = toggleHandler;
+        
+        // Test click to verify it works
+        console.log('Toggle button ready:', { 
+          button: toggleBtn, 
+          content: logsContent, 
+          text: toggleText,
+          initialDisplay: window.getComputedStyle(logsContent).display
+        });
+        
+        console.log('✅ Log toggle button event listener attached', { toggleBtnId, logsContentId });
+      } else {
+        console.error('❌ Could not find log elements:', { 
+          toggleBtn: !!toggleBtn, 
+          logsContent: !!logsContent, 
+          toggleText: !!toggleText,
+          toggleBtnId,
+          logsContentId
+        });
+      }
+    }, 50);
   }
 
   escapeHtml(text) {
