@@ -227,6 +227,17 @@ The recipe MUST match ALL specified criteria where possible. Be creative within 
         // Validate recipe completeness
         const validation = RecipeValidator.validate(recipe);
         
+        // Log recipe after validation
+        console.log('\n✅ ═══════════════════════════════════════════');
+        console.log('✅ RECIPE AFTER VALIDATION');
+        console.log('═══════════════════════════════════════════');
+        console.log(`Valid: ${validation.valid}`);
+        console.log(`Errors: ${validation.errors.length}`);
+        console.log(`Warnings: ${validation.warnings.length}`);
+        console.log('\n📋 Recipe Data:');
+        console.log(JSON.stringify(recipe, null, 2));
+        console.log('═══════════════════════════════════════════\n');
+        
         if (!validation.valid) {
           console.log(`⚠️ Validation failed with ${validation.errors.length} errors`);
           
@@ -236,11 +247,26 @@ The recipe MUST match ALL specified criteria where possible. Be creative within 
           if (fixResult.fixed) {
             console.log(`🔧 Auto-fixed: ${fixResult.message}`);
             
+            // Log recipe after auto-fix
+            console.log('\n🔧 ═══════════════════════════════════════════');
+            console.log('🔧 RECIPE AFTER AUTO-FIX');
+            console.log('═══════════════════════════════════════════');
+            console.log(JSON.stringify(fixResult.recipe, null, 2));
+            console.log('═══════════════════════════════════════════\n');
+            
             // Re-validate after fix
             const revalidation = RecipeValidator.validate(fixResult.recipe);
             
             if (revalidation.valid) {
               console.log('✅ Recipe is now valid after auto-fix!');
+              
+              // Log final validated recipe
+              console.log('\n🎉 ═══════════════════════════════════════════');
+              console.log('🎉 FINAL VALIDATED RECIPE');
+              console.log('═══════════════════════════════════════════');
+              console.log(JSON.stringify(fixResult.recipe, null, 2));
+              console.log('═══════════════════════════════════════════\n');
+              
               // Continue with fixed recipe
               Object.assign(recipe, fixResult.recipe);
             } else {
@@ -260,6 +286,13 @@ The recipe MUST match ALL specified criteria where possible. Be creative within 
           }
         } else {
           console.log(`✅ Validation passed: ${validation.warnings.length} warnings only`);
+          
+          // Log recipe that passed validation
+          console.log('\n✅ ═══════════════════════════════════════════');
+          console.log('✅ RECIPE PASSED VALIDATION');
+          console.log('═══════════════════════════════════════════');
+          console.log(JSON.stringify(recipe, null, 2));
+          console.log('═══════════════════════════════════════════\n');
         }
 
         // Check for duplicates
@@ -297,6 +330,13 @@ The recipe MUST match ALL specified criteria where possible. Be creative within 
           }
         }
 
+        // Log final recipe before returning
+        console.log('\n🎉 ═══════════════════════════════════════════');
+        console.log('🎉 FINAL RECIPE (Ready to Save)');
+        console.log('═══════════════════════════════════════════');
+        console.log(JSON.stringify(recipe, null, 2));
+        console.log('═══════════════════════════════════════════\n');
+        
         console.log(`\n✅ SUCCESS: Unique recipe generated!`);
         console.log(`═══════════════════════════════════════════\n`);
         return recipe;
@@ -617,7 +657,6 @@ Return ONLY this JSON format with NO extra text:
       });
 
       console.log('✅ OpenAI API call successful, processing response...');
-      console.log('🔍 OpenAI response structure:', JSON.stringify(completion, null, 2));
       
       // Validate OpenAI response structure
       if (!completion || !completion.choices || !completion.choices[0]) {
@@ -628,10 +667,35 @@ Return ONLY this JSON format with NO extra text:
         throw new Error('Invalid OpenAI response: No message content');
       }
       
-      const recipeData = this.parseAIResponse(completion.choices[0].message.content);
+      // Log the raw AI response (FULL response)
+      const rawResponse = completion.choices[0].message.content;
+      console.log('\n📥 ═══════════════════════════════════════════');
+      console.log('📥 RAW AI RESPONSE (FULL)');
+      console.log('═══════════════════════════════════════════');
+      console.log(`📏 Total length: ${rawResponse.length} characters`);
+      console.log('═══════════════════════════════════════════');
+      console.log(rawResponse);
+      console.log('═══════════════════════════════════════════\n');
+      
+      const recipeData = this.parseAIResponse(rawResponse);
+      
+      // Log the parsed recipe (after JSON parsing)
+      console.log('\n📦 ═══════════════════════════════════════════');
+      console.log('📦 PARSED RECIPE (After JSON Parsing)');
+      console.log('═══════════════════════════════════════════');
+      console.log(JSON.stringify(recipeData, null, 2));
+      console.log('═══════════════════════════════════════════\n');
       
       // Simple formatting - fill missing slots immediately
       const formattedRecipe = await this.quickFormatRecipe(recipeData, params);
+      
+      // Log the formatted recipe (after quickFormatRecipe)
+      console.log('\n✨ ═══════════════════════════════════════════');
+      console.log('✨ FORMATTED RECIPE (After quickFormatRecipe)');
+      console.log('═══════════════════════════════════════════');
+      console.log(JSON.stringify(formattedRecipe, null, 2));
+      console.log('═══════════════════════════════════════════\n');
+      
       console.log('✅ Recipe generation completed successfully');
       return formattedRecipe;
     } catch (error) {
