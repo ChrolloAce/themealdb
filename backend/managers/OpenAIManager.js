@@ -47,6 +47,8 @@ class OpenAIManager {
 
   /**
    * Get smart defaults based on recipe category/type
+   * ⚠️ NOTE: These are ONLY used as FALLBACKS when AI doesn't provide values.
+   * The AI should ALWAYS calculate times/servings based on the actual recipe being generated.
    */
   getSmartDefaults(category = 'Dinner', dishType = 'Main Courses', difficulty = 'Medium', servings = null) {
     // Smart defaults based on category
@@ -406,9 +408,14 @@ ${existingContext ? 'IMPORTANT: Create something different from the existing rec
 
 🚨 CRITICAL: ALL fields must have realistic values (no zeros, empty strings, or N/A):
 - strDescription: 2-3 appetizing sentences
-- Times: realistic prep/cook/total minutes (never 0)  
+- Times: Calculate REALISTIC prep/cook/total minutes based on THIS SPECIFIC RECIPE's complexity, ingredients, and cooking methods (never 0, never generic defaults)
+  * Count actual prep steps (chopping, mixing, etc.) to determine prepTime
+  * Count actual cooking steps and methods (baking, simmering, etc.) to determine cookTime
+  * totalTime = prepTime + cookTime
+  * Example: Simple salad = 10min prep, 0min cook. Complex stew = 30min prep, 90min cook.
 - servingSize: specify portion like "1 cup", "2 slices"
-- yield: specify output like "4 servings", "12 cookies"
+- yield: Calculate based on THIS RECIPE - specify output like "4 servings", "12 cookies", "2 portions"
+- numberOfServings: Calculate based on THIS RECIPE - 2 for snacks/appetizers, 4-6 for main dishes, 6-12 for desserts/cookies
 - nutrition: realistic numbers based on ingredients (NEVER use 0 for calories/protein/carbs/fat - calculate based on actual ingredients!)
 - dietary: appropriate true/false based on ingredients (vegetarian, vegan, pescatarian, glutenFree, dairyFree, keto, paleo, halal, noRedMeat, noPork, noShellfish, omnivore)
 - dishType: specify appropriate type based on the recipe (Appetizer, Soup, Salad, Main Course, Side Dish, Dessert, etc.)
@@ -479,10 +486,10 @@ Return ONLY this CLEAN JSON format with NO extra text (MODERN ARRAYS ONLY):
   "strDescription": "Brief appetizing 2-3 sentence description",
   "strTags": "tag1,tag2,tag3",
   "strMealThumb": "",
-  "prepTime": <realistic minutes based on recipe complexity>,
-  "cookTime": <realistic minutes based on recipe complexity>,
-  "totalTime": <prepTime + cookTime>,
-  "numberOfServings": <realistic number: 2 for snacks, 4 for meals, 6-8 for desserts>,
+  "prepTime": 20,
+  "cookTime": 30,
+  "totalTime": 50,
+  "numberOfServings": 4,
   "servingSize": "1 serving",
   "difficulty": "Easy/Medium/Hard",
   "instructions": [
@@ -1148,10 +1155,10 @@ Return ONLY this JSON:`;
     {"name": "ingredient name", "quantity": "1", "unit": "tsp", "optional": false, "required": true}
   ],
   "equipmentRequired": ["Equipment 1", "Equipment 2", "Equipment 3"],
-  "prepTime": <realistic minutes based on recipe complexity>,
-  "cookTime": <realistic minutes based on recipe complexity>,
-  "totalTime": <prepTime + cookTime>,
-  "numberOfServings": <realistic number: 2 for snacks, 4 for meals, 6-8 for desserts>,
+  "prepTime": 20,
+  "cookTime": 30,
+  "totalTime": 50,
+  "numberOfServings": 4,
   "servingSize": "1 serving",
   "difficulty": "${templateDifficulty}",
   "yield": "4 servings",
@@ -1372,10 +1379,10 @@ CRITICAL: Return ONLY valid JSON with ALL these fields filled with realistic num
   "strDescription": "${basicRecipe.strDescription}",
   "instructions": ${JSON.stringify(basicRecipe.instructions)},
   "ingredientsDetailed": ${JSON.stringify(basicRecipe.ingredientsDetailed || [])},
-  "prepTime": <realistic minutes based on recipe complexity>,
-  "cookTime": <realistic minutes based on recipe complexity>,
-  "totalTime": <prepTime + cookTime>,
-  "numberOfServings": <realistic number: 2 for snacks, 4 for meals, 6-8 for desserts>,
+  "prepTime": 20,
+  "cookTime": 30,
+  "totalTime": 50,
+  "numberOfServings": 4,
   "servingSize": "1 serving",
   "difficulty": "Medium",
   "yield": "4 servings",
@@ -2353,7 +2360,8 @@ Return ONLY valid JSON with this COMPLETE structure:
       equipmentRequired: equipmentRequired,
       
       // ✅ TIME AND SERVING INFO
-      // Use smart defaults based on recipe type
+      // Use smart defaults ONLY as fallback if AI didn't provide values (should be rare)
+      // The AI should always calculate times/servings based on the actual recipe
       ...(() => {
         const smartDefaults = this.getSmartDefaults(
           recipeData.strCategory || params.filters?.category || 'Dinner',
@@ -2361,11 +2369,39 @@ Return ONLY valid JSON with this COMPLETE structure:
           recipeData.difficulty || params.difficulty || params.randomDifficulty || 'Medium',
           params.servings || parseInt(recipeData.servings) || parseInt(recipeData.numberOfServings)
         );
+        // Only use defaults if AI didn't provide a value (null, undefined, NaN, empty string)
+        // Note: 0 is a valid value (e.g., no-cook recipes have 0 cookTime), so we check for null/undefined/NaN
+        const prepTime = parseInt(recipeData.prepTime);
+        const cookTime = parseInt(recipeData.cookTime);
+        const totalTime = parseInt(recipeData.totalTime);
+        const numberOfServings = parseInt(recipeData.numberOfServings) || parseInt(recipeData.servings) || params.servings;
+        
+        // Log when defaults are used
+        const usedDefaults = [];
+        const finalPrepTime = (!isNaN(prepTime) && prepTime !== null && prepTime !== undefined) ? prepTime : (usedDefaults.push('prepTime'), smartDefaults.prepTime);
+        const finalCookTime = (!isNaN(cookTime) && cookTime !== null && cookTime !== undefined) ? cookTime : (usedDefaults.push('cookTime'), smartDefaults.cookTime);
+        const finalTotalTime = (!isNaN(totalTime) && totalTime !== null && totalTime !== undefined) 
+            ? totalTime 
+            : ((!isNaN(prepTime) && !isNaN(cookTime) && prepTime !== null && cookTime !== null) 
+              ? prepTime + cookTime 
+              : (usedDefaults.push('totalTime'), smartDefaults.totalTime));
+        const finalServings = (numberOfServings && numberOfServings > 0) ? numberOfServings : (usedDefaults.push('numberOfServings'), smartDefaults.numberOfServings);
+        
+        if (usedDefaults.length > 0) {
+          console.log(`⚠️  FALLBACK USED: AI didn't provide ${usedDefaults.join(', ')}. Using smart defaults:`);
+          if (usedDefaults.includes('prepTime')) console.log(`   📝 prepTime: ${finalPrepTime} min (default for ${recipeData.strCategory || 'Dinner'})`);
+          if (usedDefaults.includes('cookTime')) console.log(`   🔥 cookTime: ${finalCookTime} min (default for ${recipeData.strCategory || 'Dinner'})`);
+          if (usedDefaults.includes('totalTime')) console.log(`   ⏱️  totalTime: ${finalTotalTime} min (default for ${recipeData.strCategory || 'Dinner'})`);
+          if (usedDefaults.includes('numberOfServings')) console.log(`   🍽️  numberOfServings: ${finalServings} (default for ${recipeData.strCategory || 'Dinner'})`);
+        } else {
+          console.log(`✅ AI provided all times/servings: prep=${finalPrepTime}min, cook=${finalCookTime}min, total=${finalTotalTime}min, servings=${finalServings}`);
+        }
+        
         return {
-          prepTime: parseInt(recipeData.prepTime) || smartDefaults.prepTime,
-          cookTime: parseInt(recipeData.cookTime) || smartDefaults.cookTime,
-          totalTime: parseInt(recipeData.totalTime) || parseInt(recipeData.prepTime) + parseInt(recipeData.cookTime) || smartDefaults.totalTime,
-          numberOfServings: parseInt(recipeData.numberOfServings) || parseInt(recipeData.servings) || params.servings || smartDefaults.numberOfServings
+          prepTime: finalPrepTime,
+          cookTime: finalCookTime,
+          totalTime: finalTotalTime,
+          numberOfServings: finalServings
         };
       })(),
       servingSize: recipeData.servingSize || '1 cup',

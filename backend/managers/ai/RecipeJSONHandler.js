@@ -85,6 +85,11 @@ class RecipeJSONHandler {
     const smartDefaults = getSmartDefaults(category, dishType);
     const smartEquipment = getSmartEquipment(dishType);
 
+    console.log(`⚠️  FALLBACK RECIPE CREATED: Using smart defaults for all fields`);
+    console.log(`   📝 Times: prep=${smartDefaults.prep}min, cook=${smartDefaults.cook}min, total=${smartDefaults.total}min (defaults for ${category})`);
+    console.log(`   🍽️  Servings: ${smartDefaults.servings} (default for ${category})`);
+    console.log(`   🔧 Equipment: ${smartEquipment.join(', ')} (default for ${dishType})`);
+
     return {
       strMeal: recipeName,
       strCategory: category,
