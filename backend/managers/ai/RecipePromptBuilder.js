@@ -154,9 +154,13 @@ THIS IS THE MOST IMPORTANT RULE - FAILURE = REJECTED RECIPE:
    ❌ Instructions: "season with salt" but strIngredient1-20 has NO salt
    ❌ Instructions: "crack eggs into bowl" but strIngredient1-20 has NO eggs
 
-13. 🚫 NEVER use "to taste" measurements - ALWAYS specific amounts:
-   ✅ CORRECT: strIngredient: "Salt", strMeasure: "1/2 tsp"
-   ❌ WRONG: strIngredient: "Salt", strMeasure: "to taste"
+13. 🚫 Measurement rules:
+   ✅ CORRECT: {"name": "Salt", "quantity": "1/2", "unit": "tsp"}
+   ✅ CORRECT: {"name": "Salt", "quantity": "", "unit": "to taste"} (no quantity if using "to taste")
+   ✅ CORRECT: {"name": "Fresh cilantro", "quantity": "", "unit": "to garnish"} (no quantity if using "to garnish")
+   ✅ CORRECT: {"name": "Crusty bread", "quantity": "", "unit": "to serve"} (no quantity if using "to serve")
+   ❌ WRONG: {"name": "Salt", "quantity": "1", "unit": "to taste"} (can't have quantity AND "to taste")
+   ❌ WRONG: {"name": "Fresh cilantro", "quantity": "2", "unit": "to garnish"} (can't have quantity AND "to garnish")
 
 🚨🚨🚨 ALLOWED VALUES - YOU MUST PICK FROM THESE EXACT LISTS 🚨🚨🚨
 DO NOT MAKE UP YOUR OWN VALUES - CHOOSE FROM THESE LISTS ONLY:

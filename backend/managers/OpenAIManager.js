@@ -362,9 +362,12 @@ ${existingContext ? 'IMPORTANT: Create something different from the existing rec
 - Mention equipment positioning, ingredient preparation sequence, and workspace management
 - Include safety precautions, proper handling techniques, and storage instructions where needed
 - Add sensory descriptions (what to smell, hear, see, feel) at each critical stage
-- Instructions: MUST be an ARRAY with 25+ separate items, each item is ONE complete step ["ultra-detailed first instruction with temperatures, times, visual cues, techniques, professional tips, and safety notes", "ultra-detailed second instruction continuing with same comprehensive level of detail", "ultra-detailed third instruction breaking down prep work separately", "each subsequent instruction must be extremely granular with specific temperatures, exact times, visual indicators, troubleshooting tips, and professional techniques"]
+- Instructions: MUST be an ARRAY with 25+ separate items, each item is ONE complete step
+- CRITICAL: Return instructions as an ARRAY: ["first step", "second step", "third step"] NOT as a string: "first step. second step. third step"
 - CRITICAL: Each array item is a SEPARATE step - do NOT combine multiple steps into one string
 - CRITICAL: Do NOT include "Step 1:", "Step 2:", etc. in the instruction text - the array index already indicates the step number
+- Example CORRECT format: ["Begin by washing vegetables", "Heat skillet over medium heat", "Add oil to pan"]
+- Example WRONG format: "Begin by washing vegetables. Heat skillet. Add oil." (this is a string, not an array!)
 
 🚨 CRITICAL: INSTRUCTION LOGIC RULES - FOLLOW THESE EXACTLY:
 - ONLY include steps that are ACTUALLY NEEDED for this specific recipe
@@ -492,9 +495,12 @@ Make it innovative and delicious. Use unexpected flavor combinations or techniqu
 - Mention equipment positioning, ingredient preparation sequence, and workspace management
 - Include safety precautions, proper handling techniques, and storage instructions where needed
 - Add sensory descriptions (what to smell, hear, see, feel) at each critical stage
-- Instructions: MUST be an ARRAY with 25+ separate items, each item is ONE complete step ["ultra-detailed first instruction with temperatures, times, visual cues, techniques, professional tips, and safety notes", "ultra-detailed second instruction continuing with same comprehensive level of detail", "ultra-detailed third instruction breaking down prep work separately", "each subsequent instruction must be extremely granular with specific temperatures, exact times, visual indicators, troubleshooting tips, and professional techniques"]
+- Instructions: MUST be an ARRAY with 25+ separate items, each item is ONE complete step
+- CRITICAL: Return instructions as an ARRAY: ["first step", "second step", "third step"] NOT as a string: "first step. second step. third step"
 - CRITICAL: Each array item is a SEPARATE step - do NOT combine multiple steps into one string
 - CRITICAL: Do NOT include "Step 1:", "Step 2:", etc. in the instruction text - the array index already indicates the step number
+- Example CORRECT format: ["Begin by washing vegetables", "Heat skillet over medium heat", "Add oil to pan"]
+- Example WRONG format: "Begin by washing vegetables. Heat skillet. Add oil." (this is a string, not an array!)
 
 🚨 CRITICAL: INSTRUCTION LOGIC RULES - FOLLOW THESE EXACTLY:
 - ONLY include steps that are ACTUALLY NEEDED for this specific recipe
@@ -855,11 +861,13 @@ THIS IS THE MOST IMPORTANT RULE - FAILURE = REJECTED RECIPE:
    Step C: Cross-check: Does EVERY ingredient get used? If not, DELETE it from the list
    Step D: Cross-check: Does EVERY ingredient mentioned in instructions exist in the list? If not, ADD it
 
-⚠️ IRON-CLAD RULE #5: SPECIFIC AMOUNTS (NO "TO TASTE")
+⚠️ IRON-CLAD RULE #5: MEASUREMENT RULES
    ✅ CORRECT: {"name": "Salt", "quantity": "1/2", "unit": "tsp"}
-   ❌ WRONG: {"name": "Salt", "quantity": "1", "unit": "to taste"}
-   ✅ CORRECT: {"name": "Black Pepper", "quantity": "1/4", "unit": "tsp"}
-   ❌ WRONG: {"name": "Black Pepper", "quantity": "1", "unit": "to taste"}
+   ✅ CORRECT: {"name": "Salt", "quantity": "", "unit": "to taste"} (no quantity if using "to taste")
+   ✅ CORRECT: {"name": "Fresh cilantro", "quantity": "", "unit": "to garnish"} (no quantity if using "to garnish")
+   ✅ CORRECT: {"name": "Crusty bread", "quantity": "", "unit": "to serve"} (no quantity if using "to serve")
+   ❌ WRONG: {"name": "Salt", "quantity": "1", "unit": "to taste"} (can't have quantity AND "to taste")
+   ❌ WRONG: {"name": "Fresh cilantro", "quantity": "2", "unit": "to garnish"} (can't have quantity AND "to garnish")
 
 ⚠️ IRON-CLAD RULE #6: FINAL VERIFICATION CHECKLIST
    □ Count ingredients in list: ___
@@ -974,11 +982,13 @@ THIS IS THE MOST IMPORTANT RULE - FAILURE = REJECTED RECIPE:
    Step C: Cross-check: Does EVERY ingredient get used? If not, DELETE it from the list
    Step D: Cross-check: Does EVERY ingredient mentioned in instructions exist in the list? If not, ADD it
 
-⚠️ IRON-CLAD RULE #5: SPECIFIC AMOUNTS (NO "TO TASTE")
+⚠️ IRON-CLAD RULE #5: MEASUREMENT RULES
    ✅ CORRECT: {"name": "Salt", "quantity": "1/2", "unit": "tsp"}
-   ❌ WRONG: {"name": "Salt", "quantity": "1", "unit": "to taste"}
-   ✅ CORRECT: {"name": "Black Pepper", "quantity": "1/4", "unit": "tsp"}
-   ❌ WRONG: {"name": "Black Pepper", "quantity": "1", "unit": "to taste"}
+   ✅ CORRECT: {"name": "Salt", "quantity": "", "unit": "to taste"} (no quantity if using "to taste")
+   ✅ CORRECT: {"name": "Fresh cilantro", "quantity": "", "unit": "to garnish"} (no quantity if using "to garnish")
+   ✅ CORRECT: {"name": "Crusty bread", "quantity": "", "unit": "to serve"} (no quantity if using "to serve")
+   ❌ WRONG: {"name": "Salt", "quantity": "1", "unit": "to taste"} (can't have quantity AND "to taste")
+   ❌ WRONG: {"name": "Fresh cilantro", "quantity": "2", "unit": "to garnish"} (can't have quantity AND "to garnish")
 
 ⚠️ IRON-CLAD RULE #6: FINAL VERIFICATION CHECKLIST
    □ Count ingredients in list: ___
@@ -2138,7 +2148,7 @@ Return ONLY valid JSON with this COMPLETE structure:
 - Fill ALL ingredient slots (1-20) - use empty string "" for unused slots, NEVER null or undefined
 - Create 6-12 detailed COOKING STEPS (not descriptions) - "Heat oil in pan", "Add chicken and cook 5 minutes"
 - Use ONLY the allowed equipment list provided above
-- 🚫 BANNED WORDS: "N/A", "TBD", "Unknown", "Various", "As needed", "To taste"
+- 🚫 BANNED WORDS: "N/A", "TBD", "Unknown", "Various"
 - ✅ REQUIRED: Specific times (15 min, 25 min), specific amounts (2 cups, 1 tbsp)
 - ✅ REQUIRED: Real nutritional values (350 calories, 28g protein)
 - ✅ REQUIRED: Specific recipe names (Tuscan Herb Chicken Pasta, not "Pasta Dish")
@@ -2154,6 +2164,14 @@ Return ONLY valid JSON with this COMPLETE structure:
     
     // ✅ INSTRUCTIONS: ONLY array format
     let instructionsArray = recipeData.instructions || [];
+    
+    // If instructions is a string instead of array, split it
+    if (typeof instructionsArray === 'string') {
+      console.log('⚠️  Instructions came as string, splitting into array...');
+      instructionsArray = this.parseInstructionsToArray(instructionsArray);
+    }
+    
+    // Ensure it's an array
     if (!Array.isArray(instructionsArray) || instructionsArray.length === 0) {
       if (recipeData.strInstructions) {
         // Convert old string format to array if present
@@ -2162,6 +2180,16 @@ Return ONLY valid JSON with this COMPLETE structure:
         instructionsArray = ['Prepare ingredients according to recipe', 'Cook as directed', 'Serve hot'];
       }
     }
+    
+    // Ensure each instruction is a separate string (not combined)
+    instructionsArray = instructionsArray.map(inst => {
+      if (typeof inst === 'string' && inst.includes('Step 1:') && inst.includes('Step 2:')) {
+        // If a single string contains multiple steps, split it
+        console.log('⚠️  Found combined steps in single string, splitting...');
+        return inst.split(/Step \d+:/i).filter(s => s.trim()).map(s => s.trim());
+      }
+      return inst;
+    }).flat().filter(inst => inst && inst.trim().length > 0);
     
     // ✅ INGREDIENTS: ONLY detailed array format
     let ingredientsDetailed = Array.isArray(recipeData.ingredientsDetailed) ? recipeData.ingredientsDetailed : [];
@@ -2369,19 +2397,17 @@ Return ONLY valid JSON with this COMPLETE structure:
         continue;
       }
       
-      // Fix "to taste" measurements
-      if (ing.quantity === 'to taste' || ing.unit === 'to taste' || (ing.unit && ing.unit.includes('to taste'))) {
-        // If it's optional/garnish, REMOVE it entirely
-        if (ing.optional === true) {
-          console.log(`   ❌ OPTIONAL "TO TASTE" REMOVED: "${ing.name}" (garnish)`);
-          continue;
-        }
-        
-        // Otherwise, give it a sensible default
-        const defaultAmount = this.getDefaultMeasurement(ing.name);
-        console.log(`   ⚠️  FIXED "TO TASTE": "${ing.name}" → ${defaultAmount.quantity} ${defaultAmount.unit}`);
-        ing.quantity = defaultAmount.quantity;
-        ing.unit = defaultAmount.unit;
+      // Fix measurements: if "to taste", "to garnish", "to serve" is used, ensure quantity is empty
+      const vaguePatterns = ['to taste', 'to garnish', 'to serve', 'as needed', 'for garnish', 'for serving'];
+      const hasVagueMeasurement = vaguePatterns.some(pattern => 
+        ing.unit === pattern || 
+        (ing.unit && ing.unit.includes(pattern))
+      );
+      
+      if (hasVagueMeasurement && ing.quantity && ing.quantity.trim() !== '') {
+        // If using "to taste" etc., quantity must be empty
+        console.log(`   ⚠️  FIXED: "${ing.name}" - removed quantity "${ing.quantity}" because unit is "${ing.unit}"`);
+        ing.quantity = '';
       }
       
       // Add to cleaned array
