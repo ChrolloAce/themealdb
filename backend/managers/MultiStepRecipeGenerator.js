@@ -227,9 +227,9 @@ Return JSON:
   "recipeName": "Creative recipe name",
   "description": "2-3 appetizing sentences",
   "instructions": [
-    "Step 1: Begin by thoroughly washing [specific ingredient] under cold running water for 30 seconds, patting dry with paper towels, and arranging all ingredients in order of use on a clean work surface.",
-    "Step 2: Preheat the [equipment] to [temperature]°F ([celsius]°C), positioning the rack in the center, and allowing 15-20 minutes for proper heat distribution.",
-    "Step 3: [Continue with ultra-detailed steps]",
+    "[Start with the FIRST actual cooking/prep step needed - only include washing/prep if actually required for this recipe]",
+    "[Continue with next logical step - ONLY preheat oven if recipe actually uses oven/baking]",
+    "[Continue with ultra-detailed steps]",
     ... (25-40 total steps)
   ],
   "prepTime": number (realistic minutes),
@@ -237,7 +237,13 @@ Return JSON:
   "totalTime": number (realistic minutes)
 }
 
-🚨 CRITICAL: Every ingredient and piece of equipment MUST be used in the instructions!`;
+🚨 CRITICAL RULES FOR INSTRUCTIONS:
+1. ONLY include steps that are ACTUALLY NEEDED for this specific recipe
+2. If recipe uses OVEN/BAKING: Include preheating step early (Step 1-3)
+3. If recipe is STOVETOP ONLY: Do NOT include oven preheating - start with actual prep/cooking steps
+4. If recipe is RAW/NO-COOK: Start with prep steps, no heating steps
+5. Every ingredient and piece of equipment MUST be used in the instructions
+6. Do NOT add unnecessary steps just to fill space - every step must serve a purpose!`;
 
     const completion = await this.openai.chat.completions.create({
       model: this.model,

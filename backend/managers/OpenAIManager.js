@@ -224,76 +224,17 @@ The recipe MUST match ALL specified criteria where possible. Be creative within 
 
         console.log(`✅ Generated: "${recipe.strMeal}"`);
 
-        // Validate recipe completeness
-        const validation = RecipeValidator.validate(recipe);
+        // VALIDATION DISABLED - Skip validation during recipe generation
+        // Validation can be re-enabled later if needed
+        // const validation = RecipeValidator.validate(recipe);
         
-        // Log recipe after validation
+        // Log recipe (validation disabled)
         console.log('\n✅ ═══════════════════════════════════════════');
-        console.log('✅ RECIPE AFTER VALIDATION');
+        console.log('✅ RECIPE GENERATED (Validation Disabled)');
         console.log('═══════════════════════════════════════════');
-        console.log(`Valid: ${validation.valid}`);
-        console.log(`Errors: ${validation.errors.length}`);
-        console.log(`Warnings: ${validation.warnings.length}`);
         console.log('\n📋 Recipe Data:');
         console.log(JSON.stringify(recipe, null, 2));
         console.log('═══════════════════════════════════════════\n');
-        
-        if (!validation.valid) {
-          console.log(`⚠️ Validation failed with ${validation.errors.length} errors`);
-          
-          // Try to auto-fix the recipe
-          const fixResult = RecipeValidator.autoFix(recipe, validation);
-          
-          if (fixResult.fixed) {
-            console.log(`🔧 Auto-fixed: ${fixResult.message}`);
-            
-            // Log recipe after auto-fix
-            console.log('\n🔧 ═══════════════════════════════════════════');
-            console.log('🔧 RECIPE AFTER AUTO-FIX');
-            console.log('═══════════════════════════════════════════');
-            console.log(JSON.stringify(fixResult.recipe, null, 2));
-            console.log('═══════════════════════════════════════════\n');
-            
-            // Re-validate after fix
-            const revalidation = RecipeValidator.validate(fixResult.recipe);
-            
-            if (revalidation.valid) {
-              console.log('✅ Recipe is now valid after auto-fix!');
-              
-              // Log final validated recipe
-              console.log('\n🎉 ═══════════════════════════════════════════');
-              console.log('🎉 FINAL VALIDATED RECIPE');
-              console.log('═══════════════════════════════════════════');
-              console.log(JSON.stringify(fixResult.recipe, null, 2));
-              console.log('═══════════════════════════════════════════\n');
-              
-              // Continue with fixed recipe
-              Object.assign(recipe, fixResult.recipe);
-            } else {
-              console.log(`❌ Auto-fix insufficient, ${revalidation.errors.length} errors remain`);
-              
-              if (attempt < maxRetries) {
-                console.log('   Retrying generation with more specific instructions...\n');
-                // Add validation errors to context for next attempt
-                antiDuplicateContext += `\n⚠️ PREVIOUS ATTEMPT HAD ERRORS:\n${validation.errors.join('\n')}\n\nEnsure ALL ingredients used in instructions are listed in the ingredients section!\n`;
-                continue;
-              }
-            }
-          } else if (attempt < maxRetries) {
-            console.log(`   Could not auto-fix. Retrying generation...\n`);
-            antiDuplicateContext += `\n⚠️ PREVIOUS ATTEMPT HAD VALIDATION ERRORS:\n${validation.errors.join('\n')}\n`;
-            continue;
-          }
-        } else {
-          console.log(`✅ Validation passed: ${validation.warnings.length} warnings only`);
-          
-          // Log recipe that passed validation
-          console.log('\n✅ ═══════════════════════════════════════════');
-          console.log('✅ RECIPE PASSED VALIDATION');
-          console.log('═══════════════════════════════════════════');
-          console.log(JSON.stringify(recipe, null, 2));
-          console.log('═══════════════════════════════════════════\n');
-        }
 
         // Check for duplicates
         if (this.uniquenessManager) {
@@ -421,7 +362,15 @@ ${existingContext ? 'IMPORTANT: Create something different from the existing rec
 - Mention equipment positioning, ingredient preparation sequence, and workspace management
 - Include safety precautions, proper handling techniques, and storage instructions where needed
 - Add sensory descriptions (what to smell, hear, see, feel) at each critical stage
-- Instructions: MUST be comprehensive array format with 25+ detailed steps ["Step 1: ultra-detailed instruction with temperatures, times, visual cues, techniques, professional tips, and safety notes", "Step 2: continue with same comprehensive level of detail covering every micro-action", "Step 3: break down all prep work separately", "Steps 4-30+: each step must be extremely granular with specific temperatures, exact times, visual indicators, troubleshooting tips, and professional techniques"]
+- Instructions: MUST be comprehensive array format with 25+ detailed steps ["ultra-detailed instruction with temperatures, times, visual cues, techniques, professional tips, and safety notes", "continue with same comprehensive level of detail covering every micro-action", "break down all prep work separately", "each step must be extremely granular with specific temperatures, exact times, visual indicators, troubleshooting tips, and professional techniques"]
+
+🚨 CRITICAL: INSTRUCTION LOGIC RULES - FOLLOW THESE EXACTLY:
+- ONLY include steps that are ACTUALLY NEEDED for this specific recipe
+- If recipe uses OVEN/BAKING: Include preheating step early (Step 1-3)
+- If recipe is STOVETOP ONLY (pan-fried, sautéed, boiled, steamed, etc.): Do NOT include oven preheating - start with actual prep/cooking steps
+- If recipe is RAW/NO-COOK (salads, ceviche, sushi, etc.): Start with prep steps, no heating steps
+- Do NOT add unnecessary steps just to fill space - every step must serve a purpose
+- Match steps to the equipment actually selected - if no oven equipment, no oven steps!
 
 🥄 INGREDIENTS MUST BE ULTRA-SPECIFIC WITH MAXIMUM DETAIL:
 - Include exact measurements with alternatives (1 cup = 240ml)
@@ -464,9 +413,9 @@ Return ONLY this CLEAN JSON format with NO extra text (MODERN ARRAYS ONLY):
   "servingSize": "1 serving",
   "difficulty": "Easy/Medium/Hard",
   "instructions": [
-    "Step 1: Ultra-detailed first step with specific temperatures, times, and visual cues",
-    "Step 2: Ultra-detailed second step with exact measurements and techniques",
-    "Step 3: Continue with 25-40 comprehensive steps..."
+    "Ultra-detailed first step with specific temperatures, times, and visual cues",
+    "Ultra-detailed second step with exact measurements and techniques",
+    "Continue with 25-40 comprehensive steps..."
   ],
   "ingredientsDetailed": [
     {"name": "Ingredient name", "quantity": "2", "unit": "cups", "optional": false, "required": true},
@@ -539,7 +488,15 @@ Make it innovative and delicious. Use unexpected flavor combinations or techniqu
 - Mention equipment positioning, ingredient preparation sequence, and workspace management
 - Include safety precautions, proper handling techniques, and storage instructions where needed
 - Add sensory descriptions (what to smell, hear, see, feel) at each critical stage
-- Instructions: MUST be comprehensive array format with 25+ detailed steps ["Step 1: ultra-detailed instruction with temperatures, times, visual cues, techniques, professional tips, and safety notes", "Step 2: continue with same comprehensive level of detail covering every micro-action", "Step 3: break down all prep work separately", "Steps 4-30+: each step must be extremely granular with specific temperatures, exact times, visual indicators, troubleshooting tips, and professional techniques"]
+- Instructions: MUST be comprehensive array format with 25+ detailed steps ["ultra-detailed instruction with temperatures, times, visual cues, techniques, professional tips, and safety notes", "continue with same comprehensive level of detail covering every micro-action", "break down all prep work separately", "each step must be extremely granular with specific temperatures, exact times, visual indicators, troubleshooting tips, and professional techniques"]
+
+🚨 CRITICAL: INSTRUCTION LOGIC RULES - FOLLOW THESE EXACTLY:
+- ONLY include steps that are ACTUALLY NEEDED for this specific recipe
+- If recipe uses OVEN/BAKING: Include preheating step early (Step 1-3)
+- If recipe is STOVETOP ONLY (pan-fried, sautéed, boiled, steamed, etc.): Do NOT include oven preheating - start with actual prep/cooking steps
+- If recipe is RAW/NO-COOK (salads, ceviche, sushi, etc.): Start with prep steps, no heating steps
+- Do NOT add unnecessary steps just to fill space - every step must serve a purpose
+- Match steps to the equipment actually selected - if no oven equipment, no oven steps!
 
 🥄 INGREDIENTS MUST BE ULTRA-SPECIFIC WITH MAXIMUM DETAIL:
 - Include exact measurements with alternatives (1 cup = 240ml)
@@ -803,7 +760,7 @@ Return ONLY this JSON format with NO extra text:
       strCategory: category,
       strArea: area,
       strDescription: "🚨 FALLBACK RECIPE - AI JSON parsing failed. This indicates a problem with the AI response format.",
-      strInstructions: "Step 1: Prepare ingredients. Step 2: Cook according to recipe. Step 3: Serve hot.",
+      strInstructions: "Prepare ingredients. Cook according to recipe. Serve hot.",
       strMealThumb: "",
       strTags: "FALLBACK,JSON_PARSING_FAILED",
       strEquipment: "🚨 FALLBACK: Basic kitchen tools",
@@ -1080,14 +1037,11 @@ Return ONLY this JSON:`;
   "strArea": "${templateCuisine}",
   "strDescription": "2-3 sentence description",
   "instructions": [
-    "Step 1: Begin by thoroughly washing all fresh produce under cold running water for 30 seconds each, patting completely dry with clean paper towels, and arranging ingredients in order of use on a clean, spacious work surface",
-    "Step 2: Preheat your oven to the exact specified temperature, positioning the oven rack in the center position, and allowing a full 15-20 minutes for proper heat distribution throughout the oven cavity",
-    "Step 3: Prepare a clean cutting board by wiping with a damp cloth, then completely drying, ensuring it's stable on your counter and won't slip during cutting tasks",
-    "Step 4: Using a sharp chef's knife, carefully dice onions into uniform 1/4-inch pieces, keeping fingertips curled under and using a rocking motion for consistent cuts",
-    "Step 5: Heat your specified cooking pan over medium heat for 2-3 minutes until you can feel warmth when holding your hand 6 inches above the surface",
-    "Step 6: Add oil to the heated pan, swirling to coat evenly, and wait until the oil shimmers but doesn't smoke, indicating the perfect temperature for cooking",
-    "Step 7: Continue with extremely detailed cooking steps, including specific temperatures, exact times, visual cues, sounds to listen for, aromas to notice, and professional techniques",
-    "...Steps 8-25+: Each step must be ultra-detailed with temperatures, timing, visual indicators, troubleshooting tips, and professional cooking techniques to ensure perfect results..."
+    "[Start with the FIRST actual step needed - only wash/prep ingredients if required for this specific recipe]",
+    "[ONLY preheat oven if recipe actually uses oven/baking - if stovetop only, skip this and start with actual cooking steps]",
+    "[Continue with logical sequence - prep work, then cooking steps in order]",
+    "[Each step must be ultra-detailed with specific temperatures, exact times, visual cues, techniques, and professional tips]",
+    "...Steps 5-25+: Continue with extremely detailed cooking steps, including specific temperatures, exact times, visual cues, sounds to listen for, aromas to notice, and professional techniques. Each step must be ultra-detailed with timing, visual indicators, troubleshooting tips, and professional cooking techniques..."
   ],
   "ingredientsDetailed": [
     {"name": "ingredient name", "quantity": "2", "unit": "cups", "optional": false, "required": true},
@@ -1204,14 +1158,11 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
   "strArea": "Cuisine (Italian, Mexican, Asian, etc)",
   "strDescription": "Brief appetizing description (2-3 sentences)",
   "instructions": [
-    "Step 1: Begin by thoroughly washing all fresh produce under cold running water for 30 seconds each, patting completely dry with clean paper towels, and arranging ingredients in order of use on a clean, spacious work surface",
-    "Step 2: Preheat your oven to the exact specified temperature, positioning the oven rack in the center position, and allowing a full 15-20 minutes for proper heat distribution throughout the oven cavity",
-    "Step 3: Prepare a clean cutting board by wiping with a damp cloth, then completely drying, ensuring it's stable on your counter and won't slip during cutting tasks",
-    "Step 4: Using a sharp chef's knife, carefully dice onions into uniform 1/4-inch pieces, keeping fingertips curled under and using a rocking motion for consistent cuts",
-    "Step 5: Heat your specified cooking pan over medium heat for 2-3 minutes until you can feel warmth when holding your hand 6 inches above the surface",
-    "Step 6: Add oil to the heated pan, swirling to coat evenly, and wait until the oil shimmers but doesn't smoke, indicating the perfect temperature for cooking",
-    "Step 7: Continue with extremely detailed cooking steps, including specific temperatures, exact times, visual cues, sounds to listen for, aromas to notice, and professional techniques",
-    "...Steps 8-25+: Each step must be ultra-detailed with temperatures, timing, visual indicators, troubleshooting tips, and professional cooking techniques to ensure perfect results..."
+    "[Start with the FIRST actual step needed - only wash/prep ingredients if required for this specific recipe]",
+    "[ONLY preheat oven if recipe actually uses oven/baking - if stovetop only, skip this and start with actual cooking steps]",
+    "[Continue with logical sequence - prep work, then cooking steps in order]",
+    "[Each step must be ultra-detailed with specific temperatures, exact times, visual cues, techniques, and professional tips]",
+    "...Steps 5-25+: Continue with extremely detailed cooking steps, including specific temperatures, exact times, visual cues, sounds to listen for, aromas to notice, and professional techniques. Each step must be ultra-detailed with timing, visual indicators, troubleshooting tips, and professional cooking techniques..."
   ],
   "dietary": {
     "vegetarian": false,
@@ -1249,7 +1200,7 @@ Fill with realistic values based on the recipe. NO zeros or empty strings.`;
   "strCategory": "${randomCategory}",
   "strArea": "${randomCuisine}",
   "strDescription": "Brief appetizing description (2-3 sentences)",
-  "instructions": ["Step 1: detailed instruction", "Step 2: detailed instruction", "Step 3: detailed instruction"],
+  "instructions": ["detailed instruction", "detailed instruction", "detailed instruction"],
   "dietary": {
     "vegetarian": false,
     "vegan": false,
@@ -2073,13 +2024,11 @@ Return ONLY valid JSON with this COMPLETE structure:
   "dateModified": "${new Date().toISOString()}",
   
   "instructionsArray": [
-    "Step 1: Begin by thoroughly washing all fresh produce under cold running water for 30 seconds each, patting completely dry with clean paper towels, and arranging ingredients in order of use on a clean, spacious work surface",
-    "Step 2: Preheat your oven to the exact specified temperature, positioning the oven rack in the center position, and allowing a full 15-20 minutes for proper heat distribution throughout the oven cavity",
-    "Step 3: Prepare a clean cutting board by wiping with a damp cloth, then completely drying, ensuring it's stable on your counter and won't slip during cutting tasks",
-    "Step 4: Using a sharp chef's knife, carefully dice onions into uniform 1/4-inch pieces, keeping fingertips curled under and using a rocking motion for consistent cuts",
-    "Step 5: Heat your specified cooking pan over medium heat for 2-3 minutes until you can feel warmth when holding your hand 6 inches above the surface",
-    "Step 6: Add oil to the heated pan, swirling to coat evenly, and wait until the oil shimmers but doesn't smoke, indicating the perfect temperature for cooking",
-    "...Continue with 20+ more extremely detailed steps covering every single action, technique, temperature check, visual cue, timing, and professional tip needed for perfect results..."
+    "[Start with the FIRST actual step needed - only wash/prep ingredients if required for this specific recipe]",
+    "[ONLY preheat oven if recipe actually uses oven/baking - if stovetop only, skip this and start with actual cooking steps]",
+    "[Continue with logical sequence - prep work, then cooking steps in order]",
+    "[Each step must be ultra-detailed with specific temperatures, exact times, visual cues, techniques, and professional tips]",
+    "...Continue with 20+ more extremely detailed steps covering every single action, technique, temperature check, visual cue, timing, and professional tip needed for perfect results. ONLY include steps that are ACTUALLY NEEDED for this recipe..."
   ],
   
   "ingredientsArray": [

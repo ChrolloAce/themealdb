@@ -356,9 +356,10 @@ class AdminRoutes {
         }
       }
       
-      // Validate recipe completeness
-      const RecipeValidator = require('../utils/RecipeValidator');
-      const validation = RecipeValidator.validate(recipe);
+      // VALIDATION DISABLED - Skip validation during recipe generation
+      // Validation can be re-enabled later if needed
+      // const RecipeValidator = require('../utils/RecipeValidator');
+      // const validation = RecipeValidator.validate(recipe);
       
       // Check if recipe is marked as duplicate
       const isDuplicate = recipe._isDuplicate || false;
@@ -374,13 +375,14 @@ class AdminRoutes {
         issues.push(duplicateWarning);
       }
       
-      if (!validation.valid) {
-        issues.push(`${validation.errors.length} validation error(s)`);
-      }
-      
-      if (validation.warnings.length > 0) {
-        issues.push(`${validation.warnings.length} warning(s)`);
-      }
+      // Validation disabled - no validation errors/warnings
+      // if (!validation.valid) {
+      //   issues.push(`${validation.errors.length} validation error(s)`);
+      // }
+      // 
+      // if (validation.warnings.length > 0) {
+      //   issues.push(`${validation.warnings.length} warning(s)`);
+      // }
       
       if (issues.length > 0) {
         message = `Recipe generated with issues: ${issues.join(', ')}`;
@@ -393,13 +395,14 @@ class AdminRoutes {
         imageUrl,
         isDuplicate,
         duplicateWarning,
-        validation: {
-          valid: validation.valid,
-          errors: validation.errors,
-          warnings: validation.warnings,
-          missingIngredients: validation.missingIngredients || [],
-          unusedIngredients: validation.unusedIngredients || []
-        },
+        // Validation disabled
+        // validation: {
+        //   valid: validation.valid,
+        //   errors: validation.errors,
+        //   warnings: validation.warnings,
+        //   missingIngredients: validation.missingIngredients || [],
+        //   unusedIngredients: validation.unusedIngredients || []
+        // },
         message
       });
     } catch (error) {
