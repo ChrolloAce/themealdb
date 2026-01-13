@@ -861,13 +861,16 @@ THIS IS THE MOST IMPORTANT RULE - FAILURE = REJECTED RECIPE:
    Step C: Cross-check: Does EVERY ingredient get used? If not, DELETE it from the list
    Step D: Cross-check: Does EVERY ingredient mentioned in instructions exist in the list? If not, ADD it
 
-⚠️ IRON-CLAD RULE #5: MEASUREMENT RULES
+⚠️ IRON-CLAD RULE #5: MEASUREMENT RULES - EXACT MEASUREMENTS REQUIRED
+   🚨 CRITICAL: ALWAYS use EXACT measurements for ALL ingredients, including salt, pepper, and seasonings
    ✅ CORRECT: {"name": "Salt", "quantity": "1/2", "unit": "tsp"}
-   ✅ CORRECT: {"name": "Salt", "quantity": "", "unit": "to taste"} (no quantity if using "to taste")
-   ✅ CORRECT: {"name": "Fresh cilantro", "quantity": "", "unit": "to garnish"} (no quantity if using "to garnish")
-   ✅ CORRECT: {"name": "Crusty bread", "quantity": "", "unit": "to serve"} (no quantity if using "to serve")
-   ❌ WRONG: {"name": "Salt", "quantity": "1", "unit": "to taste"} (can't have quantity AND "to taste")
-   ❌ WRONG: {"name": "Fresh cilantro", "quantity": "2", "unit": "to garnish"} (can't have quantity AND "to garnish")
+   ✅ CORRECT: {"name": "Black pepper", "quantity": "1/4", "unit": "tsp"}
+   ✅ CORRECT: {"name": "Cumin", "quantity": "1", "unit": "tsp"}
+   ✅ CORRECT: {"name": "Fresh cilantro", "quantity": "2", "unit": "tbsp"} (for garnish, use exact amount like 2 tbsp)
+   ❌ WRONG: {"name": "Salt", "quantity": "", "unit": "to taste"} (MUST use exact measurement like "1/2 tsp")
+   ❌ WRONG: {"name": "Pepper", "quantity": "", "unit": "to taste"} (MUST use exact measurement like "1/4 tsp")
+   ❌ WRONG: {"name": "Fresh cilantro", "quantity": "", "unit": "to garnish"} (MUST use exact measurement like "2 tbsp")
+   📝 For seasonings: Use realistic amounts (e.g., salt: 1/4 to 1 tsp, pepper: 1/4 to 1/2 tsp, herbs: 1-2 tbsp)
 
 ⚠️ IRON-CLAD RULE #6: FINAL VERIFICATION CHECKLIST
    □ Count ingredients in list: ___
@@ -982,13 +985,16 @@ THIS IS THE MOST IMPORTANT RULE - FAILURE = REJECTED RECIPE:
    Step C: Cross-check: Does EVERY ingredient get used? If not, DELETE it from the list
    Step D: Cross-check: Does EVERY ingredient mentioned in instructions exist in the list? If not, ADD it
 
-⚠️ IRON-CLAD RULE #5: MEASUREMENT RULES
+⚠️ IRON-CLAD RULE #5: MEASUREMENT RULES - EXACT MEASUREMENTS REQUIRED
+   🚨 CRITICAL: ALWAYS use EXACT measurements for ALL ingredients, including salt, pepper, and seasonings
    ✅ CORRECT: {"name": "Salt", "quantity": "1/2", "unit": "tsp"}
-   ✅ CORRECT: {"name": "Salt", "quantity": "", "unit": "to taste"} (no quantity if using "to taste")
-   ✅ CORRECT: {"name": "Fresh cilantro", "quantity": "", "unit": "to garnish"} (no quantity if using "to garnish")
-   ✅ CORRECT: {"name": "Crusty bread", "quantity": "", "unit": "to serve"} (no quantity if using "to serve")
-   ❌ WRONG: {"name": "Salt", "quantity": "1", "unit": "to taste"} (can't have quantity AND "to taste")
-   ❌ WRONG: {"name": "Fresh cilantro", "quantity": "2", "unit": "to garnish"} (can't have quantity AND "to garnish")
+   ✅ CORRECT: {"name": "Black pepper", "quantity": "1/4", "unit": "tsp"}
+   ✅ CORRECT: {"name": "Cumin", "quantity": "1", "unit": "tsp"}
+   ✅ CORRECT: {"name": "Fresh cilantro", "quantity": "2", "unit": "tbsp"} (for garnish, use exact amount like 2 tbsp)
+   ❌ WRONG: {"name": "Salt", "quantity": "", "unit": "to taste"} (MUST use exact measurement like "1/2 tsp")
+   ❌ WRONG: {"name": "Pepper", "quantity": "", "unit": "to taste"} (MUST use exact measurement like "1/4 tsp")
+   ❌ WRONG: {"name": "Fresh cilantro", "quantity": "", "unit": "to garnish"} (MUST use exact measurement like "2 tbsp")
+   📝 For seasonings: Use realistic amounts (e.g., salt: 1/4 to 1 tsp, pepper: 1/4 to 1/2 tsp, herbs: 1-2 tbsp)
 
 ⚠️ IRON-CLAD RULE #6: FINAL VERIFICATION CHECKLIST
    □ Count ingredients in list: ___
@@ -2194,7 +2200,8 @@ Return ONLY valid JSON with this COMPLETE structure:
     // Strip "Step X:" prefixes from instructions (AI generates with prefixes, we remove them)
     instructionsArray = instructionsArray.map(inst => {
       if (typeof inst === 'string') {
-        // Remove "Step 1:", "Step 2:", etc. from the beginning of each instruction
+        // Remove "Step 1:", "Step 2:", "Step 10:", "Step 25:", etc. from the beginning of each instruction
+        // \d+ matches one or more digits, so it works for single digit (Step 1:) and multi-digit (Step 10:, Step 25:, etc.)
         const cleaned = inst.replace(/^Step\s+\d+:\s*/i, '').trim();
         return cleaned;
       }
@@ -2407,17 +2414,37 @@ Return ONLY valid JSON with this COMPLETE structure:
         continue;
       }
       
-      // Fix measurements: if "to taste", "to garnish", "to serve" is used, ensure quantity is empty
+      // Convert vague measurements to exact measurements
       const vaguePatterns = ['to taste', 'to garnish', 'to serve', 'as needed', 'for garnish', 'for serving'];
       const hasVagueMeasurement = vaguePatterns.some(pattern => 
         ing.unit === pattern || 
         (ing.unit && ing.unit.includes(pattern))
       );
       
-      if (hasVagueMeasurement && ing.quantity && ing.quantity.trim() !== '') {
-        // If using "to taste" etc., quantity must be empty
-        console.log(`   ⚠️  FIXED: "${ing.name}" - removed quantity "${ing.quantity}" because unit is "${ing.unit}"`);
-        ing.quantity = '';
+      if (hasVagueMeasurement) {
+        // Convert "to taste" / "to garnish" / "to serve" to exact measurements
+        const ingredientName = ing.name.toLowerCase();
+        
+        // Default measurements for common seasonings
+        if (ingredientName.includes('salt')) {
+          ing.quantity = '1/2';
+          ing.unit = 'tsp';
+          console.log(`   ✅ FIXED: "${ing.name}" - converted "to taste" to "1/2 tsp"`);
+        } else if (ingredientName.includes('pepper') || ingredientName.includes('black pepper')) {
+          ing.quantity = '1/4';
+          ing.unit = 'tsp';
+          console.log(`   ✅ FIXED: "${ing.name}" - converted "to taste" to "1/4 tsp"`);
+        } else if (ingredientName.includes('cilantro') || ingredientName.includes('parsley') || 
+                   ingredientName.includes('basil') || ingredientName.includes('herb')) {
+          ing.quantity = '2';
+          ing.unit = 'tbsp';
+          console.log(`   ✅ FIXED: "${ing.name}" - converted "to garnish" to "2 tbsp"`);
+        } else {
+          // Generic fallback: use reasonable defaults
+          ing.quantity = '1';
+          ing.unit = 'tsp';
+          console.log(`   ✅ FIXED: "${ing.name}" - converted vague measurement to "1 tsp"`);
+        }
       }
       
       // Add to cleaned array

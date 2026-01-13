@@ -155,12 +155,15 @@ THIS IS THE MOST IMPORTANT RULE - FAILURE = REJECTED RECIPE:
    ❌ Instructions: "crack eggs into bowl" but strIngredient1-20 has NO eggs
 
 13. 🚫 Measurement rules:
+   🚨 CRITICAL: ALWAYS use EXACT measurements for ALL ingredients, including salt, pepper, and seasonings
    ✅ CORRECT: {"name": "Salt", "quantity": "1/2", "unit": "tsp"}
-   ✅ CORRECT: {"name": "Salt", "quantity": "", "unit": "to taste"} (no quantity if using "to taste")
-   ✅ CORRECT: {"name": "Fresh cilantro", "quantity": "", "unit": "to garnish"} (no quantity if using "to garnish")
-   ✅ CORRECT: {"name": "Crusty bread", "quantity": "", "unit": "to serve"} (no quantity if using "to serve")
-   ❌ WRONG: {"name": "Salt", "quantity": "1", "unit": "to taste"} (can't have quantity AND "to taste")
-   ❌ WRONG: {"name": "Fresh cilantro", "quantity": "2", "unit": "to garnish"} (can't have quantity AND "to garnish")
+   ✅ CORRECT: {"name": "Black pepper", "quantity": "1/4", "unit": "tsp"}
+   ✅ CORRECT: {"name": "Cumin", "quantity": "1", "unit": "tsp"}
+   ✅ CORRECT: {"name": "Fresh cilantro", "quantity": "2", "unit": "tbsp"} (for garnish, use exact amount like 2 tbsp)
+   ❌ WRONG: {"name": "Salt", "quantity": "", "unit": "to taste"} (MUST use exact measurement like "1/2 tsp")
+   ❌ WRONG: {"name": "Pepper", "quantity": "", "unit": "to taste"} (MUST use exact measurement like "1/4 tsp")
+   ❌ WRONG: {"name": "Fresh cilantro", "quantity": "", "unit": "to garnish"} (MUST use exact measurement like "2 tbsp")
+   📝 For seasonings: Use realistic amounts (e.g., salt: 1/4 to 1 tsp, pepper: 1/4 to 1/2 tsp, herbs: 1-2 tbsp)
 
 🚨🚨🚨 ALLOWED VALUES - YOU MUST PICK FROM THESE EXACT LISTS 🚨🚨🚨
 DO NOT MAKE UP YOUR OWN VALUES - CHOOSE FROM THESE LISTS ONLY:

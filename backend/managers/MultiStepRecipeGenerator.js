@@ -164,7 +164,10 @@ Return JSON with ingredients and measurements:
 
 🚨 CRITICAL: 
 - Use EXACT ingredient names from the available list
-- Include precise measurements
+- Include precise measurements for ALL ingredients (including salt, pepper, seasonings - NO "to taste")
+- For salt: use exact amounts like "1/2 tsp" or "1 tsp"
+- For pepper: use exact amounts like "1/4 tsp" or "1/2 tsp"
+- For herbs/garnishes: use exact amounts like "2 tbsp" or "1/4 cup"
 - 6-15 ingredients only
 - NO explanations, ONLY JSON`;
 
