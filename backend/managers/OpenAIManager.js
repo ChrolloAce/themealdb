@@ -148,33 +148,86 @@ class OpenAIManager {
     
     const finalRecipeJson = JSON.stringify(recipeToReview, null, 2);
     
-    // COMBINED PROMPT: Review AND fix in one call (optimized for speed)
-    const combinedPrompt = `Review this recipe and return the corrected version with review data.
+    // COMBINED PROMPT: Review AND fix in one call - COMPREHENSIVE REVIEW
+    const combinedPrompt = `You are a professional recipe reviewer. Review this COMPLETE recipe JSON and identify ALL issues across ALL fields. Then return the corrected recipe with review data.
 
 RECIPE:
 ${finalRecipeJson}
 
-Quickly check and fix:
-- Nutrition values (calculate from ingredients)
-- Servings (based on ingredient quantities)
-- Difficulty (match complexity)
-- Occasion/seasonality (be specific)
-- Skills (match techniques used)
-- Times (match complexity)
-- Any missing/incorrect values
+🚨 COMPREHENSIVE REVIEW CHECKLIST - Check EVERYTHING:
+
+1. INSTRUCTIONS:
+   - Are all steps logical and in correct order?
+   - Do instructions mention ingredients that aren't in the ingredient list?
+   - Are there any missing steps or incomplete instructions?
+   - Do instructions match the cooking methods (baking, stovetop, etc.)?
+   - Are there any conditional steps that should be removed or clarified?
+
+2. INGREDIENTS:
+   - Are all ingredients from instructions listed in ingredientsDetailed?
+   - Are measurements accurate and consistent?
+   - Are there any missing ingredients mentioned in instructions?
+   - Do ingredient quantities make sense for the recipe?
+
+3. EQUIPMENT:
+   - Does equipmentRequired match the cooking methods in instructions?
+   - Are all necessary tools listed?
+   - Any missing equipment needed for the steps?
+
+4. NUTRITION:
+   - Are nutrition values calculated from actual ingredients (not estimated)?
+   - Do the values make sense for the ingredient quantities?
+
+5. SERVINGS:
+   - Is numberOfServings calculated from ingredient quantities?
+   - Does it match the yield?
+
+6. TIMES:
+   - Do prepTime, cookTime, totalTime match the actual complexity and steps?
+   - Are they realistic for the recipe?
+
+7. DIFFICULTY:
+   - Does difficulty match recipe complexity (step count, techniques, equipment)?
+
+8. OCCASION/SEASONALITY:
+   - Are they specific to the recipe (not generic defaults)?
+   - Do they match the ingredients and dish type?
+
+9. SKILLS REQUIRED:
+   - Do skills match the actual techniques used in instructions?
+   - Are all necessary skills listed?
+
+10. ANY OTHER ISSUES:
+    - Missing fields?
+    - Inconsistent data?
+    - Logical errors?
 
 Return JSON:
 {
   "review": {
-    "issues": [{"field": "field.path", "severity": "critical|warning", "issue": "problem", "fixedValue": "fix"}],
-    "reviewNotes": "brief summary"
+    "issues": [
+      {
+        "field": "field.path (e.g., instructions[2], ingredientsDetailed[0].quantity, nutrition.caloriesPerServing)",
+        "severity": "critical|warning",
+        "issue": "Detailed description of the problem",
+        "fixedValue": "What it should be or how it was fixed"
+      }
+    ],
+    "reviewNotes": "Overall assessment - what was reviewed and what was fixed"
   },
   "fixedRecipe": {
-    // Complete corrected recipe JSON (same structure as input)
+    // COMPLETE corrected recipe JSON (same structure as input)
+    // Fix ALL identified issues in the complete recipe
   }
 }
 
-Return BOTH review and fixedRecipe. Be concise but thorough.`;
+IMPORTANT:
+- Review EVERY field thoroughly
+- Check instructions against ingredients
+- Check equipment against cooking methods
+- Calculate nutrition from actual ingredients
+- Return BOTH review data AND complete fixed recipe
+- Be thorough - find ALL issues!`;
 
     // SINGLE COMBINED CALL: Review + Fix (saves time)
     let completion;
