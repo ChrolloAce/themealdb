@@ -620,22 +620,18 @@ class AdminRoutes {
     
     try {
       // Add useMultiStep flag to params
-      // Review step is OPTIONAL (disabled by default to avoid timeouts on serverless)
-      // Enable it by passing enableReviewAndFix: true in the request
+      // Review step is ALWAYS ENABLED (optimized to use single combined API call)
       const generationParams = {
         ...aiParams,
         useMultiStep,
-        enableReviewAndFix: aiParams.enableReviewAndFix === true // Only enable if explicitly requested
+        enableReviewAndFix: aiParams.enableReviewAndFix !== false // Default to true (can be disabled explicitly)
       };
       
       console.log('🎨 Creating recipe with AI');
       console.log(`   Generation mode: ${useMultiStep ? 'MULTI-STEP (4 calls)' : 'SINGLE-STEP (1 call)'}`);
-      console.log(`   Review & Fix step: ${generationParams.enableReviewAndFix ? 'ENABLED (adds 2 API calls)' : 'DISABLED (to avoid timeouts)'}`);
+      console.log(`   Review & Fix step: ${generationParams.enableReviewAndFix ? 'ENABLED (1 combined API call, ~10-15s)' : 'DISABLED'}`);
       console.log('   Uniqueness checking: ENABLED');
       console.log('   Validation: ENABLED');
-      if (generationParams.enableReviewAndFix) {
-        console.log('   ⚠️  WARNING: Review step adds ~10-20 seconds. Vercel timeout is 60 seconds.');
-      }
       
       // Generate unique recipe with validation (up to 3 retries)
       const generatedRecipe = await this.openaiManager.generateUniqueRecipe(generationParams, 3);

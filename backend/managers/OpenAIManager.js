@@ -119,7 +119,7 @@ class OpenAIManager {
   async reviewAndFixRecipe(recipe, params = {}) {
     this.checkAvailability();
     
-    console.log('📤 Sending recipe to ChatGPT for review and fixes...');
+    console.log('📤 Sending recipe to ChatGPT for review and fixes (combined step)...');
     
     // Limit recipe JSON size to avoid token limits and timeouts
     let recipeToReview = recipe;
@@ -148,11 +148,13 @@ class OpenAIManager {
     
     const finalRecipeJson = JSON.stringify(recipeToReview, null, 2);
     
-    const reviewPrompt = `You are a professional recipe reviewer. Review this recipe JSON and identify ALL issues:
+    // COMBINED PROMPT: Review AND fix in one call (saves ~10 seconds)
+    const combinedPrompt = `You are a professional recipe reviewer and editor. Review this recipe JSON, identify ALL issues, and return the COMPLETE CORRECTED recipe with all fixes applied.
 
+ORIGINAL RECIPE:
 ${finalRecipeJson}
 
-🚨 REVIEW CHECKLIST - Check for:
+🚨 REVIEW CHECKLIST - Check for and fix:
 1. Missing or incorrect nutrition values (must be calculated from ingredients)
 2. Incorrect servings calculation (must be based on ingredient quantities)
 3. Missing or incorrect difficulty (must match recipe complexity)
@@ -166,63 +168,76 @@ ${finalRecipeJson}
 
 Return JSON in this format:
 {
-  "issues": [
-    {
-      "field": "nutrition.caloriesPerServing",
-      "severity": "critical|warning",
-      "issue": "Description of the problem",
-      "currentValue": "current value",
-      "suggestedFix": "what should it be"
-    }
-  ],
-  "reviewNotes": "Overall assessment of the recipe quality"
+  "review": {
+    "issues": [
+      {
+        "field": "nutrition.caloriesPerServing",
+        "severity": "critical|warning",
+        "issue": "Description of the problem",
+        "fixedValue": "corrected value"
+      }
+    ],
+    "reviewNotes": "Overall assessment and what was fixed"
+  },
+  "fixedRecipe": {
+    // COMPLETE corrected recipe JSON (same structure as input)
+    // Include ALL fields from original recipe with fixes applied
+  }
 }
 
-Be thorough - find ALL issues!`;
+IMPORTANT:
+- Return BOTH the review data AND the complete fixed recipe
+- The fixedRecipe must be the complete recipe JSON with all fixes applied
+- Be thorough - find and fix ALL issues in one pass!`;
 
-    // Step 1: Get review (with timeout handling)
-    let reviewCompletion;
+    // SINGLE COMBINED CALL: Review + Fix (saves time)
+    let completion;
     try {
-      reviewCompletion = await Promise.race([
+      completion = await Promise.race([
         this.openai.chat.completions.create({
           model: this.model,
           messages: [
             {
               role: 'system',
-              content: 'You are a professional recipe reviewer. Analyze recipes for accuracy, completeness, and logical consistency. Return ONLY valid JSON.'
+              content: 'You are a professional recipe reviewer and editor. Review recipes for issues and return both the review data and the complete corrected recipe. Return ONLY valid JSON.'
             },
             {
               role: 'user',
-              content: reviewPrompt
+              content: combinedPrompt
             }
           ],
           temperature: 0.3,
-          max_tokens: 1000 // Reduced for faster response
+          max_tokens: 3000 // Combined response needs more tokens
         }),
         new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Review step timed out after 15 seconds')), 15000)
+          setTimeout(() => reject(new Error('Review and fix step timed out after 20 seconds')), 20000)
         )
       ]);
     } catch (timeoutError) {
-      console.error('⏱️  Review step timed out:', timeoutError.message);
-      throw new Error('Review step timed out - recipe generation may be taking too long. Try disabling review step or check API response times.');
+      console.error('⏱️  Review and fix step timed out:', timeoutError.message);
+      throw new Error('Review and fix step timed out - recipe generation may be taking too long. Check API response times.');
     }
 
-    const reviewResponse = reviewCompletion.choices[0].message.content.trim();
-    console.log('\n📋 ChatGPT Review Response:');
+    const response = completion.choices[0].message.content.trim();
+    console.log('\n📋 ChatGPT Review & Fix Response:');
     console.log('─'.repeat(45));
-    console.log(reviewResponse);
+    console.log(response.substring(0, 1500) + (response.length > 1500 ? '...' : ''));
     console.log('─'.repeat(45));
 
-    // Parse review
+    // Parse combined response
     const JSONRepair = require('../utils/JSONRepair');
-    const reviewResult = JSONRepair.parseWithRepair(reviewResponse);
+    const result = JSONRepair.parseWithRepair(response);
     
-    if (!reviewResult.success) {
-      throw new Error('Failed to parse review response');
+    if (!result.success) {
+      throw new Error('Failed to parse review and fix response');
     }
 
-    const review = reviewResult.data;
+    const data = result.data;
+    
+    // Extract review data and fixed recipe
+    const review = data.review || { issues: [], reviewNotes: 'No issues found' };
+    const fixedRecipe = data.fixedRecipe || recipe; // Fallback to original if fix failed
+    
     console.log(`\n🔍 Found ${review.issues?.length || 0} issues`);
     if (review.issues && review.issues.length > 0) {
       review.issues.forEach((issue, idx) => {
@@ -232,67 +247,6 @@ Be thorough - find ALL issues!`;
     if (review.reviewNotes) {
       console.log(`\n📝 Review Notes: ${review.reviewNotes}`);
     }
-
-    // Step 2: Fix the recipe
-    const fixPrompt = `Fix the issues identified in the review. Here is the original recipe:
-
-${finalRecipeJson}
-
-Issues found:
-${JSON.stringify(review.issues || [], null, 2)}
-
-Fix ALL identified issues and return the COMPLETE corrected recipe JSON. Make sure:
-- All nutrition values are calculated from actual ingredients
-- Servings are calculated from ingredient quantities
-- Difficulty matches recipe complexity
-- Occasion/seasonality are specific to the recipe
-- Skills required match actual techniques
-- All other issues are fixed
-
-Return ONLY the complete corrected recipe JSON (same structure as input), with ALL fixes applied.`;
-
-    // Step 2: Fix the recipe (with timeout handling)
-    let fixCompletion;
-    try {
-      fixCompletion = await Promise.race([
-        this.openai.chat.completions.create({
-          model: this.model,
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a professional recipe editor. Fix all identified issues and return the complete corrected recipe. Return ONLY valid JSON.'
-            },
-            {
-              role: 'user',
-              content: fixPrompt
-            }
-          ],
-          temperature: 0.3,
-          max_tokens: 2000 // Reduced for faster response
-        }),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Fix step timed out after 15 seconds')), 15000)
-        )
-      ]);
-    } catch (timeoutError) {
-      console.error('⏱️  Fix step timed out:', timeoutError.message);
-      throw new Error('Fix step timed out - recipe generation may be taking too long. Try disabling review step or check API response times.');
-    }
-
-    const fixResponse = fixCompletion.choices[0].message.content.trim();
-    console.log('\n🔧 ChatGPT Fix Response:');
-    console.log('─'.repeat(45));
-    console.log(fixResponse.substring(0, 1000) + (fixResponse.length > 1000 ? '...' : ''));
-    console.log('─'.repeat(45));
-
-    // Parse fixed recipe
-    const fixResult = JSONRepair.parseWithRepair(fixResponse);
-    
-    if (!fixResult.success) {
-      throw new Error('Failed to parse fixed recipe response');
-    }
-
-    const fixedRecipe = fixResult.data;
     
     // Merge with original to preserve any fields that might be missing
     const mergedRecipe = { ...recipe, ...fixedRecipe };
@@ -306,8 +260,7 @@ Return ONLY the complete corrected recipe JSON (same structure as input), with A
       review: {
         issues: review.issues || [],
         reviewNotes: review.reviewNotes,
-        reviewResponse: reviewResponse,
-        fixResponse: fixResponse
+        rawResponse: response // Single combined response
       }
     };
   }
