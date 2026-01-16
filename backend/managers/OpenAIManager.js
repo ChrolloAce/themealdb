@@ -193,10 +193,10 @@ Return BOTH review and fixedRecipe. Be concise but thorough.`;
             }
           ],
           temperature: 0.3,
-          max_tokens: 2500 // Optimized for faster response
+          max_tokens: 4000 // Increased for complete recipe output
         }),
         new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Review and fix step timed out after 40 seconds')), 40000)
+          setTimeout(() => reject(new Error('Review and fix step timed out after 50 seconds')), 50000)
         )
       ]);
     } catch (timeoutError) {
