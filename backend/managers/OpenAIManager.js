@@ -121,11 +121,36 @@ class OpenAIManager {
     
     console.log('📤 Sending recipe to ChatGPT for review and fixes...');
     
+    // Limit recipe JSON size to avoid token limits and timeouts
+    let recipeToReview = recipe;
     const recipeJson = JSON.stringify(recipe, null, 2);
+    if (recipeJson.length > 8000) {
+      console.warn('⚠️  Recipe JSON is very large, truncating for review...');
+      // Keep essential fields only
+      recipeToReview = {
+        strMeal: recipe.strMeal,
+        strCategory: recipe.strCategory,
+        strArea: recipe.strArea,
+        strDescription: recipe.strDescription,
+        instructions: recipe.instructions?.slice(0, 20) || [], // Limit instructions
+        ingredientsDetailed: recipe.ingredientsDetailed || [],
+        nutrition: recipe.nutrition,
+        numberOfServings: recipe.numberOfServings,
+        prepTime: recipe.prepTime,
+        cookTime: recipe.cookTime,
+        difficulty: recipe.difficulty,
+        occasion: recipe.occasion,
+        seasonality: recipe.seasonality,
+        skillsRequired: recipe.skillsRequired,
+        dietary: recipe.dietary
+      };
+    }
+    
+    const finalRecipeJson = JSON.stringify(recipeToReview, null, 2);
     
     const reviewPrompt = `You are a professional recipe reviewer. Review this recipe JSON and identify ALL issues:
 
-${recipeJson}
+${finalRecipeJson}
 
 🚨 REVIEW CHECKLIST - Check for:
 1. Missing or incorrect nutrition values (must be calculated from ingredients)
@@ -155,22 +180,33 @@ Return JSON in this format:
 
 Be thorough - find ALL issues!`;
 
-    // Step 1: Get review
-    const reviewCompletion = await this.openai.chat.completions.create({
-      model: this.model,
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a professional recipe reviewer. Analyze recipes for accuracy, completeness, and logical consistency. Return ONLY valid JSON.'
-        },
-        {
-          role: 'user',
-          content: reviewPrompt
-        }
-      ],
-      temperature: 0.3,
-      max_tokens: 2000
-    });
+    // Step 1: Get review (with timeout handling)
+    let reviewCompletion;
+    try {
+      reviewCompletion = await Promise.race([
+        this.openai.chat.completions.create({
+          model: this.model,
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a professional recipe reviewer. Analyze recipes for accuracy, completeness, and logical consistency. Return ONLY valid JSON.'
+            },
+            {
+              role: 'user',
+              content: reviewPrompt
+            }
+          ],
+          temperature: 0.3,
+          max_tokens: 2000
+        }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Review step timed out after 30 seconds')), 30000)
+        )
+      ]);
+    } catch (timeoutError) {
+      console.error('⏱️  Review step timed out:', timeoutError.message);
+      throw new Error('Review step timed out - recipe generation may be taking too long. Try disabling review step or check API response times.');
+    }
 
     const reviewResponse = reviewCompletion.choices[0].message.content.trim();
     console.log('\n📋 ChatGPT Review Response:');
@@ -200,7 +236,7 @@ Be thorough - find ALL issues!`;
     // Step 2: Fix the recipe
     const fixPrompt = `Fix the issues identified in the review. Here is the original recipe:
 
-${recipeJson}
+${finalRecipeJson}
 
 Issues found:
 ${JSON.stringify(review.issues || [], null, 2)}
@@ -215,21 +251,33 @@ Fix ALL identified issues and return the COMPLETE corrected recipe JSON. Make su
 
 Return ONLY the complete corrected recipe JSON (same structure as input), with ALL fixes applied.`;
 
-    const fixCompletion = await this.openai.chat.completions.create({
-      model: this.model,
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a professional recipe editor. Fix all identified issues and return the complete corrected recipe. Return ONLY valid JSON.'
-        },
-        {
-          role: 'user',
-          content: fixPrompt
-        }
-      ],
-      temperature: 0.3,
-      max_tokens: 4000
-    });
+    // Step 2: Fix the recipe (with timeout handling)
+    let fixCompletion;
+    try {
+      fixCompletion = await Promise.race([
+        this.openai.chat.completions.create({
+          model: this.model,
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a professional recipe editor. Fix all identified issues and return the complete corrected recipe. Return ONLY valid JSON.'
+            },
+            {
+              role: 'user',
+              content: fixPrompt
+            }
+          ],
+          temperature: 0.3,
+          max_tokens: 4000
+        }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Fix step timed out after 30 seconds')), 30000)
+        )
+      ]);
+    } catch (timeoutError) {
+      console.error('⏱️  Fix step timed out:', timeoutError.message);
+      throw new Error('Fix step timed out - recipe generation may be taking too long. Try disabling review step or check API response times.');
+    }
 
     const fixResponse = fixCompletion.choices[0].message.content.trim();
     console.log('\n🔧 ChatGPT Fix Response:');
@@ -490,9 +538,9 @@ The recipe MUST match ALL specified criteria where possible. Be creative within 
           }
         }
 
-        // Review and fix recipe with ChatGPT
+        // Review and fix recipe with ChatGPT (OPTIONAL - disabled by default to avoid timeouts)
         let reviewData = null;
-        if (params.enableReviewAndFix !== false) {
+        if (params.enableReviewAndFix === true) {
           console.log('\n🔍 ═══════════════════════════════════════════');
           console.log('🔍 REVIEW AND FIX STEP');
           console.log('═══════════════════════════════════════════');
