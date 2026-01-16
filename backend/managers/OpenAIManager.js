@@ -15,7 +15,8 @@ class OpenAIManager {
         apiKey: process.env.OPENAI_API_KEY
       });
       this.model = process.env.OPENAI_MODEL || 'gpt-4';
-      this.reviewModel = process.env.OPENAI_REVIEW_MODEL || 'gpt-5.2-instant'; // Faster, cheaper model for review step (GPT-5.2 Instant)
+      // Try GPT-5.2 Instant first, fallback to gpt-4o-mini if not available
+      this.reviewModel = process.env.OPENAI_REVIEW_MODEL || 'gpt-4o-mini'; // Faster, cheaper model for review step
       this.imageModel = process.env.OPENAI_IMAGE_MODEL || 'dall-e-3';
       this.isAvailable = true;
       console.log('✅ OpenAI Manager initialized with API key');
@@ -43,6 +44,25 @@ class OpenAIManager {
     if (this.isAvailable) {
       this.multiStepGenerator = new MultiStepRecipeGenerator(this);
       console.log('✅ MultiStepRecipeGenerator initialized');
+    }
+  }
+
+  /**
+   * List all available OpenAI models for this API key
+   * Useful for debugging which models you have access to
+   */
+  async listAvailableModels() {
+    this.checkAvailability();
+    
+    try {
+      const models = await this.openai.models.list();
+      const modelIds = models.data.map(m => m.id).sort();
+      console.log('📋 Available OpenAI models:');
+      modelIds.forEach(id => console.log(`   - ${id}`));
+      return modelIds;
+    } catch (error) {
+      console.error('❌ Failed to list models:', error.message);
+      throw error;
     }
   }
 
@@ -188,38 +208,72 @@ Return JSON:
 CRITICAL: In reviewNotes, explicitly state for EACH major field (instructions, ingredients, equipment, skills, occasion, seasonality, dietary, allergen flags, measurements, nutrition, servings, times, difficulty) whether it was changed and why, OR why it was correct and didn't need changes. Be thorough and explicit.`;
 
     // SINGLE COMBINED CALL: Review + Fix (saves time)
+    // Try models in order: configured review model -> gpt-4o-mini -> gpt-3.5-turbo
+    const fallbackModels = [this.reviewModel, 'gpt-4o-mini', 'gpt-3.5-turbo'];
     let completion;
-    try {
-      completion = await Promise.race([
-        this.openai.chat.completions.create({
-          model: this.reviewModel, // Use faster, cheaper model for review step
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a professional recipe reviewer and editor. Review recipes for issues and return both the review data and the complete corrected recipe. Return ONLY valid JSON.'
-            },
-            {
-              role: 'user',
-              content: combinedPrompt
-            }
-          ],
-          temperature: 0.2, // Lower temperature for faster, more focused responses
-          max_tokens: 4096 // Safe limit for most OpenAI models (GPT-4o-mini supports this)
-        }),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Review and fix step timed out after 55 seconds')), 55000) // Increased to 55s (5s buffer before Vercel 60s)
-        )
-      ]);
-    } catch (timeoutError) {
-      console.error('⏱️  Review and fix step timed out:', timeoutError.message);
-      console.warn('⚠️  Continuing with original recipe (review step skipped due to timeout)');
+    let lastError = null;
+    
+    for (const modelToTry of fallbackModels) {
+      try {
+        console.log(`🔄 Attempting review with model: ${modelToTry}`);
+        completion = await Promise.race([
+          this.openai.chat.completions.create({
+            model: modelToTry,
+            messages: [
+              {
+                role: 'system',
+                content: 'You are a professional recipe reviewer and editor. Review recipes for issues and return both the review data and the complete corrected recipe. Return ONLY valid JSON.'
+              },
+              {
+                role: 'user',
+                content: combinedPrompt
+              }
+            ],
+            temperature: 0.2, // Lower temperature for faster, more focused responses
+            max_tokens: 4096 // Safe limit for most OpenAI models
+          }),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Review and fix step timed out after 55 seconds')), 55000) // Increased to 55s (5s buffer before Vercel 60s)
+          )
+        ]);
+        console.log(`✅ Successfully used model: ${modelToTry}`);
+        break; // Success, exit loop
+      } catch (error) {
+        lastError = error;
+        // If it's a model not found error, try next fallback
+        if (error.message && (error.message.includes('does not exist') || error.message.includes('404') || error.code === 'model_not_found')) {
+          console.warn(`⚠️  Model ${modelToTry} not available, trying next fallback...`);
+          continue; // Try next model
+        }
+        // If it's a timeout, break and handle below
+        if (error.message && error.message.includes('timed out')) {
+          break;
+        }
+        // For other errors, try next model
+        console.warn(`⚠️  Error with model ${modelToTry}: ${error.message}, trying next fallback...`);
+        continue;
+      }
+    }
+    
+    // If we exhausted all models or got a timeout
+    if (!completion) {
+      if (lastError && lastError.message && lastError.message.includes('timed out')) {
+        console.error('⏱️  Review and fix step timed out:', lastError.message);
+        console.warn('⚠️  Continuing with original recipe (review step skipped due to timeout)');
+      } else {
+        console.error('❌ All review models failed:', lastError?.message || 'Unknown error');
+        console.warn('⚠️  Continuing with original recipe (review step skipped due to model errors)');
+      }
       // Return original recipe with a note that review was skipped
       return {
         recipe: recipe,
         review: {
           issues: [],
-          reviewNotes: 'Review step timed out - using original recipe without review',
-          timeout: true
+          reviewNotes: lastError?.message?.includes('timed out') 
+            ? 'Review step timed out - using original recipe without review'
+            : `Review step failed - ${lastError?.message || 'Unknown error'}. Using original recipe without review`,
+          timeout: lastError?.message?.includes('timed out') || false,
+          error: lastError?.message || 'Unknown error'
         }
       };
     }

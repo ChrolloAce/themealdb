@@ -24,7 +24,7 @@ FAL_KEY=key-1mJfmM0BOGNWPGimkjcPxJbiF9YJesDdg8CQCLiyDvQCmBuxS8Clp2O5qywLn1eN6SUJ
 # OpenAI API (for recipe generation and DALL-E images)
 # OPENAI_API_KEY=your_openai_api_key_here
 # OPENAI_MODEL=gpt-4
-# OPENAI_REVIEW_MODEL=gpt-5.2-instant  # Faster, cheaper model for review step (defaults to gpt-5.2-instant)
+# OPENAI_REVIEW_MODEL=gpt-4o-mini  # Faster, cheaper model for review step (defaults to gpt-4o-mini, will fallback to gpt-3.5-turbo if unavailable)
 # OPENAI_IMAGE_MODEL=dall-e-3
 
 # Image Configuration

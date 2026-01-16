@@ -43,6 +43,7 @@ class AdminRoutes {
     
     // Debug/test routes
     this.router.get('/test/openai', ErrorHandler.asyncHandler(this.testOpenAI.bind(this)));
+    this.router.get('/test/openai/models', ErrorHandler.asyncHandler(this.listOpenAIModels.bind(this)));
     
     // Database seeding route
     this.router.post('/seed-recipes',
@@ -1419,6 +1420,28 @@ class AdminRoutes {
         error: 'Internal Server Error',
         message: 'Failed to delete all recipes',
         details: error.message
+      });
+    }
+  }
+
+  // List available OpenAI models
+  async listOpenAIModels(req, res) {
+    try {
+      console.log('🔍 Listing available OpenAI models...');
+      const models = await this.openaiManager.listAvailableModels();
+      res.json({
+        success: true,
+        models: models,
+        count: models.length,
+        currentModel: process.env.OPENAI_MODEL || 'gpt-4',
+        reviewModel: process.env.OPENAI_REVIEW_MODEL || 'gpt-4o-mini'
+      });
+    } catch (error) {
+      console.error('❌ Failed to list models:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to list models',
+        message: error.message
       });
     }
   }
