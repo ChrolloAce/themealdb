@@ -625,9 +625,11 @@ class AdminRoutes {
       console.log('   Validation: ENABLED');
       
       // Add useMultiStep flag to params
+      // Enable review and fix step by default (can be disabled by passing enableReviewAndFix: false)
       const generationParams = {
         ...aiParams,
-        useMultiStep
+        useMultiStep,
+        enableReviewAndFix: aiParams.enableReviewAndFix !== false // Default to true unless explicitly disabled
       };
       
       // Generate unique recipe with validation (up to 3 retries)
