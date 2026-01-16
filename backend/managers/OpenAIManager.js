@@ -124,7 +124,7 @@ class OpenAIManager {
     // Limit recipe JSON size to avoid token limits and timeouts
     let recipeToReview = recipe;
     const recipeJson = JSON.stringify(recipe, null, 2);
-    if (recipeJson.length > 8000) {
+    if (recipeJson.length > 6000) { // Reduced for faster processing
       console.warn('⚠️  Recipe JSON is very large, truncating for review...');
       // Keep essential fields only
       recipeToReview = {
@@ -148,47 +148,33 @@ class OpenAIManager {
     
     const finalRecipeJson = JSON.stringify(recipeToReview, null, 2);
     
-    // COMBINED PROMPT: Review AND fix in one call (saves ~10 seconds)
-    const combinedPrompt = `You are a professional recipe reviewer and editor. Review this recipe JSON, identify ALL issues, and return the COMPLETE CORRECTED recipe with all fixes applied.
+    // COMBINED PROMPT: Review AND fix in one call (optimized for speed)
+    const combinedPrompt = `Review this recipe and return the corrected version with review data.
 
-ORIGINAL RECIPE:
+RECIPE:
 ${finalRecipeJson}
 
-🚨 REVIEW CHECKLIST - Check for and fix:
-1. Missing or incorrect nutrition values (must be calculated from ingredients)
-2. Incorrect servings calculation (must be based on ingredient quantities)
-3. Missing or incorrect difficulty (must match recipe complexity)
-4. Generic occasion/seasonality (must be specific to recipe)
-5. Generic skills required (must match actual techniques used)
-6. Ingredient-instruction mismatches (ingredients not used, or instructions mention ingredients not listed)
-7. Unrealistic times (prep/cook times don't match complexity)
-8. Missing or placeholder values
-9. Logical inconsistencies (e.g., baking recipe with no oven equipment)
-10. Any other issues
+Quickly check and fix:
+- Nutrition values (calculate from ingredients)
+- Servings (based on ingredient quantities)
+- Difficulty (match complexity)
+- Occasion/seasonality (be specific)
+- Skills (match techniques used)
+- Times (match complexity)
+- Any missing/incorrect values
 
-Return JSON in this format:
+Return JSON:
 {
   "review": {
-    "issues": [
-      {
-        "field": "nutrition.caloriesPerServing",
-        "severity": "critical|warning",
-        "issue": "Description of the problem",
-        "fixedValue": "corrected value"
-      }
-    ],
-    "reviewNotes": "Overall assessment and what was fixed"
+    "issues": [{"field": "field.path", "severity": "critical|warning", "issue": "problem", "fixedValue": "fix"}],
+    "reviewNotes": "brief summary"
   },
   "fixedRecipe": {
-    // COMPLETE corrected recipe JSON (same structure as input)
-    // Include ALL fields from original recipe with fixes applied
+    // Complete corrected recipe JSON (same structure as input)
   }
 }
 
-IMPORTANT:
-- Return BOTH the review data AND the complete fixed recipe
-- The fixedRecipe must be the complete recipe JSON with all fixes applied
-- Be thorough - find and fix ALL issues in one pass!`;
+Return BOTH review and fixedRecipe. Be concise but thorough.`;
 
     // SINGLE COMBINED CALL: Review + Fix (saves time)
     let completion;
@@ -207,10 +193,10 @@ IMPORTANT:
             }
           ],
           temperature: 0.3,
-          max_tokens: 3000 // Combined response needs more tokens
+          max_tokens: 2500 // Optimized for faster response
         }),
         new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Review and fix step timed out after 20 seconds')), 20000)
+          setTimeout(() => reject(new Error('Review and fix step timed out after 40 seconds')), 40000)
         )
       ]);
     } catch (timeoutError) {
