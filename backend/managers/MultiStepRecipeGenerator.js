@@ -504,12 +504,17 @@ Return JSON:
     });
     
     // Estimate servings based on volume and protein sources
+    // Allow wider range: 2-16 servings based on actual quantities
     if (totalVolume > 0) {
-      return Math.max(2, Math.min(8, Math.round(totalVolume / 350)));
+      const calculated = Math.round(totalVolume / 350);
+      // Allow 2-16 servings (remove artificial 8 cap to allow more variety)
+      return Math.max(2, Math.min(16, calculated));
     }
     
     if (proteinSources > 0) {
-      return Math.max(2, Math.min(6, Math.round(proteinSources * 2)));
+      const calculated = Math.round(proteinSources * 2);
+      // Allow 2-12 servings based on protein
+      return Math.max(2, Math.min(12, calculated));
     }
     
     return null;

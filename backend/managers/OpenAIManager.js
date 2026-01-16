@@ -241,10 +241,20 @@ ANALYTICAL CHECKLIST - Be THOROUGH:
    - Be specific to recipe type and ingredients
    - Seasonality should match when ingredients are in season
 
-10. SERVINGS, TIMES, DIFFICULTY:
-    - Servings should match ingredient quantities
-    - Times should match recipe complexity and cooking methods
-    - Difficulty should match step count, techniques, and complexity
+10. SERVINGS, TIMES, DIFFICULTY - CRITICAL CHECKS:
+    - SERVINGS: Look at ALL ingredient quantities and determine if numberOfServings makes sense
+      * Example: 2 cups flour + 4 eggs + 1 cup milk = reasonable for 4 servings
+      * Example: 1/2 cup flour + 1 egg = should be 1-2 servings, NOT 4 or 8
+      * Example: 5 lbs meat + 3 cups sauce = should be 8-12 servings, NOT 4
+      * If servings don't match quantities, FIX IT - calculate from actual ingredient amounts
+    - TIMES: Should match recipe complexity and cooking methods
+      * Prep time: How long to prepare ingredients?
+      * Cook time: How long to actually cook?
+      * Total time: prep + cook (verify it adds up)
+    - DIFFICULTY: Should match step count, techniques, and complexity
+      * Easy: Simple steps, basic techniques
+      * Medium: Moderate steps, some skill needed
+      * Hard: Many steps, advanced techniques
 
 Return JSON:
 {
@@ -260,11 +270,13 @@ Return JSON:
 
 CRITICAL REQUIREMENTS:
 - Cross-check ingredients with instructions line by line
+- VERIFY SERVINGS: Look at ingredient quantities and ensure numberOfServings makes logical sense (not always 4 or 8!)
 - Calculate real nutrition values if missing (don't use placeholders)
 - Preserve existing valid nutrition values if they exist
 - Check ALL allergens (eggs, gluten, dairy, nuts, etc.)
 - Verify baking/cooking ratios are appropriate
 - Fix fruit counts vs juice amounts if inconsistent
+- For EVERY field, explicitly state in reviewNotes: (1) What was wrong and how you fixed it, OR (2) Why it was correct and didn't need changes
 - Be thorough and analytical, not superficial`;
 
     // SINGLE COMBINED CALL: Review + Fix (saves time)
@@ -794,18 +806,21 @@ ${existingContext ? 'IMPORTANT: Create something different from the existing rec
   * Example: Simple salad = 10min prep, 0min cook. Complex stew = 30min prep, 90min cook.
 - servingSize: specify portion like "1 cup", "2 slices"
 - yield: Calculate based on THIS RECIPE - specify output like "4 servings", "12 cookies", "2 portions"
-- numberOfServings: MANDATORY CALCULATION from ACTUAL ingredient quantities
-  🚨 CALCULATION PROCESS (DO THIS):
-  STEP 1: List all ingredient quantities (e.g., "2 cups flour", "4 eggs", "1 cup milk")
-  STEP 2: Estimate total volume/weight of finished dish
-  STEP 3: Divide by typical serving size (300-400ml for main dishes, 150-200ml for sides)
-  STEP 4: Round to reasonable number (2, 4, 6, 8 servings)
+- numberOfServings: MANDATORY - You MUST look at the ACTUAL ingredient quantities you listed and calculate how many servings this recipe makes
+  🚨 CRITICAL: After you generate the recipe, look at ALL the ingredients and their quantities, then determine:
+  - How much total food does this make?
+  - How many reasonable portions can be served?
+  - This could be 2, 3, 4, 5, 6, 8, 10, 12+ servings - whatever makes sense for THESE SPECIFIC quantities
   
-  EXAMPLE: 2 cups flour + 4 eggs + 1 cup milk = ~1200ml total = ~4 servings (300ml each)
-  EXAMPLE: 1 lb pasta (450g) + 2 cups sauce (480ml) = ~4 servings
+  EXAMPLES OF THINKING PROCESS:
+  - Small batch: 1 cup flour + 2 eggs + 1/2 cup milk = ~2 servings
+  - Medium batch: 2 cups flour + 4 eggs + 1 cup milk = ~4 servings  
+  - Large batch: 4 cups flour + 8 eggs + 2 cups milk = ~8 servings
+  - Single serve: 1/4 cup oats + 1/2 cup milk = 1 serving
+  - Party size: 5 lbs meat + 3 cups sauce + 2 lbs vegetables = ~10-12 servings
   
-  ❌ WRONG: Using "4 servings" because it's a main dish
-  ✅ CORRECT: Calculating from actual ingredient volumes/weights
+  ❌ WRONG: Using "4 servings" or "8 servings" just because it's common - you MUST calculate from YOUR recipe's actual quantities
+  ✅ CORRECT: Look at YOUR ingredients, think about how much food it makes, then determine servings (2, 3, 4, 5, 6, 8, 10, 12+)
 - nutrition: realistic numbers based on ingredients (NEVER use 0 for calories/protein/carbs/fat - calculate based on actual ingredients!)
 - dietary: Analyze ACTUAL ingredients and set flags appropriately (vegetarian, vegan, pescatarian, glutenFree, dairyFree, keto, paleo, halal, noRedMeat, noPork, noShellfish, omnivore)
 - dishType: specify appropriate type based on the recipe (Appetizer, Soup, Salad, Main Course, Side Dish, Dessert, etc.)
@@ -886,7 +901,7 @@ Return ONLY this CLEAN JSON format with NO extra text (MODERN ARRAYS ONLY):
   "prepTime": 20,
   "cookTime": 30,
   "totalTime": 50,
-  "numberOfServings": 4,
+  "numberOfServings": <CALCULATE FROM YOUR ACTUAL INGREDIENT QUANTITIES>,
   "servingSize": "1 serving",
   "difficulty": "Easy/Medium/Hard",
   "instructions": [
@@ -1020,10 +1035,10 @@ Return ONLY this JSON format with NO extra text:
   "prepTime": 15,
   "cookTime": 30,
   "totalTime": 45,
-  "numberOfServings": 4,
+  "numberOfServings": <CALCULATE FROM YOUR ACTUAL INGREDIENT QUANTITIES>,
   "servingSize": "1 cup",
   "difficulty": "Medium",
-  "yield": "4 servings",
+  "yield": "<CALCULATE FROM YOUR ACTUAL INGREDIENT QUANTITIES> servings",
   "nutrition": {
     "caloriesPerServing": 420,
     "protein": 28,
@@ -1573,10 +1588,10 @@ Return ONLY this JSON:`;
   "prepTime": 20,
   "cookTime": 30,
   "totalTime": 50,
-  "numberOfServings": 4,
+  "numberOfServings": <CALCULATE FROM INGREDIENTS - could be 2, 3, 4, 5, 6, 8, 10, 12+>,
   "servingSize": "1 serving",
   "difficulty": "${templateDifficulty}",
-  "yield": "4 servings",
+  "yield": "<CALCULATE FROM INGREDIENTS> servings",
   "nutrition": {
     "caloriesPerServing": 400,
     "protein": 25,
@@ -1803,10 +1818,10 @@ CRITICAL: Return ONLY valid JSON with ALL these fields filled with realistic num
   "prepTime": 20,
   "cookTime": 30,
   "totalTime": 50,
-  "numberOfServings": 4,
+  "numberOfServings": <CALCULATE FROM YOUR ACTUAL INGREDIENT QUANTITIES>,
   "servingSize": "1 serving",
   "difficulty": "Medium",
-  "yield": "4 servings",
+  "yield": "<CALCULATE FROM YOUR ACTUAL INGREDIENT QUANTITIES> servings",
   "equipmentRequired": ["Appropriate cooking vessel (skillet/pan/oven/bowl based on recipe)", "Chef's knife", "Cutting board", "Measuring cups/spoons"],
   "nutrition": {
     "caloriesPerServing": 420,
@@ -1894,7 +1909,7 @@ Replace the nutrition values with realistic numbers based on the actual ingredie
         };
       })(),
       difficulty: "Medium",
-      yield: "4 servings",
+      yield: "<CALCULATE FROM ACTUAL INGREDIENT QUANTITIES> servings",
       strEquipment: "Basic cooking tools",
       nutrition: {
         caloriesPerServing: 350,
@@ -3166,14 +3181,14 @@ Return ONLY valid JSON with this COMPLETE structure:
       })(),
       servingSize: recipeData.servingSize || '1 serving',
       
-      // ✅ DIFFICULTY: Calculate from recipe complexity
-      difficulty: recipeData.difficulty || this.calculateDifficultyFromComplexity(instructionsArray, ingredientsDetailed, equipmentRequired) || (() => {
-        throw new Error('MISSING: difficulty - must be calculated from recipe complexity (steps, techniques, ingredients)');
+      // ✅ DIFFICULTY: Must be provided by AI from recipe complexity
+      difficulty: recipeData.difficulty || (() => {
+        throw new Error('MISSING: difficulty - AI must calculate from recipe complexity (steps, techniques, ingredients)');
       })(),
       
-      yield: recipeData.yield || `${parseInt(recipeData.numberOfServings) || this.calculateServingsFromIngredients(ingredientsDetailed) || (() => {
-        throw new Error('MISSING: numberOfServings - must be calculated from ingredient quantities');
-      })()} servings`,
+      yield: recipeData.yield || (recipeData.numberOfServings ? `${recipeData.numberOfServings} servings` : (() => {
+        throw new Error('MISSING: numberOfServings - AI must calculate from actual ingredient quantities');
+      })()),
       
       // ✅ NUTRITION: MUST be calculated from actual ingredients - NO FALLBACKS
       nutrition: recipeData.nutrition || (() => {
@@ -3216,21 +3231,20 @@ Return ONLY valid JSON with this COMPLETE structure:
       dishType: recipeData.dishType || params.dishType || params.randomDishType || this.getRandomDishType(params),
       mainIngredient: recipeData.mainIngredient || params.mainIngredient || this.extractMainIngredient(recipeData, ingredientsDetailed) || 'Mixed ingredients',
       
-      // ✅ OCCASION: Determine from recipe type/ingredients
-      occasion: Array.isArray(recipeData.occasion) && recipeData.occasion.length > 0 && !recipeData.occasion.includes('Weeknight') 
+      // ✅ OCCASION: Must be provided by AI from recipe analysis
+      occasion: Array.isArray(recipeData.occasion) && recipeData.occasion.length > 0 
         ? recipeData.occasion 
-        : this.determineOccasion(recipeData, ingredientsDetailed),
+        : [],
       
-      // ✅ SEASONALITY: Determine from ingredients
-      seasonality: Array.isArray(recipeData.seasonality) && recipeData.seasonality.length > 0 && !recipeData.seasonality.includes('All Season')
+      // ✅ SEASONALITY: Must be provided by AI from ingredient analysis
+      seasonality: Array.isArray(recipeData.seasonality) && recipeData.seasonality.length > 0
         ? recipeData.seasonality
-        : this.determineSeasonality(ingredientsDetailed),
+        : [],
       
-      // ✅ SKILLS REQUIRED: Extract from instructions
-      skillsRequired: Array.isArray(recipeData.skillsRequired) && recipeData.skillsRequired.length > 0 && 
-                      !(recipeData.skillsRequired.length === 2 && recipeData.skillsRequired.includes('Chopping') && recipeData.skillsRequired.includes('Cooking'))
+      // ✅ SKILLS REQUIRED: Must be provided by AI from instruction analysis
+      skillsRequired: Array.isArray(recipeData.skillsRequired) && recipeData.skillsRequired.length > 0
         ? recipeData.skillsRequired
-        : this.extractSkillsFromInstructions(instructionsArray),
+        : [],
       
       // ✅ SEARCH & FILTER
       keywords: Array.isArray(recipeData.keywords) ? recipeData.keywords : [params.cuisine || 'international', params.category || 'dish'],
@@ -3482,7 +3496,7 @@ Return ONLY valid JSON with this COMPLETE structure:
       prepTime: '<realistic minutes> minutes',
       cookTime: '<realistic minutes> minutes',
       totalTime: '<prepTime + cookTime> minutes',
-      yield: `Serves ${params.servings || 4}`,
+      yield: params.servings ? `Serves ${params.servings}` : "<CALCULATE FROM ACTUAL INGREDIENT QUANTITIES> servings",
       mealType: params.category || 'Main Dish',
       dishType: params.category || 'Main Dish',
       mainIngredient: params.mainIngredient || 'Mixed ingredients',
@@ -3562,7 +3576,7 @@ Return ONLY valid JSON with this COMPLETE structure:
       prepTime: '<realistic minutes> minutes',
       cookTime: '<realistic minutes> minutes',
       totalTime: '<prepTime + cookTime> minutes',
-      yield: `Serves ${cleaned.cookingInfo?.servings || 4}`,
+      yield: cleaned.cookingInfo?.servings ? `Serves ${cleaned.cookingInfo.servings}` : "<CALCULATE FROM ACTUAL INGREDIENT QUANTITIES> servings",
       mealType: 'dinner',
       dishType: 'main dish',
       mainIngredient: cleaned.strCategory?.toLowerCase() || 'mixed',
