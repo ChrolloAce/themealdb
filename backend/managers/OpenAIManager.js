@@ -464,6 +464,22 @@ CRITICAL REQUIREMENTS:
       }
     }
     
+    // Ensure yield matches numberOfServings if servings were updated
+    if (mergedRecipe.numberOfServings && typeof mergedRecipe.numberOfServings === 'number') {
+      const servings = mergedRecipe.numberOfServings;
+      const originalServings = recipe.numberOfServings;
+      
+      // If servings changed, update yield to match
+      if (originalServings !== servings) {
+        mergedRecipe.yield = `${servings} servings`;
+        console.log(`✅ Updated yield to match numberOfServings: "${mergedRecipe.yield}"`);
+      } else if (!mergedRecipe.yield || mergedRecipe.yield === '4 servings' || mergedRecipe.yield.includes('<CALCULATE')) {
+        // If yield is missing or has placeholder, set it based on numberOfServings
+        mergedRecipe.yield = `${servings} servings`;
+        console.log(`✅ Set yield to match numberOfServings: "${mergedRecipe.yield}"`);
+      }
+    }
+    
     console.log('\n✅ Recipe review completed');
     console.log(`   Fixed: ${criticalIssues.length} critical, ${warnings.length} warnings`);
     console.log(`   Verified: ${verified.length} fields checked and confirmed correct`);
