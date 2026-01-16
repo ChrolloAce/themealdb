@@ -164,48 +164,107 @@ class OpenAIManager {
         seasonality: recipe.seasonality,
         skillsRequired: recipe.skillsRequired,
         dietary: recipe.dietary,
-        allergenFlags: recipe.allergenFlags || []
-        // Note: nutrition removed from truncated version to save tokens - will be preserved from original
+        allergenFlags: recipe.allergenFlags || [],
+        nutrition: recipe.nutrition // Include nutrition so GPT can preserve or calculate it
       };
     }
     
     const finalRecipeJson = JSON.stringify(recipeToReview, null, 2);
     
-    // COMBINED PROMPT: Review AND fix in one call - COMPREHENSIVE WITH EXPLICIT VERIFICATION
-    const combinedPrompt = `Review this recipe for logical consistency. Check ALL fields and fix issues. For fields that are CORRECT, explicitly state why they don't need changes.
+    // COMBINED PROMPT: Review AND fix in one call - ANALYTICAL AND THOROUGH
+    const combinedPrompt = `You are a professional recipe editor. Analyze this recipe THOROUGHLY for logical consistency, accuracy, and completeness. Cross-check EVERYTHING.
 
 RECIPE:
 ${finalRecipeJson}
 
-CHECKLIST - Review EVERY field:
+ANALYTICAL CHECKLIST - Be THOROUGH:
 
-1. INSTRUCTIONS: Flow, order, remove unnecessary steps, match cooking methods, clarify vague measurements.
-2. INGREDIENTS: Must match instructions, measurements consistent, quantities logical.
-3. EQUIPMENT: Must match cooking methods (e.g., oven for baking, skillet for stovetop).
-4. SKILLS REQUIRED: Must match techniques in instructions (e.g., sautéing, baking, chopping).
-5. OCCASION: Must be specific to recipe type (not generic "Weeknight" unless appropriate).
-6. SEASONALITY: Must match ingredients/recipe type (not generic "All Season" unless appropriate).
-7. DIETARY: Flags must match ingredients (dairyFree=false if contains cheese/milk).
-8. ALLERGEN FLAGS: Must match actual ingredients.
-9. MEASUREMENTS: Consistent between ingredients and instructions, specific (not vague).
-10. NUTRITION: Values should be realistic for ingredients and servings.
-11. SERVINGS: Should match ingredient quantities.
-12. TIMES: Should match recipe complexity.
-13. DIFFICULTY: Should match step count and techniques.
+1. INGREDIENTS vs INSTRUCTIONS CROSS-CHECK:
+   - Read EVERY instruction step and identify ALL ingredients mentioned
+   - Verify EVERY ingredient in the list is actually used in instructions
+   - Verify ALL ingredients mentioned in instructions are in the ingredient list
+   - Check quantities: If step says "1/2 cup sugar for glaze" but ingredient list only has "1 cup sugar total", either add separate "Sugar for glaze: 1/2 cup" OR increase total to "1 1/2 cups"
+   - Check fruit counts vs juice amounts: If you list "2 oranges" but need "1/2 cup orange juice", verify if 1 orange yields enough juice (typically 1 orange = ~1/3 cup). If not, either increase fruit count OR change to "enough oranges to yield 1/2 cup juice"
+
+2. BAKING RATIOS & COOKING SCIENCE:
+   - Baking powder: Standard is 1-2 tsp per cup of flour. Check if ratio is appropriate
+   - Leavening: Verify amounts make sense for the recipe type
+   - Liquid to dry ratios: Check if batter/dough consistency makes sense
+   - Cooking times: Verify they match the cooking method and quantities
+
+3. INSTRUCTIONS QUALITY:
+   - Remove unnecessary or redundant steps
+   - Ensure logical flow and order
+   - Clarify vague measurements ("to taste" → specific amounts when possible)
+   - Ensure all steps reference ingredients that exist in the list
+   - Check for missing steps (e.g., preheating oven, greasing pan)
+
+4. ALLERGEN FLAGS - BE COMPREHENSIVE:
+   - Check EVERY ingredient for allergens:
+     * Eggs → "Contains eggs"
+     * Wheat/flour → "Contains gluten" 
+     * Dairy (milk, cheese, butter) → "Contains dairy"
+     * Nuts → "Contains tree nuts" or "Contains peanuts"
+     * Shellfish → "Contains shellfish"
+     * Soy → "Contains soy"
+   - Don't miss any allergens present in the recipe
+
+5. DIETARY FLAGS - VERIFY ALL:
+   - vegetarian: No meat/fish
+   - vegan: No animal products (eggs, dairy, honey)
+   - glutenFree: No wheat/gluten-containing ingredients
+   - dairyFree: No milk, cheese, butter, cream
+   - keto: Low carb, high fat
+   - paleo: No grains, legumes, dairy
+   - halal: No pork, alcohol, non-halal meat
+   - Check each flag against actual ingredients
+
+6. NUTRITION VALUES:
+   - If nutrition object exists with real numeric values, PRESERVE them exactly
+   - If nutrition has placeholders/zeros/missing values, CALCULATE realistic values based on:
+     * Actual ingredient quantities
+     * Number of servings
+     * Cooking methods (baking, frying, etc.)
+   - Use standard nutrition data for common ingredients
+   - Return proper structure: caloriesPerServing, protein, carbs, fat, fiber, sugar, sodium, cholesterol, saturatedFat, etc.
+   - DO NOT use placeholder text - use real numbers or omit the field
+
+7. EQUIPMENT:
+   - Must match cooking methods (oven for baking, skillet for stovetop, etc.)
+   - Include all tools mentioned in instructions
+
+8. SKILLS REQUIRED:
+   - Must match techniques actually used (zesting, whisking, folding, etc.)
+
+9. OCCASION & SEASONALITY:
+   - Be specific to recipe type and ingredients
+   - Seasonality should match when ingredients are in season
+
+10. SERVINGS, TIMES, DIFFICULTY:
+    - Servings should match ingredient quantities
+    - Times should match recipe complexity and cooking methods
+    - Difficulty should match step count, techniques, and complexity
 
 Return JSON:
 {
   "review": {
     "issues": [
-      {"field": "path", "severity": "critical|warning", "issue": "problem", "fixedValue": "fix"},
-      {"field": "path", "severity": "verified", "issue": "Checked and verified correct - [reason why]", "fixedValue": "No change needed"}
+      {"field": "path", "severity": "critical|warning", "issue": "detailed problem description", "fixedValue": "what was fixed"},
+      {"field": "path", "severity": "verified", "issue": "Checked and verified correct - [detailed reason]", "fixedValue": "No change needed"}
     ],
-    "reviewNotes": "Comprehensive summary: List ALL fields checked. For each field, state either: (1) What was fixed and why, OR (2) Why it was correct and didn't need changes. Be explicit about instructions, ingredients, equipment, skills, occasion, seasonality, dietary, allergen flags, measurements, nutrition, servings, times, difficulty - check them ALL."
+    "reviewNotes": "Comprehensive analysis: For EACH field checked, explicitly state: (1) What issues were found and how they were fixed, OR (2) Why the field was verified as correct. Be specific about ingredient cross-checks, baking ratios, allergen flags, nutrition calculations, etc."
   },
-  "fixedRecipe": {/* COMPLETE fixed recipe */}
+  "fixedRecipe": {/* COMPLETE fixed recipe with ALL corrections applied, preserving valid existing values */}
 }
 
-CRITICAL: In reviewNotes, explicitly state for EACH major field (instructions, ingredients, equipment, skills, occasion, seasonality, dietary, allergen flags, measurements, nutrition, servings, times, difficulty) whether it was changed and why, OR why it was correct and didn't need changes. Be thorough and explicit.`;
+CRITICAL REQUIREMENTS:
+- Cross-check ingredients with instructions line by line
+- Calculate real nutrition values if missing (don't use placeholders)
+- Preserve existing valid nutrition values if they exist
+- Check ALL allergens (eggs, gluten, dairy, nuts, etc.)
+- Verify baking/cooking ratios are appropriate
+- Fix fruit counts vs juice amounts if inconsistent
+- Be thorough and analytical, not superficial`;
 
     // SINGLE COMBINED CALL: Review + Fix (saves time)
     // Try models in order: configured review model -> gpt-4o-mini -> gpt-3.5-turbo
@@ -337,6 +396,29 @@ CRITICAL: In reviewNotes, explicitly state for EACH major field (instructions, i
     
     // Merge with original to preserve any fields that might be missing
     const mergedRecipe = { ...recipe, ...fixedRecipe };
+    
+    // Preserve original nutrition if it's valid (has numeric values, not placeholders)
+    if (recipe.nutrition && fixedRecipe.nutrition) {
+      const originalNutrition = recipe.nutrition;
+      const fixedNutrition = fixedRecipe.nutrition;
+      
+      // Check if original has valid numeric values
+      const hasValidOriginal = originalNutrition.caloriesPerServing && 
+                               typeof originalNutrition.caloriesPerServing === 'number' &&
+                               originalNutrition.caloriesPerServing > 0;
+      
+      // Check if fixed has placeholders or invalid values
+      const fixedHasPlaceholders = 
+        (typeof fixedNutrition.calories === 'string' && fixedNutrition.calories.includes('Placeholder')) ||
+        (typeof fixedNutrition.caloriesPerServing === 'string' && fixedNutrition.caloriesPerServing.includes('Placeholder')) ||
+        (fixedNutrition.caloriesPerServing === 0 || fixedNutrition.caloriesPerServing === null || fixedNutrition.caloriesPerServing === undefined);
+      
+      // If original is valid and fixed has placeholders, preserve original
+      if (hasValidOriginal && fixedHasPlaceholders) {
+        console.log('⚠️  Fixed recipe has placeholder nutrition, preserving original valid nutrition values');
+        mergedRecipe.nutrition = originalNutrition;
+      }
+    }
     
     console.log('\n✅ Recipe review completed');
     console.log(`   Fixed: ${criticalIssues.length} critical, ${warnings.length} warnings`);
