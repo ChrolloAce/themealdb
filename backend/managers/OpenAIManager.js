@@ -124,18 +124,17 @@ class OpenAIManager {
     // Limit recipe JSON size to avoid token limits and timeouts
     let recipeToReview = recipe;
     const recipeJson = JSON.stringify(recipe, null, 2);
-    if (recipeJson.length > 5000) { // Reduced further for faster processing
+    if (recipeJson.length > 4000) { // More aggressive truncation for faster processing
       console.warn('⚠️  Recipe JSON is very large, truncating for review...');
-      // Keep essential fields only
+      // Keep essential fields only - prioritize review-critical fields
       recipeToReview = {
         strMeal: recipe.strMeal,
         strCategory: recipe.strCategory,
         strArea: recipe.strArea,
         strDescription: recipe.strDescription,
-        instructions: recipe.instructions?.slice(0, 15) || [], // Limit instructions
+        instructions: recipe.instructions?.slice(0, 12) || [], // Limit instructions further
         ingredientsDetailed: recipe.ingredientsDetailed || [],
         equipmentRequired: recipe.equipmentRequired || [],
-        nutrition: recipe.nutrition,
         numberOfServings: recipe.numberOfServings,
         prepTime: recipe.prepTime,
         cookTime: recipe.cookTime,
@@ -145,50 +144,40 @@ class OpenAIManager {
         skillsRequired: recipe.skillsRequired,
         dietary: recipe.dietary,
         allergenFlags: recipe.allergenFlags || []
+        // Note: nutrition removed from truncated version to save tokens - will be preserved from original
       };
     }
     
     const finalRecipeJson = JSON.stringify(recipeToReview, null, 2);
     
-    // COMBINED PROMPT: Review AND fix in one call - ANALYTICAL & LOGICAL REVIEW (OPTIMIZED)
-    const combinedPrompt = `You are an expert chef reviewing a recipe. Analyze for logical consistency and fix ALL issues.
+    // COMBINED PROMPT: Review AND fix in one call - COMPREHENSIVE BUT EFFICIENT
+    const combinedPrompt = `Review this recipe for logical consistency. Check ALL fields and fix issues.
 
 RECIPE:
 ${finalRecipeJson}
 
-REVIEW CHECKLIST (be thorough but efficient):
+CHECKLIST (prioritize critical issues):
 
-1. INSTRUCTIONS: Check flow, remove unnecessary steps (e.g., "prepare side dish"), ensure correct order, match cooking methods, clarify vague measurements.
-
-2. INGREDIENTS: Cross-reference with instructions - all mentioned ingredients must be listed, measurements must match between instructions and ingredient list, quantities must make sense.
-
-3. MEASUREMENTS: Ensure consistency (if ingredient says "2 tbsp" but instruction says "drizzle a little", fix it). Make all measurements specific.
-
-4. EQUIPMENT: Must match cooking methods in instructions.
-
-5. DIETARY: If contains dairy/meat/etc, flags must be accurate. allergenFlags must match ingredients.
-
-6. LOGIC: Remove unnecessary steps, fix inconsistencies, ensure recipe makes culinary sense.
+1. INSTRUCTIONS: Flow, order, remove unnecessary steps, match cooking methods, clarify vague measurements.
+2. INGREDIENTS: Must match instructions, measurements consistent, quantities logical.
+3. EQUIPMENT: Must match cooking methods (e.g., oven for baking, skillet for stovetop).
+4. SKILLS REQUIRED: Must match techniques in instructions (e.g., sautéing, baking, chopping).
+5. OCCASION: Must be specific to recipe type (not generic "Weeknight" unless appropriate).
+6. SEASONALITY: Must match ingredients/recipe type (not generic "All Season" unless appropriate).
+7. DIETARY: Flags must match ingredients (dairyFree=false if contains cheese/milk).
+8. ALLERGEN FLAGS: Must match actual ingredients.
+9. MEASUREMENTS: Consistent between ingredients and instructions, specific (not vague).
 
 Return JSON:
 {
   "review": {
-    "issues": [
-      {
-        "field": "field.path",
-        "severity": "critical|warning",
-        "issue": "Problem description",
-        "fixedValue": "What was fixed"
-      }
-    ],
-    "reviewNotes": "Brief summary of issues found and fixes applied"
+    "issues": [{"field": "path", "severity": "critical|warning", "issue": "problem", "fixedValue": "fix"}],
+    "reviewNotes": "Summary of fixes"
   },
-  "fixedRecipe": {
-    // COMPLETE corrected recipe JSON - fix ALL issues
-  }
+  "fixedRecipe": {/* COMPLETE fixed recipe */}
 }
 
-IMPORTANT: Be thorough but efficient. Return complete fixed recipe with all logical issues resolved.`;
+Be efficient - focus on critical issues first. Return complete fixed recipe.`;
 
     // SINGLE COMBINED CALL: Review + Fix (saves time)
     let completion;
@@ -206,16 +195,25 @@ IMPORTANT: Be thorough but efficient. Return complete fixed recipe with all logi
               content: combinedPrompt
             }
           ],
-          temperature: 0.3,
-          max_tokens: 6000 // Increased for faster completion (more tokens = less thinking time)
+          temperature: 0.2, // Lower temperature for faster, more focused responses
+          max_tokens: 5000 // Balanced - enough for complete recipe but not too much
         }),
         new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Review and fix step timed out after 45 seconds')), 45000) // Reduced to 45s to give buffer before Vercel 60s timeout
+          setTimeout(() => reject(new Error('Review and fix step timed out after 40 seconds')), 40000) // Reduced to 40s for more buffer
         )
       ]);
     } catch (timeoutError) {
       console.error('⏱️  Review and fix step timed out:', timeoutError.message);
-      throw new Error('Review and fix step timed out - recipe generation may be taking too long. Check API response times.');
+      console.warn('⚠️  Continuing with original recipe (review step skipped due to timeout)');
+      // Return original recipe with a note that review was skipped
+      return {
+        recipe: recipe,
+        review: {
+          issues: [],
+          reviewNotes: 'Review step timed out - using original recipe without review',
+          timeout: true
+        }
+      };
     }
 
     const response = completion.choices[0].message.content.trim();
