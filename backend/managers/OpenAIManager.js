@@ -124,7 +124,7 @@ class OpenAIManager {
     // Limit recipe JSON size to avoid token limits and timeouts
     let recipeToReview = recipe;
     const recipeJson = JSON.stringify(recipe, null, 2);
-    if (recipeJson.length > 6000) { // Reduced for faster processing
+    if (recipeJson.length > 5000) { // Reduced further for faster processing
       console.warn('⚠️  Recipe JSON is very large, truncating for review...');
       // Keep essential fields only
       recipeToReview = {
@@ -132,8 +132,9 @@ class OpenAIManager {
         strCategory: recipe.strCategory,
         strArea: recipe.strArea,
         strDescription: recipe.strDescription,
-        instructions: recipe.instructions?.slice(0, 20) || [], // Limit instructions
+        instructions: recipe.instructions?.slice(0, 15) || [], // Limit instructions
         ingredientsDetailed: recipe.ingredientsDetailed || [],
+        equipmentRequired: recipe.equipmentRequired || [],
         nutrition: recipe.nutrition,
         numberOfServings: recipe.numberOfServings,
         prepTime: recipe.prepTime,
@@ -142,104 +143,52 @@ class OpenAIManager {
         occasion: recipe.occasion,
         seasonality: recipe.seasonality,
         skillsRequired: recipe.skillsRequired,
-        dietary: recipe.dietary
+        dietary: recipe.dietary,
+        allergenFlags: recipe.allergenFlags || []
       };
     }
     
     const finalRecipeJson = JSON.stringify(recipeToReview, null, 2);
     
-    // COMBINED PROMPT: Review AND fix in one call - ANALYTICAL & LOGICAL REVIEW
-    const combinedPrompt = `You are an expert chef and recipe editor reviewing a recipe for publication. Analyze this recipe THOROUGHLY for logical consistency, completeness, and culinary accuracy. Think like a professional - would this recipe work? Does it make sense? Is everything consistent?
+    // COMBINED PROMPT: Review AND fix in one call - ANALYTICAL & LOGICAL REVIEW (OPTIMIZED)
+    const combinedPrompt = `You are an expert chef reviewing a recipe. Analyze for logical consistency and fix ALL issues.
 
 RECIPE:
 ${finalRecipeJson}
 
-🧠 ANALYTICAL REVIEW - Think through the ENTIRE recipe:
+REVIEW CHECKLIST (be thorough but efficient):
 
-1. INSTRUCTION LOGIC & FLOW:
-   - Read through ALL instructions step-by-step. Do they flow logically?
-   - Are there any unnecessary steps (e.g., "prepare a side dish" when that's not part of the recipe)?
-   - Are steps in the correct order? (e.g., preheating oven should come before baking)
-   - Do instructions mention ingredients that aren't in the ingredient list?
-   - Are there missing steps? (e.g., ingredient prep, resting time, serving instructions)
-   - Do instructions match the cooking method? (e.g., no oven preheating for stovetop-only recipes)
-   - Are there vague instructions that need clarification? (e.g., "drizzle a little oil" when a specific amount is listed)
+1. INSTRUCTIONS: Check flow, remove unnecessary steps (e.g., "prepare side dish"), ensure correct order, match cooking methods, clarify vague measurements.
 
-2. INGREDIENT CONSISTENCY:
-   - Cross-reference EVERY ingredient in instructions with ingredientsDetailed array
-   - Are ALL ingredients mentioned in instructions actually listed?
-   - Are measurements consistent? (e.g., if instructions say "2 tbsp olive oil" but ingredient list says "1 tbsp", fix it)
-   - Do ingredient quantities make logical sense for the number of servings?
-   - Are there any ingredients listed but never used in instructions?
-   - Are measurements specific or vague? (e.g., "a little", "to taste" when exact amounts should be used)
+2. INGREDIENTS: Cross-reference with instructions - all mentioned ingredients must be listed, measurements must match between instructions and ingredient list, quantities must make sense.
 
-3. MEASUREMENT ACCURACY:
-   - If an ingredient lists "2 tbsp olive oil" but instructions say "drizzle a little", make it consistent
-   - Check that all measurements are clear and specific
-   - Ensure units match (e.g., "pieces" for whole items, "tbsp" for liquids/powders)
+3. MEASUREMENTS: Ensure consistency (if ingredient says "2 tbsp" but instruction says "drizzle a little", fix it). Make all measurements specific.
 
-4. EQUIPMENT LOGIC:
-   - Does equipmentRequired match what's actually needed in the instructions?
-   - If recipe bakes, is "Oven" listed? If it uses a skillet, is that listed?
-   - Are all necessary tools included? (e.g., mixing bowls, knives, measuring tools)
+4. EQUIPMENT: Must match cooking methods in instructions.
 
-5. COOKING LOGIC:
-   - Do cooking times make sense for the method? (e.g., 30 min bake for chicken is reasonable)
-   - Do temperatures match the cooking method? (e.g., 375°F for baking is standard)
-   - Are there any contradictory instructions? (e.g., "bake for 10 minutes" then "bake for 30 minutes")
+5. DIETARY: If contains dairy/meat/etc, flags must be accurate. allergenFlags must match ingredients.
 
-6. NUTRITION & SERVINGS:
-   - Are nutrition values realistic for the ingredient quantities and servings?
-   - Does numberOfServings match the ingredient quantities? (e.g., 4 chicken breasts = 4 servings)
-   - Are nutrition values calculated from actual ingredients, not generic estimates?
-
-7. DIETARY & ALLERGEN CONSISTENCY:
-   - If recipe contains dairy (e.g., cheese, milk), is dairyFree set to false?
-   - Do allergenFlags match the actual ingredients?
-   - Are dietary flags accurate based on ingredients?
-
-8. RECIPE COHERENCE:
-   - Does the recipe name match what's being made?
-   - Does the description accurately describe the dish?
-   - Do category, dishType, and cuisine match the recipe?
-
-9. UNNECESSARY OR VAGUE CONTENT:
-   - Remove any steps that aren't part of the actual recipe (e.g., "prepare side dishes")
-   - Clarify vague measurements (e.g., "a little" → specific amount)
-   - Remove redundant or filler steps
-
-10. OVERALL LOGIC:
-    - Would a home cook be able to follow this recipe successfully?
-    - Are all steps necessary and in the right order?
-    - Does everything make culinary sense?
+6. LOGIC: Remove unnecessary steps, fix inconsistencies, ensure recipe makes culinary sense.
 
 Return JSON:
 {
   "review": {
     "issues": [
       {
-        "field": "field.path (e.g., instructions[10], ingredientsDetailed[0].unit, dietary.dairyFree)",
+        "field": "field.path",
         "severity": "critical|warning",
-        "issue": "Clear description of the logical problem (e.g., 'Step 10 suggests preparing a side dish which is not part of this recipe - should be removed')",
-        "fixedValue": "What was changed and why (e.g., 'Removed unnecessary side dish preparation step')"
+        "issue": "Problem description",
+        "fixedValue": "What was fixed"
       }
     ],
-    "reviewNotes": "Comprehensive analysis: What you reviewed, what logical issues you found, and how you fixed them. Be specific about recipe flow, consistency, and culinary logic."
+    "reviewNotes": "Brief summary of issues found and fixes applied"
   },
   "fixedRecipe": {
-    // COMPLETE corrected recipe JSON with ALL logical issues fixed
-    // Remove unnecessary steps, fix inconsistencies, clarify vague instructions
-    // Ensure everything is consistent and makes culinary sense
+    // COMPLETE corrected recipe JSON - fix ALL issues
   }
 }
 
-CRITICAL INSTRUCTIONS:
-- Think like a professional chef reviewing a recipe for a cookbook
-- Focus on LOGICAL CONSISTENCY and CULINARY ACCURACY
-- Remove unnecessary steps, fix vague measurements, ensure consistency
-- Cross-reference instructions with ingredients - they MUST match
-- Be thorough - analyze the recipe as a whole, not just individual fields
-- Return BOTH detailed review data AND the complete fixed recipe`;
+IMPORTANT: Be thorough but efficient. Return complete fixed recipe with all logical issues resolved.`;
 
     // SINGLE COMBINED CALL: Review + Fix (saves time)
     let completion;
@@ -258,10 +207,10 @@ CRITICAL INSTRUCTIONS:
             }
           ],
           temperature: 0.3,
-          max_tokens: 4000 // Increased for complete recipe output
+          max_tokens: 6000 // Increased for faster completion (more tokens = less thinking time)
         }),
         new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Review and fix step timed out after 50 seconds')), 50000)
+          setTimeout(() => reject(new Error('Review and fix step timed out after 45 seconds')), 45000) // Reduced to 45s to give buffer before Vercel 60s timeout
         )
       ]);
     } catch (timeoutError) {
