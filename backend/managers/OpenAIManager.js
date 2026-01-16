@@ -150,13 +150,13 @@ class OpenAIManager {
     
     const finalRecipeJson = JSON.stringify(recipeToReview, null, 2);
     
-    // COMBINED PROMPT: Review AND fix in one call - COMPREHENSIVE BUT EFFICIENT
-    const combinedPrompt = `Review this recipe for logical consistency. Check ALL fields and fix issues.
+    // COMBINED PROMPT: Review AND fix in one call - COMPREHENSIVE WITH EXPLICIT VERIFICATION
+    const combinedPrompt = `Review this recipe for logical consistency. Check ALL fields and fix issues. For fields that are CORRECT, explicitly state why they don't need changes.
 
 RECIPE:
 ${finalRecipeJson}
 
-CHECKLIST (prioritize critical issues):
+CHECKLIST - Review EVERY field:
 
 1. INSTRUCTIONS: Flow, order, remove unnecessary steps, match cooking methods, clarify vague measurements.
 2. INGREDIENTS: Must match instructions, measurements consistent, quantities logical.
@@ -167,17 +167,24 @@ CHECKLIST (prioritize critical issues):
 7. DIETARY: Flags must match ingredients (dairyFree=false if contains cheese/milk).
 8. ALLERGEN FLAGS: Must match actual ingredients.
 9. MEASUREMENTS: Consistent between ingredients and instructions, specific (not vague).
+10. NUTRITION: Values should be realistic for ingredients and servings.
+11. SERVINGS: Should match ingredient quantities.
+12. TIMES: Should match recipe complexity.
+13. DIFFICULTY: Should match step count and techniques.
 
 Return JSON:
 {
   "review": {
-    "issues": [{"field": "path", "severity": "critical|warning", "issue": "problem", "fixedValue": "fix"}],
-    "reviewNotes": "Summary of fixes"
+    "issues": [
+      {"field": "path", "severity": "critical|warning", "issue": "problem", "fixedValue": "fix"},
+      {"field": "path", "severity": "verified", "issue": "Checked and verified correct - [reason why]", "fixedValue": "No change needed"}
+    ],
+    "reviewNotes": "Comprehensive summary: List ALL fields checked. For each field, state either: (1) What was fixed and why, OR (2) Why it was correct and didn't need changes. Be explicit about instructions, ingredients, equipment, skills, occasion, seasonality, dietary, allergen flags, measurements, nutrition, servings, times, difficulty - check them ALL."
   },
   "fixedRecipe": {/* COMPLETE fixed recipe */}
 }
 
-Be efficient - focus on critical issues first. Return complete fixed recipe.`;
+CRITICAL: In reviewNotes, explicitly state for EACH major field (instructions, ingredients, equipment, skills, occasion, seasonality, dietary, allergen flags, measurements, nutrition, servings, times, difficulty) whether it was changed and why, OR why it was correct and didn't need changes. Be thorough and explicit.`;
 
     // SINGLE COMBINED CALL: Review + Fix (saves time)
     let completion;
@@ -236,21 +243,49 @@ Be efficient - focus on critical issues first. Return complete fixed recipe.`;
     const review = data.review || { issues: [], reviewNotes: 'No issues found' };
     const fixedRecipe = data.fixedRecipe || recipe; // Fallback to original if fix failed
     
-    console.log(`\n🔍 Found ${review.issues?.length || 0} issues`);
-    if (review.issues && review.issues.length > 0) {
-      review.issues.forEach((issue, idx) => {
-        console.log(`   ${idx + 1}. [${issue.severity?.toUpperCase()}] ${issue.field}: ${issue.issue}`);
+    const criticalIssues = review.issues?.filter(i => i.severity === 'critical') || [];
+    const warnings = review.issues?.filter(i => i.severity === 'warning') || [];
+    const verified = review.issues?.filter(i => i.severity === 'verified') || [];
+    
+    console.log(`\n🔍 Review Summary:`);
+    console.log(`   Critical issues: ${criticalIssues.length}`);
+    console.log(`   Warnings: ${warnings.length}`);
+    console.log(`   Verified (correct): ${verified.length}`);
+    
+    if (criticalIssues.length > 0) {
+      console.log(`\n❌ Critical Issues:`);
+      criticalIssues.forEach((issue, idx) => {
+        console.log(`   ${idx + 1}. ${issue.field}: ${issue.issue}`);
+        console.log(`      → Fixed: ${issue.fixedValue}`);
       });
     }
+    
+    if (warnings.length > 0) {
+      console.log(`\n⚠️  Warnings:`);
+      warnings.forEach((issue, idx) => {
+        console.log(`   ${idx + 1}. ${issue.field}: ${issue.issue}`);
+        console.log(`      → Fixed: ${issue.fixedValue}`);
+      });
+    }
+    
+    if (verified.length > 0) {
+      console.log(`\n✅ Verified (No Changes Needed):`);
+      verified.forEach((issue, idx) => {
+        console.log(`   ${idx + 1}. ${issue.field}: ${issue.issue}`);
+      });
+    }
+    
     if (review.reviewNotes) {
-      console.log(`\n📝 Review Notes: ${review.reviewNotes}`);
+      console.log(`\n📝 Comprehensive Review Notes:`);
+      console.log(`   ${review.reviewNotes}`);
     }
     
     // Merge with original to preserve any fields that might be missing
     const mergedRecipe = { ...recipe, ...fixedRecipe };
     
-    console.log('\n✅ Recipe fixes applied');
-    console.log(`   Fixed ${review.issues?.length || 0} issues`);
+    console.log('\n✅ Recipe review completed');
+    console.log(`   Fixed: ${criticalIssues.length} critical, ${warnings.length} warnings`);
+    console.log(`   Verified: ${verified.length} fields checked and confirmed correct`);
     
     // Return both the fixed recipe and the review data
     return {
