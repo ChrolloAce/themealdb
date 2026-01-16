@@ -226,8 +226,9 @@ ANALYTICAL CHECKLIST - Be THOROUGH:
      * Number of servings
      * Cooking methods (baking, frying, etc.)
    - Use standard nutrition data for common ingredients
-   - Return proper structure: caloriesPerServing, protein, carbs, fat, fiber, sugar, sodium, cholesterol, saturatedFat, etc.
+   - Return proper structure with EXACT field names: caloriesPerServing (NOT "calories"), protein, carbs (NOT "carbohydrates"), fat, fiber, sugar, sodium, cholesterol, saturatedFat, vitaminA, vitaminC, iron, calcium
    - DO NOT use placeholder text - use real numbers or omit the field
+   - CRITICAL: Field names must be EXACTLY: caloriesPerServing, carbs (not calories, not carbohydrates)
 
 7. EQUIPMENT:
    - Must match cooking methods (oven for baking, skillet for stovetop, etc.)
@@ -397,10 +398,39 @@ CRITICAL REQUIREMENTS:
     // Merge with original to preserve any fields that might be missing
     const mergedRecipe = { ...recipe, ...fixedRecipe };
     
+    // Normalize nutrition field names (GPT might use different names)
+    if (mergedRecipe.nutrition) {
+      const nutrition = mergedRecipe.nutrition;
+      
+      // Convert 'calories' to 'caloriesPerServing' if needed
+      if (nutrition.calories !== undefined && nutrition.caloriesPerServing === undefined) {
+        nutrition.caloriesPerServing = typeof nutrition.calories === 'number' ? nutrition.calories : 
+                                       (typeof nutrition.calories === 'string' && !nutrition.calories.includes('Placeholder') ? 
+                                        parseFloat(nutrition.calories) : undefined);
+        delete nutrition.calories;
+      }
+      
+      // Convert 'carbohydrates' to 'carbs' if needed
+      if (nutrition.carbohydrates !== undefined && nutrition.carbs === undefined) {
+        nutrition.carbs = typeof nutrition.carbohydrates === 'number' ? nutrition.carbohydrates :
+                          (typeof nutrition.carbohydrates === 'string' && !nutrition.carbohydrates.includes('Placeholder') ?
+                           parseFloat(nutrition.carbohydrates) : undefined);
+        delete nutrition.carbohydrates;
+      }
+      
+      // Remove placeholder values
+      Object.keys(nutrition).forEach(key => {
+        const value = nutrition[key];
+        if (typeof value === 'string' && value.includes('Placeholder')) {
+          delete nutrition[key];
+        }
+      });
+    }
+    
     // Preserve original nutrition if it's valid (has numeric values, not placeholders)
     if (recipe.nutrition && fixedRecipe.nutrition) {
       const originalNutrition = recipe.nutrition;
-      const fixedNutrition = fixedRecipe.nutrition;
+      const fixedNutrition = mergedRecipe.nutrition;
       
       // Check if original has valid numeric values
       const hasValidOriginal = originalNutrition.caloriesPerServing && 
@@ -409,13 +439,15 @@ CRITICAL REQUIREMENTS:
       
       // Check if fixed has placeholders or invalid values
       const fixedHasPlaceholders = 
-        (typeof fixedNutrition.calories === 'string' && fixedNutrition.calories.includes('Placeholder')) ||
-        (typeof fixedNutrition.caloriesPerServing === 'string' && fixedNutrition.caloriesPerServing.includes('Placeholder')) ||
-        (fixedNutrition.caloriesPerServing === 0 || fixedNutrition.caloriesPerServing === null || fixedNutrition.caloriesPerServing === undefined);
+        !fixedNutrition.caloriesPerServing ||
+        fixedNutrition.caloriesPerServing === 0 || 
+        fixedNutrition.caloriesPerServing === null || 
+        fixedNutrition.caloriesPerServing === undefined ||
+        (typeof fixedNutrition.caloriesPerServing === 'string' && fixedNutrition.caloriesPerServing.includes('Placeholder'));
       
       // If original is valid and fixed has placeholders, preserve original
       if (hasValidOriginal && fixedHasPlaceholders) {
-        console.log('⚠️  Fixed recipe has placeholder nutrition, preserving original valid nutrition values');
+        console.log('⚠️  Fixed recipe has placeholder/invalid nutrition, preserving original valid nutrition values');
         mergedRecipe.nutrition = originalNutrition;
       }
     }
