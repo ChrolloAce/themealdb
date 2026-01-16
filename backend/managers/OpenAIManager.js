@@ -15,6 +15,7 @@ class OpenAIManager {
         apiKey: process.env.OPENAI_API_KEY
       });
       this.model = process.env.OPENAI_MODEL || 'gpt-4';
+      this.reviewModel = process.env.OPENAI_REVIEW_MODEL || 'gpt-4o-mini'; // Faster, cheaper model for review step
       this.imageModel = process.env.OPENAI_IMAGE_MODEL || 'dall-e-3';
       this.isAvailable = true;
       console.log('✅ OpenAI Manager initialized with API key');
@@ -119,7 +120,7 @@ class OpenAIManager {
   async reviewAndFixRecipe(recipe, params = {}) {
     this.checkAvailability();
     
-    console.log('📤 Sending recipe to ChatGPT for review and fixes (combined step)...');
+    console.log(`📤 Sending recipe to ChatGPT for review and fixes (combined step) using ${this.reviewModel}...`);
     
     // Limit recipe JSON size to avoid token limits and timeouts
     let recipeToReview = recipe;
@@ -191,7 +192,7 @@ CRITICAL: In reviewNotes, explicitly state for EACH major field (instructions, i
     try {
       completion = await Promise.race([
         this.openai.chat.completions.create({
-          model: this.model,
+          model: this.reviewModel, // Use faster, cheaper model for review step
           messages: [
             {
               role: 'system',
@@ -203,7 +204,7 @@ CRITICAL: In reviewNotes, explicitly state for EACH major field (instructions, i
             }
           ],
           temperature: 0.2, // Lower temperature for faster, more focused responses
-          max_tokens: 6000 // Balanced for comprehensive review with all field verifications
+          max_tokens: 4096 // Safe limit for most OpenAI models (GPT-4o-mini supports this)
         }),
         new Promise((_, reject) => 
           setTimeout(() => reject(new Error('Review and fix step timed out after 55 seconds')), 55000) // Increased to 55s (5s buffer before Vercel 60s)
