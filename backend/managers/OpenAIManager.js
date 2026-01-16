@@ -15,7 +15,7 @@ class OpenAIManager {
         apiKey: process.env.OPENAI_API_KEY
       });
       this.model = process.env.OPENAI_MODEL || 'gpt-4';
-      this.reviewModel = process.env.OPENAI_REVIEW_MODEL || 'gpt-4o-mini'; // Faster, cheaper model for review step
+      this.reviewModel = process.env.OPENAI_REVIEW_MODEL || 'gpt-5.2-instant'; // Faster, cheaper model for review step (GPT-5.2 Instant)
       this.imageModel = process.env.OPENAI_IMAGE_MODEL || 'dall-e-3';
       this.isAvailable = true;
       console.log('✅ OpenAI Manager initialized with API key');
