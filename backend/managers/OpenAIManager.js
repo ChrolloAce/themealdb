@@ -415,10 +415,28 @@ ${existingContext ? 'IMPORTANT: Create something different from the existing rec
   * Example: Simple salad = 10min prep, 0min cook. Complex stew = 30min prep, 90min cook.
 - servingSize: specify portion like "1 cup", "2 slices"
 - yield: Calculate based on THIS RECIPE - specify output like "4 servings", "12 cookies", "2 portions"
-- numberOfServings: Calculate based on THIS RECIPE - 2 for snacks/appetizers, 4-6 for main dishes, 6-12 for desserts/cookies
+- numberOfServings: MANDATORY CALCULATION from ACTUAL ingredient quantities
+  🚨 CALCULATION PROCESS (DO THIS):
+  STEP 1: List all ingredient quantities (e.g., "2 cups flour", "4 eggs", "1 cup milk")
+  STEP 2: Estimate total volume/weight of finished dish
+  STEP 3: Divide by typical serving size (300-400ml for main dishes, 150-200ml for sides)
+  STEP 4: Round to reasonable number (2, 4, 6, 8 servings)
+  
+  EXAMPLE: 2 cups flour + 4 eggs + 1 cup milk = ~1200ml total = ~4 servings (300ml each)
+  EXAMPLE: 1 lb pasta (450g) + 2 cups sauce (480ml) = ~4 servings
+  
+  ❌ WRONG: Using "4 servings" because it's a main dish
+  ✅ CORRECT: Calculating from actual ingredient volumes/weights
 - nutrition: realistic numbers based on ingredients (NEVER use 0 for calories/protein/carbs/fat - calculate based on actual ingredients!)
-- dietary: appropriate true/false based on ingredients (vegetarian, vegan, pescatarian, glutenFree, dairyFree, keto, paleo, halal, noRedMeat, noPork, noShellfish, omnivore)
+- dietary: Analyze ACTUAL ingredients and set flags appropriately (vegetarian, vegan, pescatarian, glutenFree, dairyFree, keto, paleo, halal, noRedMeat, noPork, noShellfish, omnivore)
 - dishType: specify appropriate type based on the recipe (Appetizer, Soup, Salad, Main Course, Side Dish, Dessert, etc.)
+- difficulty: Calculate from recipe complexity - count steps, techniques, ingredient count, equipment needed
+  * Easy: <15 steps, simple techniques, <8 ingredients
+  * Medium: 15-25 steps, moderate techniques, 8-12 ingredients
+  * Hard: >25 steps, advanced techniques, >12 ingredients
+- occasion: Determine from recipe type/ingredients (Weeknight, Weekend, Holiday, Date Night, Party, etc.) - NOT default "Weeknight"
+- seasonality: Determine from ingredients (Spring, Summer, Fall, Winter, All Season) - analyze actual ingredients, NOT default "All Season"
+- skillsRequired: Extract from actual cooking techniques in instructions (Chopping, Baking, Grilling, Sautéing, etc.) - NOT default ["Chopping", "Cooking"]
 - Arrays: all must have at least 1-2 items
 
 🔥 INSTRUCTIONS MUST BE ULTRA-DETAILED (FLEXIBLE STEP COUNT BASED ON COMPLEXITY):
@@ -1114,10 +1132,28 @@ DO NOT MAKE UP YOUR OWN VALUES - CHOOSE FROM THESE LISTS ONLY:
 3. No comments in JSON
 4. Return ONLY valid JSON - no markdown, no explanations
 
-⚠️ NUTRITION VALUES:
-- Calculate realistic calories/protein/carbs/fat based on actual ingredients
-- NEVER use 0 for any nutrition field - calculate from ingredients!
-- Example: 2 eggs + cream = ~320 calories, 15g protein, not 0!
+⚠️ NUTRITION VALUES - MANDATORY CALCULATION PROCESS:
+🚨 YOU MUST CALCULATE THIS - NO GUESSES, NO DEFAULTS:
+
+STEP 1: List each ingredient with its quantity
+STEP 2: Look up nutrition per unit for each ingredient
+STEP 3: Multiply by quantity used in recipe
+STEP 4: Sum all ingredients to get TOTAL recipe nutrition
+STEP 5: Divide by numberOfServings to get PER SERVING values
+
+EXAMPLE CALCULATION:
+- 2 cups flour (455 cal/cup) = 910 calories, 26g protein
+- 4 eggs (70 cal each) = 280 calories, 28g protein  
+- 1 cup milk (150 cal) = 150 calories, 8g protein
+- TOTAL: 1340 calories, 62g protein
+- For 4 servings: 335 calories/serving, 15.5g protein/serving
+
+❌ WRONG: Using default 350 calories or guessing
+✅ CORRECT: Actually calculating from ingredient quantities
+
+- NEVER use 0 for any nutrition field
+- NEVER use default values like 350 calories
+- MUST show your work by calculating from actual ingredients!
 
 Return ONLY this JSON:`;
     }
@@ -1177,6 +1213,12 @@ Return ONLY this JSON:`;
     "iron": 12,
     "calcium": 10
   },
+  
+  ⚠️ CRITICAL NOTE: The nutrition and numberOfServings values above are EXAMPLES ONLY.
+  You MUST calculate ACTUAL values from the ingredients you list:
+  - numberOfServings: Calculate from ingredient volumes/weights (estimate total, divide by serving size)
+  - nutrition: Sum calories/protein/carbs/fat from each ingredient, divide by numberOfServings
+  - Example calculation: 2 cups flour (910 cal) + 4 eggs (280 cal) = 1190 total ÷ 4 servings = 297.5 cal/serving
   "dietary": {
     "vegetarian": false,
     "vegan": false,
@@ -2262,6 +2304,306 @@ Return ONLY valid JSON with this COMPLETE structure:
 🔥 VALIDATION CHECK: Scan your entire response and replace ANY "N/A" with real values before returning!`;
   }
 
+  /**
+   * Validate that recipe has all required fields calculated from actual recipe data
+   * Throws error if critical fields are missing
+   */
+  validateRecipeCompleteness(recipeData, ingredientsDetailed, instructionsArray) {
+    const errors = [];
+    
+    // Check nutrition - MUST be calculated from ingredients
+    if (!recipeData.nutrition || !recipeData.nutrition.caloriesPerServing) {
+      errors.push('MISSING: nutrition.caloriesPerServing - must be calculated from actual ingredients');
+    } else if (recipeData.nutrition.caloriesPerServing === 350 && !recipeData.nutrition.protein) {
+      // Check if it's the default fallback value
+      errors.push('INVALID: nutrition appears to use fallback values (350 calories) - must calculate from actual ingredients');
+    }
+    
+    // Check servings - MUST be calculated from ingredient quantities
+    const servings = parseInt(recipeData.numberOfServings) || parseInt(recipeData.servings);
+    if (!servings || servings <= 0) {
+      errors.push('MISSING: numberOfServings - must be calculated from ingredient quantities');
+    }
+    
+    // Check difficulty - MUST be calculated from recipe complexity
+    if (!recipeData.difficulty || !['Easy', 'Medium', 'Hard'].includes(recipeData.difficulty)) {
+      errors.push('MISSING: difficulty - must be calculated from recipe complexity (steps, techniques)');
+    }
+    
+    // Check occasion - MUST be determined from recipe type/ingredients
+    if (!recipeData.occasion || (Array.isArray(recipeData.occasion) && recipeData.occasion.includes('Weeknight') && recipeData.occasion.length === 1)) {
+      errors.push('MISSING: occasion - must be determined from recipe type/ingredients, not default "Weeknight"');
+    }
+    
+    // Check seasonality - MUST be determined from ingredients
+    if (!recipeData.seasonality || (Array.isArray(recipeData.seasonality) && recipeData.seasonality.includes('All Season') && recipeData.seasonality.length === 1)) {
+      errors.push('MISSING: seasonality - must be determined from ingredients, not default "All Season"');
+    }
+    
+    // Check skills required - MUST be extracted from instructions
+    if (!recipeData.skillsRequired || !Array.isArray(recipeData.skillsRequired) || recipeData.skillsRequired.length === 0) {
+      errors.push('MISSING: skillsRequired - must be extracted from actual cooking techniques in instructions');
+    } else if (recipeData.skillsRequired.length === 2 && 
+               recipeData.skillsRequired.includes('Chopping') && 
+               recipeData.skillsRequired.includes('Cooking')) {
+      // Check if it's the default
+      errors.push('INVALID: skillsRequired appears to use default values - must extract from actual instructions');
+    }
+    
+    if (errors.length > 0) {
+      throw new Error(`RECIPE GENERATION FAILED - Missing or invalid calculated fields:\n${errors.map(e => `  ❌ ${e}`).join('\n')}\n\nAI must calculate ALL values from the actual recipe/ingredients, not use defaults.`);
+    }
+  }
+
+  /**
+   * Calculate servings from ingredient quantities
+   */
+  calculateServingsFromIngredients(ingredientsDetailed) {
+    if (!ingredientsDetailed || ingredientsDetailed.length === 0) {
+      return null;
+    }
+    
+    // Analyze ingredient quantities to estimate servings
+    // This is a heuristic - AI should do better, but we can estimate
+    let totalVolume = 0;
+    let proteinSources = 0;
+    let carbSources = 0;
+    
+    ingredientsDetailed.forEach(ing => {
+      const qty = parseFloat(ing.quantity) || 0;
+      const unit = (ing.unit || '').toLowerCase();
+      
+      // Estimate volume
+      if (unit.includes('cup')) {
+        totalVolume += qty * 240; // ml per cup
+      } else if (unit.includes('tbsp')) {
+        totalVolume += qty * 15; // ml per tbsp
+      } else if (unit.includes('tsp')) {
+        totalVolume += qty * 5; // ml per tsp
+      } else if (unit.includes('lb') || unit.includes('pound')) {
+        totalVolume += qty * 450; // rough ml equivalent
+      } else if (unit.includes('oz')) {
+        totalVolume += qty * 30; // rough ml equivalent
+      }
+      
+      // Count protein sources
+      const name = ing.name.toLowerCase();
+      if (name.includes('chicken') || name.includes('beef') || name.includes('pork') || 
+          name.includes('fish') || name.includes('egg') || name.includes('tofu')) {
+        proteinSources += qty;
+      }
+      
+      // Count carb sources
+      if (name.includes('rice') || name.includes('pasta') || name.includes('bread') || 
+          name.includes('potato') || name.includes('flour')) {
+        carbSources += qty;
+      }
+    });
+    
+    // Estimate servings based on volume and protein sources
+    // Rough heuristic: 300-400ml per serving for main dishes
+    if (totalVolume > 0) {
+      const estimated = Math.max(2, Math.min(8, Math.round(totalVolume / 350)));
+      return estimated;
+    }
+    
+    // Fallback based on protein sources
+    if (proteinSources > 0) {
+      return Math.max(2, Math.min(6, Math.round(proteinSources * 2)));
+    }
+    
+    return null; // Can't calculate
+  }
+
+  /**
+   * Calculate difficulty from recipe complexity
+   */
+  calculateDifficultyFromComplexity(instructionsArray, ingredientsDetailed, equipmentRequired) {
+    if (!instructionsArray || instructionsArray.length === 0) {
+      return null;
+    }
+    
+    const stepCount = instructionsArray.length;
+    const ingredientCount = ingredientsDetailed?.length || 0;
+    const equipmentCount = equipmentRequired?.length || 0;
+    
+    // Count advanced techniques
+    const instructionsText = instructionsArray.join(' ').toLowerCase();
+    const advancedTechniques = [
+      'sous vide', 'temper', 'emulsify', 'braise', 'confit', 'sous-vide',
+      'molecular', 'spherification', 'foam', 'gel', 'ferment'
+    ];
+    const hasAdvancedTechniques = advancedTechniques.some(tech => instructionsText.includes(tech));
+    
+    // Count cooking methods
+    const methods = ['bake', 'roast', 'grill', 'fry', 'sauté', 'steam', 'boil', 'simmer', 'braise'];
+    const methodCount = methods.filter(method => instructionsText.includes(method)).length;
+    
+    let complexityScore = 0;
+    
+    // Step count (0-3 points)
+    if (stepCount > 30) complexityScore += 3;
+    else if (stepCount > 20) complexityScore += 2;
+    else if (stepCount > 10) complexityScore += 1;
+    
+    // Ingredient count (0-2 points)
+    if (ingredientCount > 12) complexityScore += 2;
+    else if (ingredientCount > 8) complexityScore += 1;
+    
+    // Equipment count (0-1 points)
+    if (equipmentCount > 6) complexityScore += 1;
+    
+    // Advanced techniques (0-2 points)
+    if (hasAdvancedTechniques) complexityScore += 2;
+    else if (methodCount > 4) complexityScore += 1;
+    
+    // Determine difficulty
+    if (complexityScore >= 6) return 'Hard';
+    if (complexityScore >= 3) return 'Medium';
+    return 'Easy';
+  }
+
+  /**
+   * Extract skills required from instructions
+   */
+  extractSkillsFromInstructions(instructionsArray) {
+    if (!instructionsArray || instructionsArray.length === 0) {
+      return [];
+    }
+    
+    const instructionsText = instructionsArray.join(' ').toLowerCase();
+    const skills = [];
+    
+    // Detect skills from instructions
+    if (instructionsText.match(/\b(chop|dice|mince|slice|julienne|brunoise)\b/)) {
+      skills.push('Chopping');
+    }
+    if (instructionsText.match(/\b(whisk|beat|whip|fold|stir)\b/)) {
+      skills.push('Mixing');
+    }
+    if (instructionsText.match(/\b(bake|roast|broil)\b/)) {
+      skills.push('Baking');
+    }
+    if (instructionsText.match(/\b(sauté|fry|pan-fry|sear)\b/)) {
+      skills.push('Sautéing');
+    }
+    if (instructionsText.match(/\b(grill|barbecue|bbq)\b/)) {
+      skills.push('Grilling');
+    }
+    if (instructionsText.match(/\b(steam|boil|simmer|braise)\b/)) {
+      skills.push('Stovetop Cooking');
+    }
+    if (instructionsText.match(/\b(knead|roll|fold|laminate)\b/)) {
+      skills.push('Pastry Work');
+    }
+    if (instructionsText.match(/\b(temper|emulsify|reduce|deglaze)\b/)) {
+      skills.push('Advanced Techniques');
+    }
+    if (instructionsText.match(/\b(marinate|brine|cure)\b/)) {
+      skills.push('Preparation');
+    }
+    
+    // Always include basic cooking if we have instructions
+    if (skills.length === 0) {
+      skills.push('Basic Cooking');
+    }
+    
+    return skills;
+  }
+
+  /**
+   * Determine occasion from recipe type and ingredients
+   */
+  determineOccasion(recipeData, ingredientsDetailed) {
+    const category = recipeData.strCategory?.toLowerCase() || '';
+    const dishType = recipeData.dishType?.toLowerCase() || '';
+    const name = recipeData.strMeal?.toLowerCase() || '';
+    const ingredients = ingredientsDetailed?.map(i => i.name.toLowerCase()).join(' ') || '';
+    
+    const occasions = [];
+    
+    // Breakfast/Brunch
+    if (category.includes('breakfast') || category.includes('brunch') || 
+        name.includes('breakfast') || name.includes('brunch') ||
+        ingredients.includes('bacon') && ingredients.includes('egg')) {
+      occasions.push('Breakfast', 'Brunch');
+    }
+    
+    // Special occasions
+    if (name.includes('holiday') || name.includes('christmas') || name.includes('thanksgiving') ||
+        ingredients.includes('turkey') || ingredients.includes('ham')) {
+      occasions.push('Holiday', 'Special Occasion');
+    }
+    
+    // Date night / romantic
+    if (name.includes('romantic') || name.includes('date') || 
+        ingredients.includes('wine') || ingredients.includes('champagne')) {
+      occasions.push('Date Night', 'Romantic Dinner');
+    }
+    
+    // Party / entertaining
+    if (dishType.includes('appetizer') || dishType.includes('dip') || 
+        name.includes('party') || name.includes('finger food')) {
+      occasions.push('Party', 'Entertaining');
+    }
+    
+    // Weeknight (default for most)
+    if (occasions.length === 0) {
+      occasions.push('Weeknight');
+    }
+    
+    // Weekend / leisurely
+    if (category.includes('dinner') && ingredients.includes('slow') || 
+        dishType.includes('stew') || dishType.includes('roast')) {
+      occasions.push('Weekend', 'Leisurely Cooking');
+    }
+    
+    return occasions;
+  }
+
+  /**
+   * Determine seasonality from ingredients
+   */
+  determineSeasonality(ingredientsDetailed) {
+    if (!ingredientsDetailed || ingredientsDetailed.length === 0) {
+      return ['All Season'];
+    }
+    
+    const ingredients = ingredientsDetailed.map(i => i.name.toLowerCase()).join(' ');
+    const seasons = [];
+    
+    // Spring ingredients
+    if (ingredients.match(/\b(asparagus|peas|rhubarb|strawberry|artichoke|radish|spring onion)\b/)) {
+      seasons.push('Spring');
+    }
+    
+    // Summer ingredients
+    if (ingredients.match(/\b(tomato|zucchini|corn|peach|berry|watermelon|cucumber|basil)\b/)) {
+      seasons.push('Summer');
+    }
+    
+    // Fall ingredients
+    if (ingredients.match(/\b(pumpkin|squash|apple|cranberry|sweet potato|brussels sprout|kale)\b/)) {
+      seasons.push('Fall');
+    }
+    
+    // Winter ingredients
+    if (ingredients.match(/\b(citrus|orange|grapefruit|root vegetable|winter squash|cabbage)\b/)) {
+      seasons.push('Winter');
+    }
+    
+    // If no seasonal ingredients detected, check for year-round
+    if (seasons.length === 0) {
+      // Check if it's mostly pantry/meat items
+      const pantryItems = ingredients.match(/\b(rice|pasta|flour|chicken|beef|pork|onion|garlic|potato)\b/g);
+      if (pantryItems && pantryItems.length > 3) {
+        return ['All Season'];
+      }
+    }
+    
+    return seasons.length > 0 ? seasons : ['All Season'];
+  }
+
   // COMPREHENSIVE recipe formatting - NO N/A VALUES EVER
   async quickFormatRecipe(recipeData, params) {
     console.log('🧹 CLEAN FORMAT: Using ONLY modern array-based fields (NO duplicates!)');
@@ -2404,44 +2746,73 @@ Return ONLY valid JSON with this COMPLETE structure:
           numberOfServings: finalServings
         };
       })(),
-      servingSize: recipeData.servingSize || '1 cup',
-      difficulty: recipeData.difficulty || params.difficulty || params.randomDifficulty || 'Medium',
-      yield: recipeData.yield || `${parseInt(recipeData.numberOfServings) || params.servings || 4} servings`,
+      servingSize: recipeData.servingSize || '1 serving',
       
-      // ✅ NUTRITION
-      nutrition: recipeData.nutrition || {
-        caloriesPerServing: 350,
-        protein: 25,
-        carbs: 35,
-        fat: 12,
-        fiber: 6,
-        sugar: 8,
-        sodium: 680,
-        cholesterol: 45,
-        saturatedFat: 4,
-        vitaminA: 15,
-        vitaminC: 25,
-        iron: 12,
-        calcium: 8
-      },
+      // ✅ DIFFICULTY: Calculate from recipe complexity
+      difficulty: recipeData.difficulty || this.calculateDifficultyFromComplexity(instructionsArray, ingredientsDetailed, equipmentRequired) || (() => {
+        throw new Error('MISSING: difficulty - must be calculated from recipe complexity (steps, techniques, ingredients)');
+      })(),
       
-      // ✅ DIETARY
-      dietary: recipeData.dietary || {
-        vegetarian: false,
-        vegan: false,
-        glutenFree: false,
-        dairyFree: false,
-        keto: false,
-        paleo: false
-      },
+      yield: recipeData.yield || `${parseInt(recipeData.numberOfServings) || this.calculateServingsFromIngredients(ingredientsDetailed) || (() => {
+        throw new Error('MISSING: numberOfServings - must be calculated from ingredient quantities');
+      })()} servings`,
+      
+      // ✅ NUTRITION: MUST be calculated from actual ingredients - NO FALLBACKS
+      nutrition: recipeData.nutrition || (() => {
+        throw new Error('MISSING: nutrition - must be calculated from actual ingredients. AI must provide caloriesPerServing, protein, carbs, fat, etc. based on ingredient quantities.');
+      })(),
+      
+      // ✅ DIETARY: Calculate from ingredients if not provided
+      dietary: recipeData.dietary || (() => {
+        // Use analyzeDietary if available (from MultiStepGenerator), otherwise calculate here
+        if (this.multiStepGenerator && this.multiStepGenerator.analyzeDietary) {
+          return this.multiStepGenerator.analyzeDietary(ingredientsDetailed.map(i => ({ ingredient: i.name, measure: `${i.quantity} ${i.unit}` })), params.filters || {});
+        }
+        // Basic calculation
+        const ingredientNames = ingredientsDetailed.map(i => i.name.toLowerCase()).join(' ');
+        const hasMeat = /beef|pork|chicken|turkey|lamb|duck|veal|venison/.test(ingredientNames);
+        const hasSeafood = /fish|salmon|tuna|shrimp|crab|lobster|oyster|clam|mussel/.test(ingredientNames);
+        const hasDairy = /milk|cheese|butter|cream|yogurt/.test(ingredientNames);
+        const hasEggs = /egg/.test(ingredientNames);
+        const hasGluten = /flour|bread|pasta|wheat|barley|rye/.test(ingredientNames);
+        
+        return {
+          vegetarian: !hasMeat && !hasSeafood,
+          vegan: !hasMeat && !hasSeafood && !hasDairy && !hasEggs,
+          pescatarian: hasSeafood && !hasMeat,
+          glutenFree: !hasGluten,
+          dairyFree: !hasDairy,
+          nutFree: !/almond|peanut|walnut|pecan|cashew|pistachio|hazelnut/.test(ingredientNames),
+          keto: false, // Would need nutrition calc
+          paleo: !hasGluten && !hasDairy && !ingredientsDetailed.some(i => i.name.toLowerCase().includes('bean')),
+          halal: !ingredientsDetailed.some(i => i.name.toLowerCase().includes('pork')),
+          noRedMeat: !/(beef|pork|lamb|veal)/.test(ingredientNames),
+          noPork: !/pork/.test(ingredientNames),
+          noShellfish: !/(shrimp|crab|lobster|oyster|clam|mussel)/.test(ingredientNames),
+          omnivore: hasMeat || hasSeafood
+        };
+      })(),
       
       // ✅ CATEGORIZATION
       mealType: Array.isArray(recipeData.mealType) ? recipeData.mealType : [recipeData.mealType || params.category || params.randomCategory || 'Dinner'],
       dishType: recipeData.dishType || params.dishType || params.randomDishType || this.getRandomDishType(params),
       mainIngredient: recipeData.mainIngredient || params.mainIngredient || this.extractMainIngredient(recipeData, ingredientsDetailed) || 'Mixed ingredients',
-      occasion: Array.isArray(recipeData.occasion) ? recipeData.occasion : [recipeData.occasion || 'Weeknight'],
-      seasonality: Array.isArray(recipeData.seasonality) ? recipeData.seasonality : [recipeData.seasonality || 'All Season'],
-      skillsRequired: Array.isArray(recipeData.skillsRequired) ? recipeData.skillsRequired : ['Chopping', 'Cooking'],
+      
+      // ✅ OCCASION: Determine from recipe type/ingredients
+      occasion: Array.isArray(recipeData.occasion) && recipeData.occasion.length > 0 && !recipeData.occasion.includes('Weeknight') 
+        ? recipeData.occasion 
+        : this.determineOccasion(recipeData, ingredientsDetailed),
+      
+      // ✅ SEASONALITY: Determine from ingredients
+      seasonality: Array.isArray(recipeData.seasonality) && recipeData.seasonality.length > 0 && !recipeData.seasonality.includes('All Season')
+        ? recipeData.seasonality
+        : this.determineSeasonality(ingredientsDetailed),
+      
+      // ✅ SKILLS REQUIRED: Extract from instructions
+      skillsRequired: Array.isArray(recipeData.skillsRequired) && recipeData.skillsRequired.length > 0 && 
+                      !(recipeData.skillsRequired.length === 2 && recipeData.skillsRequired.includes('Chopping') && recipeData.skillsRequired.includes('Cooking'))
+        ? recipeData.skillsRequired
+        : this.extractSkillsFromInstructions(instructionsArray),
       
       // ✅ SEARCH & FILTER
       keywords: Array.isArray(recipeData.keywords) ? recipeData.keywords : [params.cuisine || 'international', params.category || 'dish'],
@@ -2461,6 +2832,15 @@ Return ONLY valid JSON with this COMPLETE structure:
     
     // 🧹 Clean up the ingredients array (remove duplicates and fix "to taste")
     recipe.ingredientsDetailed = this.cleanIngredientsArray(recipe.ingredientsDetailed);
+    
+    // ✅ VALIDATE: Ensure all critical fields are calculated from actual recipe data
+    try {
+      this.validateRecipeCompleteness(recipe, recipe.ingredientsDetailed, recipe.instructions);
+      console.log('✅ Recipe validation passed - all fields calculated from actual recipe data');
+    } catch (error) {
+      console.error('❌ RECIPE VALIDATION FAILED:', error.message);
+      throw error; // Fail the generation
+    }
     
     // ✅ CRITICAL FIX #1: Calculate timeCategory based on ACTUAL totalTime (not AI's guess!)
     const totalTime = recipe.totalTime || recipe.prepTime + recipe.cookTime;

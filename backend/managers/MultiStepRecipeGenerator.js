@@ -305,30 +305,42 @@ INGREDIENTS:
 
 SERVINGS: ${servings}
 
-Calculate realistic nutrition values PER SERVING based on the ingredients and their amounts.
+🚨 MANDATORY CALCULATION PROCESS - YOU MUST DO THIS:
+
+STEP 1: For EACH ingredient, look up its nutrition per unit
+STEP 2: Multiply by the quantity used in the recipe
+STEP 3: Sum ALL ingredients to get TOTAL recipe nutrition
+STEP 4: Divide by ${servings} to get PER SERVING values
+
+EXAMPLE:
+- 2 cups flour: 455 cal/cup × 2 = 910 calories, 13g protein/cup × 2 = 26g protein
+- 4 eggs: 70 cal/egg × 4 = 280 calories, 7g protein/egg × 4 = 28g protein
+- 1 cup milk: 150 cal, 8g protein
+- TOTAL: 1340 calories, 62g protein
+- PER SERVING (÷4): 335 calories, 15.5g protein
 
 Return JSON:
 {
-  "caloriesPerServing": number (realistic calories),
-  "protein": number (grams),
-  "carbs": number (grams),
-  "fat": number (grams),
-  "fiber": number (grams),
-  "sugar": number (grams),
-  "sodium": number (milligrams),
-  "cholesterol": number (milligrams),
-  "saturatedFat": number (grams),
-  "vitaminA": number (% daily value),
-  "vitaminC": number (% daily value),
-  "iron": number (% daily value),
-  "calcium": number (% daily value)
+  "caloriesPerServing": <calculated number>,
+  "protein": <calculated grams>,
+  "carbs": <calculated grams>,
+  "fat": <calculated grams>,
+  "fiber": <calculated grams>,
+  "sugar": <calculated grams>,
+  "sodium": <calculated milligrams>,
+  "cholesterol": <calculated milligrams>,
+  "saturatedFat": <calculated grams>,
+  "vitaminA": <calculated % daily value>,
+  "vitaminC": <calculated % daily value>,
+  "iron": <calculated % daily value>,
+  "calcium": <calculated % daily value>
 }
 
 🚨 CRITICAL:
-- All values must be realistic numbers (NEVER 0)
-- Calculate based on actual ingredient quantities
+- All values must be REALISTIC CALCULATED numbers (NEVER 0, NEVER defaults)
+- Calculate based on ACTUAL ingredient quantities listed above
 - Consider cooking methods (frying adds fat, etc.)
-- NO explanations, ONLY JSON`;
+- Show your calculation work mentally, then return ONLY JSON`;
 
     const completion = await this.openai.chat.completions.create({
       model: this.model,
@@ -400,19 +412,42 @@ Return JSON:
       cookTime: instructionsData.cookTime,
       totalTime: instructionsData.totalTime,
       
-      // Servings
-      numberOfServings: params.numberOfServings || params.filters?.servings || 4,
+      // Servings - must be calculated from ingredients
+      numberOfServings: params.numberOfServings || params.filters?.servings || (() => {
+        // Calculate from ingredients if not provided
+        const calculated = this.calculateServingsFromIngredients(ingredients);
+        if (!calculated) {
+          throw new Error('MISSING: numberOfServings - must be calculated from ingredient quantities');
+        }
+        return calculated;
+      })(),
       servingSize: '1 serving',
-      yield: `${params.numberOfServings || params.filters?.servings || 4} servings`,
+      yield: `${params.numberOfServings || params.filters?.servings || (() => {
+        const calculated = this.calculateServingsFromIngredients(ingredients);
+        if (!calculated) {
+          throw new Error('MISSING: numberOfServings - must be calculated from ingredient quantities');
+        }
+        return calculated;
+      })()} servings`,
       
-      // Nutrition
-      nutrition,
+      // Nutrition - MUST be provided by AI calculation
+      nutrition: nutrition || (() => {
+        throw new Error('MISSING: nutrition - must be calculated from actual ingredients');
+      })(),
       
-      // Dietary flags
-      dietary,
+      // Dietary flags - calculated from ingredients
+      dietary: dietary || (() => {
+        throw new Error('MISSING: dietary - must be calculated from ingredients');
+      })(),
       
-      // Metadata
-      difficulty: params.difficulty || 'Medium',
+      // Metadata - difficulty must be calculated from complexity
+      difficulty: params.difficulty || (() => {
+        const calculated = this.calculateDifficultyFromComplexity(instructionsData.instructions, ingredients, equipment);
+        if (!calculated) {
+          throw new Error('MISSING: difficulty - must be calculated from recipe complexity');
+        }
+        return calculated;
+      })(),
       dishType: filters.dishType || 'Main Course',
       mainIngredient: ingredients[0]?.ingredient || '',
       
@@ -428,6 +463,97 @@ Return JSON:
     };
 
     return recipe;
+  }
+
+  /**
+   * Calculate servings from ingredient quantities
+   */
+  calculateServingsFromIngredients(ingredients) {
+    if (!ingredients || ingredients.length === 0) {
+      return null;
+    }
+    
+    // Analyze ingredient quantities to estimate servings
+    let totalVolume = 0;
+    let proteinSources = 0;
+    
+    ingredients.forEach(ing => {
+      const measure = ing.measure || '';
+      const qty = parseFloat(measure.match(/[\d.]+/)?.[0]) || 0;
+      const unit = measure.toLowerCase();
+      
+      // Estimate volume
+      if (unit.includes('cup')) {
+        totalVolume += qty * 240; // ml per cup
+      } else if (unit.includes('tbsp')) {
+        totalVolume += qty * 15; // ml per tbsp
+      } else if (unit.includes('tsp')) {
+        totalVolume += qty * 5; // ml per tsp
+      } else if (unit.includes('lb') || unit.includes('pound')) {
+        totalVolume += qty * 450; // rough ml equivalent
+      } else if (unit.includes('oz')) {
+        totalVolume += qty * 30; // rough ml equivalent
+      }
+      
+      // Count protein sources
+      const name = ing.ingredient.toLowerCase();
+      if (name.includes('chicken') || name.includes('beef') || name.includes('pork') || 
+          name.includes('fish') || name.includes('egg') || name.includes('tofu')) {
+        proteinSources += qty;
+      }
+    });
+    
+    // Estimate servings based on volume and protein sources
+    if (totalVolume > 0) {
+      return Math.max(2, Math.min(8, Math.round(totalVolume / 350)));
+    }
+    
+    if (proteinSources > 0) {
+      return Math.max(2, Math.min(6, Math.round(proteinSources * 2)));
+    }
+    
+    return null;
+  }
+
+  /**
+   * Calculate difficulty from recipe complexity
+   */
+  calculateDifficultyFromComplexity(instructions, ingredients, equipment) {
+    if (!instructions || instructions.length === 0) {
+      return null;
+    }
+    
+    const stepCount = instructions.length;
+    const ingredientCount = ingredients?.length || 0;
+    const equipmentCount = equipment?.length || 0;
+    
+    const instructionsText = instructions.join(' ').toLowerCase();
+    const advancedTechniques = [
+      'sous vide', 'temper', 'emulsify', 'braise', 'confit', 'sous-vide',
+      'molecular', 'spherification', 'foam', 'gel', 'ferment'
+    ];
+    const hasAdvancedTechniques = advancedTechniques.some(tech => instructionsText.includes(tech));
+    
+    const methods = ['bake', 'roast', 'grill', 'fry', 'sauté', 'steam', 'boil', 'simmer', 'braise'];
+    const methodCount = methods.filter(method => instructionsText.includes(method)).length;
+    
+    let complexityScore = 0;
+    
+    if (stepCount > 30) complexityScore += 3;
+    else if (stepCount > 20) complexityScore += 2;
+    else if (stepCount > 10) complexityScore += 1;
+    
+    if (ingredientCount > 12) complexityScore += 2;
+    else if (ingredientCount > 8) complexityScore += 1;
+    
+    if (equipmentCount > 6) complexityScore += 1;
+    
+    if (hasAdvancedTechniques) complexityScore += 2;
+    else if (methodCount > 4) complexityScore += 1;
+    
+    if (complexityScore >= 6) return 'Hard';
+    if (complexityScore >= 3) return 'Medium';
+    return 'Easy';
   }
 
   /**
