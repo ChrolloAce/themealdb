@@ -203,7 +203,7 @@ CRITICAL: In reviewNotes, explicitly state for EACH major field (instructions, i
             }
           ],
           temperature: 0.2, // Lower temperature for faster, more focused responses
-          max_tokens: 7000 // Increased for comprehensive review with all field verifications
+          max_tokens: 6000 // Balanced for comprehensive review with all field verifications
         }),
         new Promise((_, reject) => 
           setTimeout(() => reject(new Error('Review and fix step timed out after 55 seconds')), 55000) // Increased to 55s (5s buffer before Vercel 60s)
