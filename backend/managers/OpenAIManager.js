@@ -197,10 +197,10 @@ Be thorough - find ALL issues!`;
             }
           ],
           temperature: 0.3,
-          max_tokens: 2000
+          max_tokens: 1000 // Reduced for faster response
         }),
         new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Review step timed out after 30 seconds')), 30000)
+          setTimeout(() => reject(new Error('Review step timed out after 15 seconds')), 15000)
         )
       ]);
     } catch (timeoutError) {
@@ -268,10 +268,10 @@ Return ONLY the complete corrected recipe JSON (same structure as input), with A
             }
           ],
           temperature: 0.3,
-          max_tokens: 4000
+          max_tokens: 2000 // Reduced for faster response
         }),
         new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Fix step timed out after 30 seconds')), 30000)
+          setTimeout(() => reject(new Error('Fix step timed out after 15 seconds')), 15000)
         )
       ]);
     } catch (timeoutError) {
