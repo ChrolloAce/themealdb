@@ -2555,13 +2555,52 @@ Return ONLY valid JSON with this COMPLETE structure:
     }
     
     // Check occasion - MUST be determined from recipe type/ingredients
-    if (!recipeData.occasion || (Array.isArray(recipeData.occasion) && recipeData.occasion.includes('Weeknight') && recipeData.occasion.length === 1)) {
-      errors.push('MISSING: occasion - must be determined from recipe type/ingredients, not default "Weeknight"');
+    // Valid occasions: Weeknight, Weekend, Holiday, Date Night, Party, Breakfast, Brunch, etc.
+    // NOTE: "Weeknight" is a VALID occasion - don't reject it just because it's common!
+    const validOccasions = ['Weeknight', 'Weekend', 'Holiday', 'Date Night', 'Party', 'Breakfast', 'Brunch', 'Romantic Dinner', 'Entertaining', 'Special Occasion', 'Leisurely Cooking', 'Family Dinner'];
+    const occasionValue = Array.isArray(recipeData.occasion) ? recipeData.occasion : (recipeData.occasion ? [recipeData.occasion] : []);
+    
+    if (!recipeData.occasion || occasionValue.length === 0) {
+      errors.push('MISSING: occasion - must be determined from recipe type/ingredients');
+    } else {
+      // Check if all values are valid (allow "Weeknight" as it's a legitimate choice)
+      const hasValidOccasion = occasionValue.some(occ => {
+        const occLower = occ.toLowerCase();
+        return validOccasions.includes(occ) || 
+               occLower.includes('weeknight') || 
+               occLower.includes('weekend') || 
+               occLower.includes('holiday') || 
+               occLower.includes('party') || 
+               occLower.includes('date') ||
+               occLower.includes('breakfast') ||
+               occLower.includes('brunch');
+      });
+      if (!hasValidOccasion) {
+        errors.push('INVALID: occasion - must be a valid occasion type (Weeknight, Weekend, Holiday, Date Night, Party, etc.)');
+      }
     }
     
     // Check seasonality - MUST be determined from ingredients
-    if (!recipeData.seasonality || (Array.isArray(recipeData.seasonality) && recipeData.seasonality.includes('All Season') && recipeData.seasonality.length === 1)) {
-      errors.push('MISSING: seasonality - must be determined from ingredients, not default "All Season"');
+    // NOTE: "All Season" is a VALID seasonality - don't reject it just because it's common!
+    const validSeasonality = ['Spring', 'Summer', 'Fall', 'Winter', 'All Season'];
+    const seasonalityValue = Array.isArray(recipeData.seasonality) ? recipeData.seasonality : (recipeData.seasonality ? [recipeData.seasonality] : []);
+    
+    if (!recipeData.seasonality || seasonalityValue.length === 0) {
+      errors.push('MISSING: seasonality - must be determined from ingredients');
+    } else {
+      // Check if all values are valid (allow "All Season" as it's a legitimate choice for some recipes)
+      const hasValidSeasonality = seasonalityValue.some(season => {
+        const seasonLower = season.toLowerCase();
+        return validSeasonality.includes(season) || 
+               seasonLower.includes('spring') || 
+               seasonLower.includes('summer') || 
+               seasonLower.includes('fall') || 
+               seasonLower.includes('winter') || 
+               seasonLower.includes('all');
+      });
+      if (!hasValidSeasonality) {
+        errors.push('INVALID: seasonality - must be a valid season (Spring, Summer, Fall, Winter, All Season)');
+      }
     }
     
     // Check skills required - MUST be extracted from instructions
