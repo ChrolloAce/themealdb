@@ -793,10 +793,14 @@ class AdminRoutes {
       console.log = originalConsoleLog;
       console.error = originalConsoleError;
       
+      // Extract review data if available
+      const reviewData = generatedRecipe._review || null;
+      
       res.json({
         success: true,
         recipe: savedRecipe.meals[0],
         imageGenerated: imageUrls.length > 0,
+        review: reviewData, // Include review data in response
         imageUrl: primaryImageUrl,
         imageUrls: imageUrls,
         imageCount: imageUrls.length,

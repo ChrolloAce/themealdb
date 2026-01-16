@@ -114,6 +114,157 @@ class OpenAIManager {
   }
 
   /**
+   * Review and fix recipe - send to ChatGPT for review, get fixes, return corrected recipe
+   */
+  async reviewAndFixRecipe(recipe, params = {}) {
+    this.checkAvailability();
+    
+    console.log('📤 Sending recipe to ChatGPT for review and fixes...');
+    
+    const recipeJson = JSON.stringify(recipe, null, 2);
+    
+    const reviewPrompt = `You are a professional recipe reviewer. Review this recipe JSON and identify ALL issues:
+
+${recipeJson}
+
+🚨 REVIEW CHECKLIST - Check for:
+1. Missing or incorrect nutrition values (must be calculated from ingredients)
+2. Incorrect servings calculation (must be based on ingredient quantities)
+3. Missing or incorrect difficulty (must match recipe complexity)
+4. Generic occasion/seasonality (must be specific to recipe)
+5. Generic skills required (must match actual techniques used)
+6. Ingredient-instruction mismatches (ingredients not used, or instructions mention ingredients not listed)
+7. Unrealistic times (prep/cook times don't match complexity)
+8. Missing or placeholder values
+9. Logical inconsistencies (e.g., baking recipe with no oven equipment)
+10. Any other issues
+
+Return JSON in this format:
+{
+  "issues": [
+    {
+      "field": "nutrition.caloriesPerServing",
+      "severity": "critical|warning",
+      "issue": "Description of the problem",
+      "currentValue": "current value",
+      "suggestedFix": "what should it be"
+    }
+  ],
+  "reviewNotes": "Overall assessment of the recipe quality"
+}
+
+Be thorough - find ALL issues!`;
+
+    // Step 1: Get review
+    const reviewCompletion = await this.openai.chat.completions.create({
+      model: this.model,
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a professional recipe reviewer. Analyze recipes for accuracy, completeness, and logical consistency. Return ONLY valid JSON.'
+        },
+        {
+          role: 'user',
+          content: reviewPrompt
+        }
+      ],
+      temperature: 0.3,
+      max_tokens: 2000
+    });
+
+    const reviewResponse = reviewCompletion.choices[0].message.content.trim();
+    console.log('\n📋 ChatGPT Review Response:');
+    console.log('─'.repeat(45));
+    console.log(reviewResponse);
+    console.log('─'.repeat(45));
+
+    // Parse review
+    const JSONRepair = require('../utils/JSONRepair');
+    const reviewResult = JSONRepair.parseWithRepair(reviewResponse);
+    
+    if (!reviewResult.success) {
+      throw new Error('Failed to parse review response');
+    }
+
+    const review = reviewResult.data;
+    console.log(`\n🔍 Found ${review.issues?.length || 0} issues`);
+    if (review.issues && review.issues.length > 0) {
+      review.issues.forEach((issue, idx) => {
+        console.log(`   ${idx + 1}. [${issue.severity?.toUpperCase()}] ${issue.field}: ${issue.issue}`);
+      });
+    }
+    if (review.reviewNotes) {
+      console.log(`\n📝 Review Notes: ${review.reviewNotes}`);
+    }
+
+    // Step 2: Fix the recipe
+    const fixPrompt = `Fix the issues identified in the review. Here is the original recipe:
+
+${recipeJson}
+
+Issues found:
+${JSON.stringify(review.issues || [], null, 2)}
+
+Fix ALL identified issues and return the COMPLETE corrected recipe JSON. Make sure:
+- All nutrition values are calculated from actual ingredients
+- Servings are calculated from ingredient quantities
+- Difficulty matches recipe complexity
+- Occasion/seasonality are specific to the recipe
+- Skills required match actual techniques
+- All other issues are fixed
+
+Return ONLY the complete corrected recipe JSON (same structure as input), with ALL fixes applied.`;
+
+    const fixCompletion = await this.openai.chat.completions.create({
+      model: this.model,
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a professional recipe editor. Fix all identified issues and return the complete corrected recipe. Return ONLY valid JSON.'
+        },
+        {
+          role: 'user',
+          content: fixPrompt
+        }
+      ],
+      temperature: 0.3,
+      max_tokens: 4000
+    });
+
+    const fixResponse = fixCompletion.choices[0].message.content.trim();
+    console.log('\n🔧 ChatGPT Fix Response:');
+    console.log('─'.repeat(45));
+    console.log(fixResponse.substring(0, 1000) + (fixResponse.length > 1000 ? '...' : ''));
+    console.log('─'.repeat(45));
+
+    // Parse fixed recipe
+    const fixResult = JSONRepair.parseWithRepair(fixResponse);
+    
+    if (!fixResult.success) {
+      throw new Error('Failed to parse fixed recipe response');
+    }
+
+    const fixedRecipe = fixResult.data;
+    
+    // Merge with original to preserve any fields that might be missing
+    const mergedRecipe = { ...recipe, ...fixedRecipe };
+    
+    console.log('\n✅ Recipe fixes applied');
+    console.log(`   Fixed ${review.issues?.length || 0} issues`);
+    
+    // Return both the fixed recipe and the review data
+    return {
+      recipe: mergedRecipe,
+      review: {
+        issues: review.issues || [],
+        reviewNotes: review.reviewNotes,
+        reviewResponse: reviewResponse,
+        fixResponse: fixResponse
+      }
+    };
+  }
+
+  /**
    * Set recipe manager (for lazy initialization)
    */
   setRecipeManager(recipeManager) {
@@ -339,6 +490,26 @@ The recipe MUST match ALL specified criteria where possible. Be creative within 
           }
         }
 
+        // Review and fix recipe with ChatGPT
+        let reviewData = null;
+        if (params.enableReviewAndFix !== false) {
+          console.log('\n🔍 ═══════════════════════════════════════════');
+          console.log('🔍 REVIEW AND FIX STEP');
+          console.log('═══════════════════════════════════════════');
+          try {
+            const reviewResult = await this.reviewAndFixRecipe(recipe, params);
+            // reviewResult contains { recipe, review }
+            recipe = reviewResult.recipe;
+            reviewData = reviewResult.review;
+            console.log('✅ Recipe reviewed and fixed by ChatGPT');
+            console.log(`   Found ${reviewData.issues?.length || 0} issues, all fixed`);
+          } catch (reviewError) {
+            console.error('⚠️  Review step failed, using original recipe:', reviewError.message);
+            // Continue with original recipe if review fails
+          }
+          console.log('═══════════════════════════════════════════\n');
+        }
+
         // Log final recipe before returning
         console.log('\n🎉 ═══════════════════════════════════════════');
         console.log('🎉 FINAL RECIPE (Ready to Save)');
@@ -348,6 +519,11 @@ The recipe MUST match ALL specified criteria where possible. Be creative within 
         
         console.log(`\n✅ SUCCESS: Unique recipe generated!`);
         console.log(`═══════════════════════════════════════════\n`);
+        
+        // Return recipe with review data if available
+        if (reviewData) {
+          return { ...recipe, _review: reviewData };
+        }
         return recipe;
 
       } catch (error) {
