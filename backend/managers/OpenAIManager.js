@@ -234,12 +234,31 @@ ANALYTICAL CHECKLIST - Be THOROUGH:
    - Must match cooking methods (oven for baking, skillet for stovetop, etc.)
    - Include all tools mentioned in instructions
 
-8. SKILLS REQUIRED:
-   - Must match techniques actually used (zesting, whisking, folding, etc.)
+8. SKILLS REQUIRED - CRITICAL FORMAT CHECK:
+   - Must match techniques actually used in the instructions
+   - FORMAT: Each skill must be 1-2 words MAX (ideally 1 word)
+   - GOOD: ["Sautéing", "Baking", "Whisking", "Grilling", "Folding"]
+   - GOOD: ["Pan-frying", "Stir-frying", "Deep-frying"]
+   - BAD: ["Mixing Sauces", "Herb-Crusting", "Roasting Vegetables"] (too long, should be "Mixing", "Roasting", "Seasoning")
+   - Check instructions and extract actual techniques as single words or simple 2-word hyphenated phrases
+   - Remove skills that aren't actually used in the recipe
+   - If you see skills like "Mixing Sauces" or "Roasting Vegetables", simplify to "Mixing" and "Roasting"
 
-9. OCCASION & SEASONALITY:
-   - Be specific to recipe type and ingredients
-   - Seasonality should match when ingredients are in season
+9. OCCASION & SEASONALITY - VERIFY ACCURACY:
+   - OCCASION: Check if it matches the recipe type and complexity
+     * Weeknight: Quick, simple recipes (under 1 hour, basic techniques)
+     * Weekend: More involved recipes (longer prep, complex techniques)
+     * Holiday: Special occasion dishes, elaborate preparations
+     * Date Night: Elegant, impressive dishes
+     * Party: Large batch, shareable dishes
+     * If occasion doesn't match recipe complexity/type, FIX IT
+   - SEASONALITY: Check if it matches actual ingredients used
+     * Spring: Asparagus, peas, strawberries, lamb
+     * Summer: Tomatoes, corn, berries, zucchini, stone fruits
+     * Fall: Apples, squash, root vegetables, cranberries
+     * Winter: Citrus, root vegetables, hearty greens, winter squash
+     * All Season: Ingredients available year-round (onions, garlic, chicken, rice, pasta)
+     * If seasonality doesn't match ingredients, FIX IT based on actual ingredients in the recipe
 
 10. SERVINGS, TIMES, DIFFICULTY - CRITICAL CHECKS:
     - SERVINGS: Look at ALL ingredient quantities and determine if numberOfServings makes sense
@@ -271,12 +290,16 @@ Return JSON:
 CRITICAL REQUIREMENTS:
 - Cross-check ingredients with instructions line by line
 - VERIFY SERVINGS: Look at ingredient quantities and ensure numberOfServings makes logical sense (not always 4 or 8!)
+- VERIFY OCCASION: Check if it matches recipe complexity and type (Weeknight = quick/simple, Weekend = complex, Holiday = elaborate)
+- VERIFY SEASONALITY: Check if it matches actual ingredients (Spring/Summer/Fall/Winter based on produce used, or All Season for year-round ingredients)
+- VERIFY SKILLS REQUIRED: Extract from actual techniques in instructions, ensure each is 1-2 words MAX (ideally 1 word), simplify long skills like "Mixing Sauces" → "Mixing"
+- VERIFY DIETARY FLAGS: Check each flag (vegetarian, vegan, glutenFree, dairyFree, etc.) against actual ingredients - fix any incorrect flags
 - Calculate real nutrition values if missing (don't use placeholders)
 - Preserve existing valid nutrition values if they exist
 - Check ALL allergens (eggs, gluten, dairy, nuts, etc.)
 - Verify baking/cooking ratios are appropriate
 - Fix fruit counts vs juice amounts if inconsistent
-- For EVERY field, explicitly state in reviewNotes: (1) What was wrong and how you fixed it, OR (2) Why it was correct and didn't need changes
+- For EVERY field checked (including occasion, seasonality, skillsRequired, dietary), explicitly state in reviewNotes: (1) What was wrong and how you fixed it, OR (2) Why it was correct and didn't need changes
 - Be thorough and analytical, not superficial`;
 
     // SINGLE COMBINED CALL: Review + Fix (saves time)
