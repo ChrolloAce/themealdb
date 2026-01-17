@@ -2798,29 +2798,19 @@ Return ONLY valid JSON with this COMPLETE structure:
       errors.push('MISSING: difficulty - must be calculated from recipe complexity (steps, techniques)');
     }
     
-    // Check occasion - MUST be determined from recipe type/ingredients
-    // Valid occasions: Weeknight, Weekend, Holiday, Date Night, Party, Breakfast, Brunch, etc.
-    // NOTE: "Weeknight" is a VALID occasion - don't reject it just because it's common!
-    const validOccasions = ['Weeknight', 'Weekend', 'Holiday', 'Date Night', 'Party', 'Breakfast', 'Brunch', 'Romantic Dinner', 'Entertaining', 'Special Occasion', 'Leisurely Cooking', 'Family Dinner'];
+    // Check occasion - MUST be determined from recipe characteristics
+    // Allow ANY appropriate occasion that fits the recipe - not limited to specific options
     const occasionValue = Array.isArray(recipeData.occasion) ? recipeData.occasion : (recipeData.occasion ? [recipeData.occasion] : []);
     
     if (!recipeData.occasion || occasionValue.length === 0) {
-      errors.push('MISSING: occasion - must be determined from recipe type/ingredients');
+      errors.push('MISSING: occasion - must be determined from recipe characteristics (complexity, time, type, serving size)');
     } else {
-      // Check if all values are valid (allow "Weeknight" as it's a legitimate choice)
+      // Just check that it's a non-empty string/array - allow any appropriate occasion
       const hasValidOccasion = occasionValue.some(occ => {
-        const occLower = occ.toLowerCase();
-        return validOccasions.includes(occ) || 
-               occLower.includes('weeknight') || 
-               occLower.includes('weekend') || 
-               occLower.includes('holiday') || 
-               occLower.includes('party') || 
-               occLower.includes('date') ||
-               occLower.includes('breakfast') ||
-               occLower.includes('brunch');
+        return occ && typeof occ === 'string' && occ.trim().length > 0;
       });
       if (!hasValidOccasion) {
-        errors.push('INVALID: occasion - must be a valid occasion type (Weeknight, Weekend, Holiday, Date Night, Party, etc.)');
+        errors.push('INVALID: occasion - must be a non-empty string describing an appropriate occasion for this recipe');
       }
     }
     
