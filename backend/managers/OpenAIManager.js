@@ -503,6 +503,40 @@ CRITICAL REQUIREMENTS:
       }
     }
     
+    // Validate and fix skillsRequired format (1-2 words max, ideally 1 word)
+    if (mergedRecipe.skillsRequired && Array.isArray(mergedRecipe.skillsRequired)) {
+      const originalSkills = [...(recipe.skillsRequired || [])];
+      const fixedSkills = mergedRecipe.skillsRequired.map(skill => {
+        if (typeof skill !== 'string') return skill;
+        const trimmed = skill.trim();
+        
+        // If skill is more than 2 words (excluding hyphenated words), simplify it
+        const words = trimmed.split(/\s+/);
+        if (words.length > 2) {
+          // Take first word or first hyphenated phrase
+          const simplified = words[0].includes('-') ? words[0] : words[0];
+          console.log(`⚠️  Simplified skill "${trimmed}" to "${simplified}" (was ${words.length} words)`);
+          return simplified;
+        }
+        
+        // If it's exactly 2 words, check if it's hyphenated (like "Stir-frying")
+        if (words.length === 2 && !trimmed.includes('-')) {
+          // If not hyphenated, take first word only
+          const simplified = words[0];
+          console.log(`⚠️  Simplified skill "${trimmed}" to "${simplified}" (keeping 1 word format)`);
+          return simplified;
+        }
+        
+        return trimmed;
+      }).filter(skill => skill && typeof skill === 'string' && skill.trim().length > 0);
+      
+      // Update if skills were changed
+      if (JSON.stringify(originalSkills) !== JSON.stringify(fixedSkills)) {
+        mergedRecipe.skillsRequired = fixedSkills;
+        console.log(`✅ Fixed skillsRequired format: ${JSON.stringify(originalSkills)} → ${JSON.stringify(fixedSkills)}`);
+      }
+    }
+    
     console.log('\n✅ Recipe review completed');
     console.log(`   Fixed: ${criticalIssues.length} critical, ${warnings.length} warnings`);
     console.log(`   Verified: ${verified.length} fields checked and confirmed correct`);
